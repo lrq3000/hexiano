@@ -5,7 +5,7 @@
  *   FILE: HexKeyboard.java                                                *
  *                                                                         *
  *   This file is part of IsoKeys, an open-source project                  *
- *   hosted at http://isokeys.sourcedforge.net.                            *
+ *   hosted at http://isokeys.sourceforge.net.                            *
  *                                                                         *
  *   IsoKeys is free software: you can redistribute it and/or              *
  *   modify it under the terms of the GNU General Public License           *
@@ -26,244 +26,52 @@ package com.inept.isokeys;
 
 import java.lang.Math;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.RectF;
 import android.image.*;
 import android.util.Log;
-import android.world.World;
+import android.view.MotionEvent;
+import android.view.SurfaceView;
+import android.view.View;
+import android.world.VoidWorld;
 import android.world.Posn;
 import java.util.ArrayList;
 
-public class HexKeyboard extends World
+public class HexKeyboard extends View
 {
     static final int TITLE_BAR_HEIGHT = 50;
-
-    static Scene mBackground;
+    static Bitmap mBitmap;
+    static Paint mPaint = Image.WHITE;
     static int mDisplayWidth = 0;
     static int mDisplayHeight = 0;
     static int mRowCount = 0;
     static int mColumnCount = 0;
-    static int mTileRadius = 64;
+    static int mTileRadius = 64; // What about dip (density-independent pixels)?!
     static int mTileHeight = 0;
-   
-    		
-    static final RegularPolygon mOverlay = new RegularPolygon(mTileRadius, 6, "outline", "black");
-    static final Image mWhiteHexTileImage = 
-    		new RegularPolygon(mTileRadius, 6, "solid", "white").overlay(mOverlay).rotate(90);
-    static final Image mBlackHexTileImage =
-    		new RegularPolygon(mTileRadius, 6, "solid", "black").overlay(mOverlay).rotate(90);
-    static final Image mRedHexTileImage = 
-    		new RegularPolygon(mTileRadius, 6, "solid", "red").overlay(mOverlay).rotate(90);
-    static final Image mGreenHexTileImage = 
-    		new RegularPolygon(mTileRadius, 6, "solid", "green").overlay(mOverlay).rotate(90);
     
     static ArrayList<HexKey> mKeys = new ArrayList<HexKey>();
- 
-    private class HexKey
-    {
-    	Posn mCenter;
-    	Posn mLowerLeft;
-    	Posn mLowerRight;
-    	Posn mMiddleLeft;
-    	Posn mMiddleRight;
-    	Posn mUpperLeft;
-    	Posn mUpperRight;
-    	String mColor;
-    	int mPitch;
-    	
-    	public HexKey(int x, int y, int pitch, String color)
-    	{
-    		this(new Posn(x, y), pitch, color);
-    	}
-    	
-    	public HexKey(Posn center, int pitch, String color)
-    	{
-    		mCenter = center;
-    		mMiddleLeft = new Posn(mCenter.x - mTileRadius, mCenter.y);
-    		mMiddleRight = new Posn(mCenter.x + mTileRadius, mCenter.y);
-    		mLowerLeft = new Posn(mCenter.x - mTileRadius/2, 
-    			mCenter.y + (int)(Math.round(Math.sqrt(3.0) * mTileRadius)/2));
-    		mLowerRight = new Posn(mCenter.x + mTileRadius/2, 
-    			mCenter.y + (int)(Math.round(Math.sqrt(3.0) * mTileRadius)/2));
-    		mUpperLeft = new Posn(mCenter.x - mTileRadius/2, 
-    			mCenter.y - (int)(Math.round(Math.sqrt(3.0) * mTileRadius)/2));
-    		mUpperRight = new Posn(mCenter.x + mTileRadius/2, 
-    			mCenter.y - (int)(Math.round(Math.sqrt(3.0) * mTileRadius)/2));
-    		
-    		mPitch = pitch;
-    		mColor = color;
-    	}
-  
-    	public Image getImage()
-    	{
-    		if (mColor.equals("green"))
-    		{
-    			return mGreenHexTileImage;
-    		}
-    		
-    		return mRedHexTileImage;
-    	}
-  
-    	public Image getPressImage()
-    	{
-    		return mBlackHexTileImage;
-    	}
-    	
-    	public String toString()
-    	{
-    		String str = new String("HexKey: ");
-    		str += "Center: (" + mCenter.x + ", " + mCenter.y + ")";
-    		return str;
-    	}
-    	
-    	public boolean contains(Posn pos)
-    	{
-    		return this.contains(pos.x, pos.y);
-    	}
-    	
-    	public boolean contains(int x, int y)
-    	{
-//    		Log.v("HexKey::contains", this.toString());
-    		if (x >= mLowerLeft.x && x <= mLowerRight.x &&
-    			y >= mUpperLeft.y && y <= mLowerLeft.y)
-    		{
-    			Log.d("HexKey::contains", "Center cut");
-    			return true; // Center cut.
-    		}
-    		if (x < mMiddleLeft.x || x > mMiddleRight.x ||
-    			y < mUpperLeft.y || y > mLowerLeft.y)
-    		{
-//    			Log.d("HexKey::contains", "Air ball");
-    			return false; // Air ball.
-    		}
-    		
-    		if (x <= mUpperLeft.x) // Could be in left triangle.
-    		{
-    			if (y <= mMiddleLeft.y)
-    			{
-    				// We are in upper half of the left triangle if the
-    				// slope formed by the line from the (x, y) to the upper-left
-    				// vertex is >= the slope from the middle-left vertex to the
-    				// upper-left vertex. We take the negative because the y-coordinate's
-    				// sign is reversed.
-    				double sideSlope = (-1.0) *
-    						(mUpperLeft.y - mMiddleLeft.y)/(mUpperLeft.x - mMiddleLeft.x);
-    				double pointSlope = (-1.0) * (mUpperLeft.y - y)/(mUpperLeft.x - x);
-    				
-    				Log.d("HexKey::contains", "Upper-left side slope: " + sideSlope);
-    				Log.d("HexKey::contains", "Upper-left point slope: " + pointSlope);
-    				
-    				if (pointSlope >= sideSlope)
-    				{
-    					return true;
-    				}
-    			}
-    			else
-    			{
-    				// We may be in the lower half of the left triangle.
-    				double sideSlope = (-1.0) *
-    						(mLowerLeft.y - mMiddleLeft.y)/(mLowerLeft.x - mMiddleLeft.x);
-    				double pointSlope = (-1.0) * (mMiddleLeft.y - y)/(mMiddleLeft.x - x);
-    				Log.d("HexKey::contains", "Lower-left side slope: " + sideSlope);
-    				Log.d("HexKey::contains", "Lower-left point slope: " + pointSlope);
-    				if (pointSlope >= sideSlope)
-    				{
-    					return true;
-    				}
-    			}
-    		}
-    		else // Could be in right triangle
-    		{
-    			if (y <= mMiddleRight.y)
-    			{
-    				// We are in upper half of the right triangle if the
-    				// slope formed by the line from the (x, y) to the upper-right
-    				// vertex is <= the slope from the middle-right
-    				// vertex to the upper-upper vertex. We take the negative because 
-    				// the y-coordinate's sign is reversed.
-    				double sideSlope = (-1.0) *
-    						(mUpperRight.y - mMiddleRight.y)/(mUpperRight.x - mMiddleRight.x);
-    				double pointSlope = (-1.0) *(mUpperRight.y - y)/(mUpperRight.x - x);
-    				Log.d("HexKey::contains", "Upper-right side slope: " + sideSlope);
-    				Log.d("HexKey::contains", "Upper-right point slope: " + pointSlope);
-    				if (pointSlope <= sideSlope)
-    				{
-    					return true;
-    				}
-    			}
-    			else
-    			{
-    				double sideSlope = (-1.0) *
-    						(mLowerRight.y - mMiddleRight.y)/(mLowerRight.x - mMiddleRight.x);
-    				double pointSlope = (-1.0) *(mMiddleRight.y - y)/(mMiddleRight.x - x);
-    				Log.d("HexKey::contains", "Lower-right side slope: " + sideSlope);
-    				Log.d("HexKey::contains", "Lower-right point slope: " + pointSlope);
-    				if (pointSlope <= sideSlope)
-    				{
-    					return true;
-    				}
-    			}
-    		}
-    		
-    		return false;
-    	}
-    	
-    	public void play()
-    	{
-    		String pitchStr = String.valueOf(mPitch);
-    		Log.d("HexKey::play", pitchStr);
-    		return;
-    	}
-    	
-    	public void stop()
-    	{
-    		String pitchStr = String.valueOf(mPitch);
-    		Log.d("HexKey::stop", pitchStr);
-    		return;
-    	}
-    }
     
     void setUpBoard(int displayHeight, int displayWidth)
     {
         mDisplayWidth = displayWidth;
         mDisplayHeight = displayHeight;
     	mTileHeight = (int)(Math.round(Math.sqrt(3.0) * mTileRadius));
-        
+       
         mRowCount = displayHeight/mTileHeight + 1;
-        mRowCount = 10;
+        // mRowCount = 10;
         
         mColumnCount = displayWidth/(mTileRadius * 3) + 2;
-    }
-    
-    HexKeyboard(int height, int width, Scene scene)
-    {
-    	mBackground = scene;
-    	setUpBoard(height, width);
-    }
-    
-    HexKeyboard(int height, int width)
-    {
-    	mBackground = new EmptyScene(width, height);
     	
-    	boolean needKeys = false;
-    	if (mKeys.isEmpty())
+    	if (! mKeys.isEmpty())
     	{
-    		needKeys = true;
+    		return;
     	}
-    	
-    	setUpBoard(height, width);
         
         int y = 0;
-
-//		RegularPolygon redHexTile = new RegularPolygon(mTileRadius, 6, "solid", "red");
-//		Image redHexTileImg = redHexTile.rotate(90);
-//		RegularPolygon overlay = new RegularPolygon(mTileRadius, 6, "outline", "black");
-//		Image overlayImg  = overlay.rotate(90);
-//		
-//		RegularPolygon greenHexTile = new RegularPolygon(mTileRadius, 6, "solid", "green");
-//		Image greenHexTileImg = greenHexTile.rotate(90);
-		
-//		int [][] upperY = new int[2 * mColumnCount][mRowCount];
-//		int [][] lowerY = new int[2 * mColumnCount][mRowCount];
-		
 		int pitch = 0;
 		
         for (int j = 0; j < mRowCount; j++)
@@ -274,22 +82,14 @@ public class HexKeyboard extends World
         	{
         		int kittyCornerX = (int)Math.round(x - mTileRadius * 1.5);
         		int kittyCornerY = y + mTileHeight/2;
-        		HexKey kittyCornerKey = new HexKey(kittyCornerX, kittyCornerY, pitch, "green");
+        		HexKey kittyCornerKey = 
+        				new HexKey(mTileRadius, new Posn(kittyCornerX, kittyCornerY), pitch, "green");
         		
-        		mBackground = mBackground.placeImage(kittyCornerKey.getImage(),
-                		x - mTileRadius * 1.5, y + mTileHeight/2);
-        		if (needKeys)
-        		{
-        			mKeys.add(kittyCornerKey);
-        		}
+        		mKeys.add(kittyCornerKey);
         		pitch++;
         		
-        		HexKey key = new HexKey(x, y, pitch, "red");
-        		mBackground = mBackground.placeImage(key.getImage(), x, y);
-        		if (needKeys)
-        		{
-        			mKeys.add(key);
-        		}
+        		HexKey key = new HexKey(mTileRadius, new Posn(x, y), pitch, "red");
+        		mKeys.add(key);
         		pitch++;
         		
         		x += 3 * mTileRadius;
@@ -297,9 +97,19 @@ public class HexKeyboard extends World
         	
         	y += mTileHeight;
         }
+        
+    	mBitmap = Bitmap.createBitmap(mDisplayWidth, mDisplayHeight, Bitmap.Config.ARGB_8888);
+    	Canvas tempCanvas = new Canvas(mBitmap);
+    	this.onDraw(tempCanvas);
     }
    
-    private HexKey touchKey(int x, int y) throws Exception
+    public HexKeyboard(Context context, int height, int width, int keyRadius)
+	{
+		super(context);
+    	setUpBoard(height, width);
+	}
+    
+    private void pressKey(int x, int y) throws Exception
     {
     	for (int i = 0; i < mKeys.size(); i++)
     	{
@@ -307,14 +117,14 @@ public class HexKeyboard extends World
     		if (key.contains(x, y))
     		{
     			key.play();
-    			return key;
+    			return;
     		}
     	}
     	
     	throw new Exception("Key not found");
     }
     
-    private HexKey releaseKey(int x, int y) throws Exception
+    private void releaseKey(int x, int y) throws Exception
     {
     	for (int i = 0; i < mKeys.size(); i++)
     	{
@@ -322,7 +132,7 @@ public class HexKeyboard extends World
     		if (key.contains(x, y))
     		{
     			key.stop();
-    			return key;
+    			return;
     		}
     	}
     	
@@ -440,46 +250,50 @@ public class HexKeyboard extends World
         }
     	return false;
     }
-    
-    public Scene onDraw()
+   
+    public void onDraw(Canvas canvas)
     { 
-    	Log.v("onDraw", "Hand it back");
-    	return this.mBackground;
+    	Canvas tempCanvas = new Canvas(mBitmap);
+    	for (HexKey k : mKeys)
+    	{
+    		k.paint(tempCanvas);
+    	}
+    	
+    	canvas.drawBitmap(mBitmap, 0, 0, null);
     }
 
-    public World onMouse(int x, int y, String me){
-    	Log.v("onMouse", me);
-    	HexKeyboard newWorld = null;
+    public boolean onTouchEvent(MotionEvent event){
+    	Log.v("onMouse", event.toString());
 
+    	int x = -1;
+    	int y = -1;
+    	
+    	int actId = event.getAction();
     	try
     	{
-    		if(me.equals("long-button-down"))
+    		if (actId == MotionEvent.ACTION_DOWN ||
+    				actId == MotionEvent.ACTION_POINTER_DOWN)
     		{
-    			return this;
+    			x = (int)event.getX();
+    			y = (int)event.getY();
+    			this.pressKey(x, y);
+    			this.invalidate();
     		}
-    		if(me.equals("button-down"))
+    		else if (actId == MotionEvent.ACTION_UP ||
+    				actId == MotionEvent.ACTION_POINTER_UP)
     		{
-    			HexKey key = this.touchKey(x, y);
-    			mBackground = mBackground.placeImage(key.getPressImage(), key.mCenter);
-    			newWorld = new HexKeyboard(mDisplayHeight, mDisplayWidth, mBackground);
+    			x = (int)event.getX();
+    			y = (int)event.getY();
+    			this.releaseKey(x, y);
+    			this.invalidate();
     		}
-    		else if (me.equals("button-up"))
-    		{
-    			//        	int sliceRowNum = this.getHorizontalSliceNumber(x, y);
-    			//        	int sliceColNum = this.getHorizontalSliceNumber(x, y);
-    			//        	String msg = "Slice Column: " + sliceColNum + ", Row: " + sliceRowNum;
-    			//        	Log.v("onMouse", msg);
-
-    			HexKey key = this.releaseKey(x, y);
-    			mBackground = mBackground.placeImage(key.getImage(), key.mCenter);
-    			newWorld = new HexKeyboard(mDisplayHeight, mDisplayWidth, mBackground);
-    		}
+    		
     	}
     	catch (Exception e)
     	{
-    		Log.e("HexKeyboard::onMouse", "HexKey not found at (" + x + ", " + ")");
+    		Log.e("HexKeyboard::onMouse", "HexKey not found at (" + x + ", " + y + ")");
     	}
-        
-        return newWorld;
+    	
+        return true;
     }
 }
