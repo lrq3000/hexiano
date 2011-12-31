@@ -30,12 +30,20 @@ public class HexKey
 	Paint mOverlayPaint = new Paint();
 	static int mKeyCount = 0;
 	static int mRadius;
-	int mPitch;
+	int mStreamId;
     private boolean mPressed;
     private boolean mDirty;
     
-	public HexKey(int radius, Posn center, int pitch, String color)
+    private static Instrument mInstrument;
+    private Note mNote;
+    private int mMidiNoteNumber;
+    
+	public HexKey(int radius, Posn center, int midiNoteNumber, String color, Instrument instrument)
 	{
+		mInstrument = instrument;
+		mNote = new Note(midiNoteNumber);
+		mMidiNoteNumber = mNote.getMidiNoteNumber();
+		mStreamId = -1;
 		mPressed = false;
 		mDirty = true;
 		mRadius = radius;
@@ -51,7 +59,6 @@ public class HexKey
 		mUpperRight = new Posn(mCenter.x + mRadius/2, 
 			mCenter.y - (int)(Math.round(Math.sqrt(3.0) * mRadius)/2));
 		
-		mPitch = pitch;
 		mColorStr = color;
 		mColorId = ColorDatabase.color(mColorStr);
         mPaint.setColor(mColorId);
@@ -229,7 +236,8 @@ public class HexKey
 	
 	public void play()
 	{
-		String pitchStr = String.valueOf(mPitch);
+		mStreamId = mInstrument.play(mMidiNoteNumber);
+		String pitchStr = String.valueOf(mMidiNoteNumber);
 		Log.d("HexKey::play", pitchStr);
 		this.setPressed(true);
 		return;
@@ -237,7 +245,9 @@ public class HexKey
 	
 	public void stop()
 	{
-		String pitchStr = String.valueOf(mPitch);
+		mInstrument.stop(mStreamId);
+		mStreamId = -1;
+		String pitchStr = String.valueOf(mMidiNoteNumber);
 		Log.d("HexKey::stop", pitchStr);
 		this.setPressed(false);
 		return;

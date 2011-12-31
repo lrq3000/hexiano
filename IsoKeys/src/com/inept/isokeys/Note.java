@@ -29,10 +29,10 @@ import java.util.Map;
 
 public class Note
 {
-	int mOctave;
-	String mFlatName;
-    String mSharpName;
-	int mMidiNoteNumber;
+	protected int mOctave;
+	protected String mFlatName;
+    protected String mSharpName;
+	protected int mMidiNoteNumber;
 	
 	public Note(int midiNumber)
 	{
@@ -50,6 +50,11 @@ public class Note
 	public String getSharpName()
 	{
 		return mSharpName + mOctave;
+	}
+
+	public int getMidiNoteNumber()
+	{
+		return mMidiNoteNumber;
 	}
 	
 	static final HashMap<Integer, String> mFlatForNumber;

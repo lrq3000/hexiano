@@ -24,11 +24,54 @@
 
 package com.inept.isokeys;
 
+import java.util.HashMap;
+
+import android.content.Context;
+import android.media.AudioManager;
+import android.media.SoundPool;
+
 public abstract class Instrument {
-	
-	public Instrument()
+
+	public static final int POLYPHONY_COUNT = 8;
+	private SoundPool mSoundPool; 
+	private HashMap<Integer, Integer> mSounds; 
+	private AudioManager  mAudioManager;
+	private Context mContext;
+
+	public Instrument(Context context)
 	{
-		
+		mContext = context;
+		init(context);
 	}
 
+	public void init(Context context)
+	{ 
+		mSoundPool = new SoundPool(POLYPHONY_COUNT, AudioManager.STREAM_MUSIC, 0); 
+		mSounds = new HashMap<Integer, Integer>(); 
+		mAudioManager = (AudioManager)mContext.getSystemService(Context.AUDIO_SERVICE); 	     
+	} 
+
+	public void addSound(int index, int soundId)
+	{
+		mSounds.put(index, mSoundPool.load(mContext, soundId, 1));
+	}
+
+	public int play(int midiNoteNumber)
+	{ 
+		int index = midiNoteNumber;
+		// FIXME: Not all notes will map to unmodified sounds.
+		int streamVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC); 
+		return  mSoundPool.play(mSounds.get(index), streamVolume, streamVolume, 1, 0, 1f); 
+	}
+
+	public void stop(int streamId)
+	{ 
+		mSoundPool.stop(streamId);
+	}
+
+	public void loop(int index)
+	{ 
+		int streamVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC); 
+		mSoundPool.play(mSounds.get(index), streamVolume, streamVolume, 1, -1, 1f); 
+	}
 }

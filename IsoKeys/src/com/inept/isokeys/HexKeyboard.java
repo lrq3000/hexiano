@@ -53,6 +53,8 @@ public class HexKeyboard extends View
     static int mTileRadius = 64; // What about dip (density-independent pixels)?!
     static int mTileHeight = 0;
     
+    static Instrument mInstrument;
+    
     static ArrayList<HexKey> mKeys = new ArrayList<HexKey>();
     
     void setUpBoard(int displayHeight, int displayWidth)
@@ -72,7 +74,7 @@ public class HexKeyboard extends View
     	}
         
         int y = 0;
-		int pitch = 0;
+		int pitch = 21;
 		
         for (int j = 0; j < mRowCount; j++)
         {	
@@ -82,13 +84,22 @@ public class HexKeyboard extends View
         	{
         		int kittyCornerX = (int)Math.round(x - mTileRadius * 1.5);
         		int kittyCornerY = y + mTileHeight/2;
-        		HexKey kittyCornerKey = 
-        				new HexKey(mTileRadius, new Posn(kittyCornerX, kittyCornerY), pitch, "green");
+        		HexKey kittyCornerKey = new HexKey(
+        				mTileRadius,
+        				new Posn(kittyCornerX, kittyCornerY),
+        				pitch,
+        				"green",
+        				mInstrument);
         		
         		mKeys.add(kittyCornerKey);
         		pitch++;
         		
-        		HexKey key = new HexKey(mTileRadius, new Posn(x, y), pitch, "red");
+        		HexKey key = new HexKey(
+        				mTileRadius,
+        				new Posn(x, y),
+        				pitch,
+        				"red",
+        				mInstrument);
         		mKeys.add(key);
         		pitch++;
         		
@@ -106,6 +117,7 @@ public class HexKeyboard extends View
     public HexKeyboard(Context context, int height, int width, int keyRadius)
 	{
 		super(context);
+		mInstrument = new Piano(context);
     	setUpBoard(height, width);
 	}
     
