@@ -1,3 +1,27 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *                                                                         *
+ *   IsoKeys, Copyright 2011 David A. Randolph                             *
+ *                                                                         *
+ *   FILE: HexKey.java                                                     *
+ *                                                                         *
+ *   This file is part of IsoKeys, an open-source project                  *
+ *   hosted at http://isokeys.sourceforge.net.                             *
+ *                                                                         *
+ *   IsoKeys is free software: you can redistribute it and/or              *
+ *   modify it under the terms of the GNU General Public License           *
+ *   as published by the Free Software Foundation, either version          *
+ *   3 of the License, or (at your option) any later version.              *
+ *                                                                         *
+ *   AndroidWorld is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with IsoKeys.  If not, see <http://www.gnu.org/licenses/>.      *
+ *                                                                         *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 package com.inept.isokeys;
 
 import java.util.Hashtable;
@@ -14,7 +38,7 @@ import android.image.RegularPolygon;
 import android.util.Log;
 import android.world.Posn;
 
-public class HexKey
+public abstract class HexKey
 {
 	Posn mCenter;
 	Posn mLowerLeft;
@@ -28,17 +52,19 @@ public class HexKey
 	Paint mPaint = new Paint();
 	Paint mPressPaint = new Paint();
 	Paint mOverlayPaint = new Paint();
+	Paint mTextPaint = new Paint();
+	Paint mReversePaint;
 	static int mKeyCount = 0;
 	static int mRadius;
 	int mStreamId;
     private boolean mPressed;
     private boolean mDirty;
     
-    private static Instrument mInstrument;
-    private Note mNote;
-    private int mMidiNoteNumber;
+    protected static Instrument mInstrument;
+    protected Note mNote;
+    protected int mMidiNoteNumber;
     
-	public HexKey(int radius, Posn center, int midiNoteNumber, String color, Instrument instrument)
+	public HexKey(int radius, Posn center, int midiNoteNumber, Instrument instrument)
 	{
 		mInstrument = instrument;
 		mNote = new Note(midiNoteNumber);
@@ -58,20 +84,7 @@ public class HexKey
 			mCenter.y - (int)(Math.round(Math.sqrt(3.0) * mRadius)/2));
 		mUpperRight = new Posn(mCenter.x + mRadius/2, 
 			mCenter.y - (int)(Math.round(Math.sqrt(3.0) * mRadius)/2));
-		
-		mColorStr = color;
-		mColorId = ColorDatabase.color(mColorStr);
-        mPaint.setColor(mColorId);
-        mPaint.setAntiAlias(true);
-        mPaint.setStyle(Paint.Style.FILL);
-        mPaint.setStrokeWidth(2);
-        
-		int blackId = ColorDatabase.color("black");
-        mOverlayPaint.setColor(blackId);
-        mOverlayPaint.setAntiAlias(true);
-        mOverlayPaint.setStyle(Paint.Style.STROKE);
-        mOverlayPaint.setStrokeWidth(2);
-        
+	
 		int pressId = ColorDatabase.color("darkgray");
         mPressPaint.setColor(pressId);
         mPressPaint.setAntiAlias(true);
@@ -81,6 +94,16 @@ public class HexKey
 		mKeyCount++;
 	}
 
+	protected String getTextColor(String keyColor)
+	{
+	    return "black";
+	}
+	
+	protected String getOverlayColor(String keyColor)
+	{
+	    return "black";
+	}
+	
     protected Path getHexagonPath()
     {
         Path hexy = new Path();
@@ -118,6 +141,9 @@ public class HexKey
     		hexPath.offset(mCenter.x, mCenter.y);
     		canvas.drawPath(hexPath, mPaint);
     		canvas.drawPath(hexPath, mOverlayPaint);
+    		// String label = mNote.getSharpName();
+    		String label = "" + mNote.getMidiNoteNumber();
+    		canvas.drawText(label, mCenter.x, mCenter.y, mTextPaint);
     	}
     	
     	mDirty = false;

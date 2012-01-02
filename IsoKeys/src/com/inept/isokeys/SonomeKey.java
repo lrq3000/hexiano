@@ -2,7 +2,7 @@
  *                                                                         *
  *   IsoKeys, Copyright 2011 David A. Randolph                             *
  *                                                                         *
- *   FILE: Play.java                                                       *
+ *   FILE: SonomeKey.java                                                  *
  *                                                                         *
  *   This file is part of IsoKeys, an open-source project                  *
  *   hosted at http://isokeys.sourceforge.net.                             *
@@ -21,40 +21,59 @@
  *   along with IsoKeys.  If not, see <http://www.gnu.org/licenses/>.      *
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
 package com.inept.isokeys;
 
-import android.app.Activity;
-import android.content.Context;
-import android.os.Bundle;
-import android.view.Display;
-import android.view.Window;
-import android.view.WindowManager;
+import android.graphics.Paint;
+import android.image.ColorDatabase;
+import android.world.Posn;
 
-public class Play extends Activity
+public class SonomeKey extends HexKey
 {
-	HexKeyboard mBoard;
-	/**
-	 * @see android.app.Activity#onCreate(Bundle)
-	 */
-	@Override
-	protected void onCreate(Bundle savedInstanceState)
+	public SonomeKey(int radius, Posn center, int midiNoteNumber, Instrument instrument)
 	{
-		super.onCreate(savedInstanceState);
+		super(radius, center, midiNoteNumber, instrument);
 
-		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		mColorStr = getColor();
+		mColorId = ColorDatabase.color(mColorStr);
+        mPaint.setColor(mColorId);
+        mPaint.setAntiAlias(true);
+        mPaint.setStyle(Paint.Style.FILL);
+        mPaint.setStrokeWidth(2);
+       
+		int overlayId = ColorDatabase.color(this.getOverlayColor(mColorStr));
+        mOverlayPaint.setColor(overlayId);
+        mOverlayPaint.setAntiAlias(true);
+        mOverlayPaint.setStyle(Paint.Style.STROKE);
+        mOverlayPaint.setStrokeWidth(2);
+        
+		int textId = ColorDatabase.color(this.getTextColor(mColorStr));
+        mTextPaint.setColor(textId);
+        mTextPaint.setAntiAlias(true);
+        mTextPaint.setStyle(Paint.Style.STROKE);
+        mTextPaint.setStrokeWidth(1);
+        mTextPaint.setTextAlign(Paint.Align.CENTER);
+	}
+	
+	protected String getColor()
+	{
+		String sharpName = mNote.getSharpName();
+		String color = "khaki";
+		if (sharpName.contains("#"))
+		{	
+			if (sharpName.contains("G"))
+			{
+				color = "saddlebrown";
+			}
+			else
+			{
+				color = "brown";
+			}	
+		}
+		else if (sharpName.contains("D"))
+		{
+			color = "darkkhaki";
+		}
 		
-		Display display = getWindowManager().getDefaultDisplay();
-
-		int displayWidth = display.getWidth();
-		int displayHeight = display.getHeight(); // - TITLE_BAR_HEIGHT;
-
-		Context con = this.getApplicationContext();
-		mBoard = new HexKeyboard(con, displayHeight, displayWidth, 64);	
-		mBoard.invalidate();
-		
-		this.setContentView(mBoard);
+		return color;
 	}
 }

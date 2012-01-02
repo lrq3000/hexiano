@@ -56,7 +56,8 @@ public class HexKeyboard extends View
     static Instrument mInstrument;
     
     static ArrayList<HexKey> mKeys = new ArrayList<HexKey>();
-    
+   
+
     void setUpBoard(int displayHeight, int displayWidth)
     {
         mDisplayWidth = displayWidth;
@@ -74,8 +75,9 @@ public class HexKeyboard extends View
     	}
         
         int y = 0;
-		int pitch = 21;
-		
+		int pitch = 89; // Puts F6 in first hex key.
+	    int rowFirstPitch = pitch;
+	    
         for (int j = 0; j < mRowCount; j++)
         {	
         	int x = mTileRadius;
@@ -84,28 +86,28 @@ public class HexKeyboard extends View
         	{
         		int kittyCornerX = (int)Math.round(x - mTileRadius * 1.5);
         		int kittyCornerY = y + mTileHeight/2;
-        		HexKey kittyCornerKey = new HexKey(
+        		SonomeKey kittyCornerKey = new SonomeKey(
         				mTileRadius,
         				new Posn(kittyCornerX, kittyCornerY),
         				pitch,
-        				"green",
         				mInstrument);
         		
         		mKeys.add(kittyCornerKey);
-        		pitch++;
+        		pitch+=4;
         		
-        		HexKey key = new HexKey(
+        		SonomeKey key = new SonomeKey(
         				mTileRadius,
         				new Posn(x, y),
         				pitch,
-        				"red",
         				mInstrument);
         		mKeys.add(key);
-        		pitch++;
+        		pitch-=3;
         		
         		x += 3 * mTileRadius;
         	}
         	
+            pitch = rowFirstPitch - 7; // Down a fifth.
+            rowFirstPitch = pitch;
         	y += mTileHeight;
         }
         

@@ -2,17 +2,17 @@
  *                                                                         *
  *   IsoKeys, Copyright 2011 David A. Randolph                             *
  *                                                                         *
- *   FILE: Note.java                                                *
+ *   FILE: Note.java                                                       *
  *                                                                         *
  *   This file is part of IsoKeys, an open-source project                  *
- *   hosted at http://isokeys.sourceforge.net.                            *
+ *   hosted at http://isokeys.sourceforge.net.                             *
  *                                                                         *
  *   IsoKeys is free software: you can redistribute it and/or              *
  *   modify it under the terms of the GNU General Public License           *
  *   as published by the Free Software Foundation, either version          *
  *   3 of the License, or (at your option) any later version.              *
  *                                                                         *
- *   IsoKeys is distributed in the hope that it will be useful,       *
+ *   IsoKeys is distributed in the hope that it will be useful,            *
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
  *   GNU General Public License for more details.                          *
@@ -33,7 +33,7 @@ public class Note
 	protected String mFlatName;
     protected String mSharpName;
 	protected int mMidiNoteNumber;
-	
+
 	public Note(int midiNumber)
 	{
 	    mMidiNoteNumber = midiNumber;
