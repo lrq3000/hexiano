@@ -62,7 +62,8 @@ public class SonomeKey extends HexKey
 		{	
 			if (sharpName.contains("G"))
 			{
-				color = "saddlebrown";
+				// color = "saddlebrown";
+				color = "chocolate";
 			}
 			else
 			{

@@ -141,8 +141,8 @@ public abstract class HexKey
     		hexPath.offset(mCenter.x, mCenter.y);
     		canvas.drawPath(hexPath, mPaint);
     		canvas.drawPath(hexPath, mOverlayPaint);
-    		// String label = mNote.getSharpName();
-    		String label = "" + mNote.getMidiNoteNumber();
+    		String label = mNote.getSharpName();
+    		// String label = "" + mNote.getMidiNoteNumber();
     		canvas.drawText(label, mCenter.x, mCenter.y, mTextPaint);
     	}
     	
