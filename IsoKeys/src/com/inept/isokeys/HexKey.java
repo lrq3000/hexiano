@@ -30,6 +30,7 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.image.ColorDatabase;
 import android.image.Image;
@@ -143,7 +144,11 @@ public abstract class HexKey
     		canvas.drawPath(hexPath, mOverlayPaint);
     		String label = mNote.getSharpName();
     		// String label = "" + mNote.getMidiNoteNumber();
-    		canvas.drawText(label, mCenter.x, mCenter.y, mTextPaint);
+    		Rect bounds = new Rect();
+    		mTextPaint.getTextBounds("X", 0, 1, bounds);
+    		Log.d("HexKey::paint", "Bottom: " + bounds.bottom + " Top: " + bounds.top);
+    		int labelHeight = bounds.bottom - bounds.top;
+    		canvas.drawText(label, mCenter.x, mCenter.y + Math.abs(labelHeight/2), mTextPaint);
     	}
     	
     	mDirty = false;
@@ -177,6 +182,18 @@ public abstract class HexKey
 	
 	public boolean contains(int x, int y)
 	{
+		/*
+		 * 
+		 * We split the hexagon into three areas to determine if the specified coordinates
+		 * are included. These are a "center-cut" rectangle, where most positive examples are
+		 * expected, and a right and left triangle:
+		        ______
+               /|    |\
+		      / |    | \
+		      \ |    | /
+		       \|____|/
+		  
+		  */
 		if (x >= mLowerLeft.x && x <= mLowerRight.x &&
 			y >= mUpperLeft.y && y <= mLowerLeft.y)
 		{
@@ -188,8 +205,7 @@ public abstract class HexKey
 		{
 			return false; // Air ball.
 		}
-		
-		if (x <= mUpperLeft.x) // Could be in left triangle.
+		if (x <= mUpperLeft.x) // Could be in left "triangle."
 		{
 			if (y <= mMiddleLeft.y)
 			{

@@ -49,8 +49,8 @@ public class SonomeKey extends HexKey
 		int textId = ColorDatabase.color(this.getTextColor(mColorStr));
         mTextPaint.setColor(textId);
         mTextPaint.setAntiAlias(true);
-        mTextPaint.setStyle(Paint.Style.STROKE);
-        mTextPaint.setStrokeWidth(1);
+        mTextPaint.setStyle(Paint.Style.FILL);
+        mTextPaint.setTextSize(20);
         mTextPaint.setTextAlign(Paint.Align.CENTER);
 	}
 	
