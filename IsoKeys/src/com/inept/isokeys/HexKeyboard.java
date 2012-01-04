@@ -40,6 +40,7 @@ import android.view.View;
 import android.world.VoidWorld;
 import android.world.Posn;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class HexKeyboard extends View
 {
@@ -53,6 +54,7 @@ public class HexKeyboard extends View
 	static int mTileRadius = 64; // What about dip (density-independent pixels)?!
 	static int mTileHeight = 0;
 
+	static HashMap<Integer, Integer> mTouches = new HashMap<Integer, Integer>();
 	static Instrument mInstrument;
 
 	static ArrayList<HexKey> mKeys = new ArrayList<HexKey>();
@@ -64,7 +66,7 @@ public class HexKeyboard extends View
 		mDisplayHeight = displayHeight;
 		mTileHeight = (int)(Math.round(Math.sqrt(3.0) * mTileRadius));
 
-		mRowCount = displayHeight/mTileHeight + 1;
+		mRowCount = displayHeight/mTileHeight + 2;
 		// mRowCount = 10;
 
 		mColumnCount = displayWidth/(mTileRadius * 3) + 2;
@@ -120,38 +122,29 @@ public class HexKeyboard extends View
 	{
 		super(context);
 		mInstrument = new Piano(context);
-		setUpBoard(height, width);
+		if (height > width)
+		{
+			setUpBoard(width, height);
+		}
+		else
+		{
+			setUpBoard(height, width);
+		}
 	}
 
-	private void pressKey(int x, int y) throws Exception
+	private int keyIdAt(int x, int y) throws Exception
 	{
 		for (int i = 0; i < mKeys.size(); i++)
 		{
 			HexKey key = mKeys.get(i);
 			if (key.contains(x, y))
 			{
-				key.play();
-				return;
+				return i;
 			}
 		}
 
 		throw new Exception("Key not found");
 	}
-
-	private void releaseKey(int x, int y) throws Exception
-	{
-		for (int i = 0; i < mKeys.size(); i++)
-		{
-			HexKey key = mKeys.get(i);
-			if (key.contains(x, y))
-			{
-				key.stop();
-				return;
-			}
-		}
-
-		throw new Exception("Key not found");
-	} 
 
 	private int getLowerBound (int x, int y)
 	{
@@ -289,11 +282,14 @@ public class HexKeyboard extends View
 			if (actionCode == MotionEvent.ACTION_DOWN ||
 					actionCode == MotionEvent.ACTION_POINTER_DOWN)
 			{
-				for (int i = 0; i < event.getPointerCount(); i++)
+				for (int pointerId = 0; pointerId < event.getPointerCount(); pointerId++)
 				{
-					x = (int)event.getX(i);
-					y = (int)event.getY(i);
-					this.pressKey(x, y);
+					x = (int)event.getX(pointerId);
+					y = (int)event.getY(pointerId);
+					int touchingId = this.keyIdAt(x, y);
+					
+					mKeys.get(touchingId).play();
+					mTouches.put(pointerId, touchingId);
 					this.invalidate();
 				}
 			}
@@ -302,9 +298,38 @@ public class HexKeyboard extends View
 			{
 				for (int i = 0; i < event.getPointerCount(); i++)
 				{
-					x = (int)event.getX();
-					y = (int)event.getY();
-					this.releaseKey(x, y);
+					x = (int)event.getX(i);
+					y = (int)event.getY(i);
+					int touchingId = this.keyIdAt(x, y);
+					mKeys.get(touchingId).stop();
+					mTouches.remove(touchingId);
+					this.invalidate();
+				}
+			}
+			else if (actionCode == MotionEvent.ACTION_MOVE)
+			{
+				for (int pointerId = 0; pointerId < event.getPointerCount(); pointerId++)
+				{
+					x = (int)event.getX(pointerId);
+					y = (int)event.getY(pointerId);
+					int touchingId = this.keyIdAt(x, y);
+					if (mTouches.containsKey(pointerId))
+					{
+						int touchedId = mTouches.get(pointerId);
+						if (touchedId == touchingId)
+						{
+							// Nothing to do.
+							return true;
+						}
+						else
+						{
+							mKeys.get(touchedId).stop();
+							mTouches.remove(touchedId);
+						}
+					}
+					
+					mKeys.get(touchingId).play();
+					mTouches.put(pointerId, touchingId);
 					this.invalidate();
 				}
 			}
