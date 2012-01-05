@@ -24,18 +24,11 @@
 
 package com.inept.isokeys;
 
-import java.util.Hashtable;
-
 import android.graphics.Canvas;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.image.ColorDatabase;
-import android.image.Image;
-import android.graphics.Matrix;
-import android.image.RegularPolygon;
 import android.util.Log;
 import android.world.Posn;
 
@@ -142,8 +135,8 @@ public abstract class HexKey
     		hexPath.offset(mCenter.x, mCenter.y);
     		canvas.drawPath(hexPath, mPaint);
     		canvas.drawPath(hexPath, mOverlayPaint);
-    		String label = mNote.getSharpName();
-    		// String label = "" + mNote.getMidiNoteNumber();
+    		// String label = mNote.getSharpName();
+    		String label = "" + mNote.getMidiNoteNumber();
     		Rect bounds = new Rect();
     		mTextPaint.getTextBounds("X", 0, 1, bounds);
     		Log.d("HexKey::paint", "Bottom: " + bounds.bottom + " Top: " + bounds.top);

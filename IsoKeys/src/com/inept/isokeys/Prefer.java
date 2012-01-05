@@ -3,7 +3,7 @@
  *   IsoKeys, an isomorphic musical keyboard for Android                   *
  *   Copyright 2011, 2012 David A. Randolph                                *
  *                                                                         *
- *   FILE: Play.java                                                       *
+ *   FILE: Prefer.java                                                     *
  *                                                                         *
  *   This file is part of IsoKeys, an open-source project                  *
  *   hosted at http://isokeys.sourceforge.net.                             *
@@ -24,66 +24,16 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 package com.inept.isokeys;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Display;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.Window;
-import android.view.WindowManager;
+import android.preference.PreferenceActivity;
 
-public class Play extends Activity
+import com.inept.isokeys.R;
+
+public class Prefer extends PreferenceActivity
 {
-	HexKeyboard mBoard;
-	/**
-	 * @see android.app.Activity#onCreate(Bundle)
-	 */
-	@Override
-	protected void onCreate(Bundle savedInstanceState)
+	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-
-		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-				WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-
-		Display display = getWindowManager().getDefaultDisplay();
-
-		int displayWidth = display.getWidth();
-		int displayHeight = display.getHeight(); 
-
-		Context con = this.getApplicationContext();
-		mBoard = new HexKeyboard(con, displayHeight, displayWidth, 64);	
-		mBoard.invalidate();
-
-		this.setContentView(mBoard);
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu)
-	{
-		Log.d("Play", "Menu, ho!");
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.menu, menu); 
-		return true; 
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
-		switch (item.getItemId())
-		{
-		    case R.id.preferences:
-			    startActivity(new Intent(this, Prefer.class)); 
-			    break;
-		}
-
-		return true; 
+		addPreferencesFromResource(R.xml.preferences);
 	}
 }

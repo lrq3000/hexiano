@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <PreferenceCategory android:title="@string/heading_appearance" android:key="appearance">
+        <ListPreference android:title="@string/prompt_layout" android:defaultValue="@string/default_layout" android:entryValues="@array/layouts" android:key="layout" android:entries="@array/layouts" android:enabled="true" android:selectable="true"/><ListPreference android:entries="@array/color_schemes"
+            android:selectable="true"
+            android:enabled="true"
+            android:key="colorScheme" android:title="@string/prompt_color_scheme" android:entryValues="@array/color_schemes" android:defaultValue="@string/default_color_scheme"/>
+        <ListPreference android:selectable="true" android:defaultValue="@string/none" android:enabled="true" android:entryValues="@array/key_labels" android:key="labelType" android:title="@string/prompt_label_type" android:entries="@array/key_labels"/>
+        
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/heading_sound" android:key="sound">
+        <ListPreference android:key="instrument" android:title="@string/prompt_instrument" android:defaultValue="@string/default_instrument" android:entryValues="@array/instruments" android:entries="@array/instruments"/><ListPreference android:entryValues="@array/base_octaves" android:key="baseOctave" android:title="@string/prompt_base_octave" android:defaultValue="6" android:entries="@array/base_octaves"/>
+        <ListPreference android:title="@string/prompt_base_note" android:entryValues="@array/base_notes" android:key="baseNote" android:defaultValue="@string/default_note" android:entries="@array/base_notes"/>
+        
+    </PreferenceCategory>
+    
+
+</PreferenceScreen>

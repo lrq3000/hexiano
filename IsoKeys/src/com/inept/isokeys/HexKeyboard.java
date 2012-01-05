@@ -1,18 +1,19 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *   IsoKeys, Copyright 2011 David A. Randolph                             *
+ *   IsoKeys, an isomorphic musical keyboard for Android                   *
+ *   Copyright (C) 2011, 2012 David A. Randolph                            *
  *                                                                         *
  *   FILE: HexKeyboard.java                                                *
  *                                                                         *
  *   This file is part of IsoKeys, an open-source project                  *
- *   hosted at http://isokeys.sourceforge.net.                            *
+ *   hosted at http://isokeys.sourceforge.net.                             *
  *                                                                         *
  *   IsoKeys is free software: you can redistribute it and/or              *
  *   modify it under the terms of the GNU General Public License           *
  *   as published by the Free Software Foundation, either version          *
  *   3 of the License, or (at your option) any later version.              *
  *                                                                         *
- *   IsoKeys is distributed in the hope that it will be useful,       *
+ *   IsoKeys is distributed in the hope that it will be useful,            *
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
  *   GNU General Public License for more details.                          *
@@ -30,21 +31,16 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.RectF;
 import android.image.*;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.SurfaceView;
 import android.view.View;
-import android.world.VoidWorld;
 import android.world.Posn;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class HexKeyboard extends View
 {
-	static final int TITLE_BAR_HEIGHT = 50;
 	static Bitmap mBitmap;
 	static Paint mPaint = Image.WHITE;
 	static int mDisplayWidth = 0;

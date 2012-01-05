@@ -9,5 +9,7 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity android:name=".Prefer"
+            android:label="@string/prompt_preferences"/>
     </application>
 </manifest>
