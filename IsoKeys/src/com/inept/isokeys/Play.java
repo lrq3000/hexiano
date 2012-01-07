@@ -27,8 +27,12 @@ package com.inept.isokeys;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
@@ -37,8 +41,9 @@ import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
 
-public class Play extends Activity
+public class Play extends Activity implements OnSharedPreferenceChangeListener
 {
+	SharedPreferences mPrefs;
 	HexKeyboard mBoard;
 	/**
 	 * @see android.app.Activity#onCreate(Bundle)
@@ -47,19 +52,35 @@ public class Play extends Activity
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-
+		
+		mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        mPrefs.registerOnSharedPreferenceChangeListener(this);
+        
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        
+        loadKeyboard();
+	}
+	
+	protected void loadKeyboard()
+	{
 		this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-
+		
 		Display display = getWindowManager().getDefaultDisplay();
-
 		int displayWidth = display.getWidth();
 		int displayHeight = display.getHeight(); 
-
+	
+		DisplayMetrics dm = new DisplayMetrics();
+		getWindowManager().getDefaultDisplay().getMetrics(dm);
+		int dpi = dm.densityDpi;
+        int keyRadius = 3 * dpi / 8;
+	    String scaleStr = mPrefs.getString("scale", "100");
+	    int scalePct = Integer.parseInt(scaleStr);
+	    keyRadius = (keyRadius * scalePct) / 100;
+		
 		Context con = this.getApplicationContext();
-		mBoard = new HexKeyboard(con, displayHeight, displayWidth, 64);	
+		mBoard = new HexKeyboard(con, displayHeight, displayWidth, keyRadius);	
 		mBoard.invalidate();
 
 		this.setContentView(mBoard);
@@ -85,5 +106,14 @@ public class Play extends Activity
 		}
 
 		return true; 
+	}
+
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
+			String key)
+	{
+		// TODO Auto-generated method stub
+		mBoard.setUpBoard();
+		mBoard.invalidate();
 	}
 }

@@ -28,10 +28,14 @@ package com.inept.isokeys;
 import java.lang.Math;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.image.*;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -39,15 +43,17 @@ import android.world.Posn;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class HexKeyboard extends View
+public class HexKeyboard extends View implements OnSharedPreferenceChangeListener
 {
+	SharedPreferences mPrefs;
+	Resources mResources;
 	static Bitmap mBitmap;
 	static Paint mPaint = Image.WHITE;
 	static int mDisplayWidth = 0;
 	static int mDisplayHeight = 0;
 	static int mRowCount = 0;
 	static int mColumnCount = 0;
-	static int mTileRadius = 64; // What about dip (density-independent pixels)?!
+	static int mTileRadius = 64; 
 	static int mTileHeight = 0;
 
 	static HashMap<Integer, Integer> mTouches = new HashMap<Integer, Integer>();
@@ -55,23 +61,48 @@ public class HexKeyboard extends View
 
 	static ArrayList<HexKey> mKeys = new ArrayList<HexKey>();
 
-
-	void setUpBoard(int displayHeight, int displayWidth)
+	protected void setUpJammerBoard()
 	{
-		mDisplayWidth = displayWidth;
-		mDisplayHeight = displayHeight;
-		mTileHeight = (int)(Math.round(Math.sqrt(3.0) * mTileRadius));
+		int y = 0;
+		int pitch = 108; 
+		int rowFirstPitch = pitch;
 
-		mRowCount = displayHeight/mTileHeight + 2;
-		// mRowCount = 10;
+		for (int j = 0; j < mRowCount; j++)
+		{	
+			int x = mTileRadius;
 
-		mColumnCount = displayWidth/(mTileRadius * 3) + 2;
+			for (int i = 0; i < mColumnCount; i++)
+			{
+				int kittyCornerX = (int)Math.round(x - mTileRadius * 1.5);
+				int kittyCornerY = y + mTileHeight/2;
+				JammerKey kittyCornerKey = new JammerKey(
+						mTileRadius,
+						new Posn(kittyCornerX, kittyCornerY),
+						pitch,
+						mInstrument);
 
-		if (! mKeys.isEmpty())
-		{
-			return;
+				mKeys.add(kittyCornerKey);
+				pitch-=5;
+
+				JammerKey key = new JammerKey(
+						mTileRadius,
+						new Posn(x, y),
+						pitch,
+						mInstrument);
+				mKeys.add(key);
+				pitch-=7;
+
+				x += 3 * mTileRadius;
+			}
+
+			pitch = rowFirstPitch - 2; // Down a full tone.
+			rowFirstPitch = pitch;
+			y += mTileHeight;
 		}
+	}
 
+	protected void setUpSonomeBoard()
+	{
 		int y = 0;
 		int pitch = 89; // Puts F6 in first hex key.
 		int rowFirstPitch = pitch;
@@ -108,24 +139,58 @@ public class HexKeyboard extends View
 			rowFirstPitch = pitch;
 			y += mTileHeight;
 		}
+	}
+	
+	void setUpBoard()
+	{
+//		if (! mKeys.isEmpty())
+//		{
+//			return;
+//		}
 
+		mKeys.clear();
+		
+		String layoutPref = mPrefs.getString("layout", "Sonome");
+		if (layoutPref.equals("Sonome"))
+		{
+			this.setUpSonomeBoard();
+		}
+		else
+		{
+			this.setUpJammerBoard();
+		}
+		
 		mBitmap = Bitmap.createBitmap(mDisplayWidth, mDisplayHeight, Bitmap.Config.ARGB_8888);
 		Canvas tempCanvas = new Canvas(mBitmap);
 		this.onDraw(tempCanvas);
 	}
 
-	public HexKeyboard(Context context, int height, int width, int keyRadius)
+	public HexKeyboard(Context context, int height, int width, int tileRadius)
 	{
 		super(context);
+	
+		mResources = getResources();
+		mPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        mPrefs.registerOnSharedPreferenceChangeListener(this);
+        
+		mTileRadius = tileRadius;
 		mInstrument = new Piano(context);
 		if (height > width)
 		{
-			setUpBoard(width, height);
+			mDisplayHeight = width;
+			mDisplayWidth = height;
 		}
 		else
 		{
-			setUpBoard(height, width);
+			mDisplayWidth = width;
+			mDisplayHeight = height;
 		}
+		
+		mTileHeight = (int)(Math.round(Math.sqrt(3.0) * mTileRadius));
+		mRowCount = mDisplayHeight/mTileHeight + 2;
+		mColumnCount = mDisplayWidth/(mTileRadius * 3) + 2;
+		
+		setUpBoard();
 	}
 
 	private int keyIdAt(int x, int y) throws Exception
@@ -336,5 +401,11 @@ public class HexKeyboard extends View
 		}
 
 		return true;
+	}
+
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences arg0, String arg1) {
+		// TODO Auto-generated method stub
+		
 	}
 }

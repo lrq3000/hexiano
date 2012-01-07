@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <resources>
     <string name="heading_appearance">Appearance</string>
-    <string name="heading_sound">Sound</string>
     <string name="url">http://isokeys.sourceforge.net</string>
     <string name="contact">rndlph@users.sourceforge.net</string>
     <string name="app_name">IsoKeys</string>
     <string name="none">None</string>
     <string name="default_color_scheme">Khaki</string>
-    <string name="default_note">D</string>
     <string name="default_instrument">Piano</string>
     <string name="default_layout">Sonome</string>
-    <string name="default_octave">6</string>
     <string-array name="base_notes">
         <item>A</item>
         <item>A#</item>
@@ -58,18 +55,24 @@
     <string name="prompt_base_octave">Base Octave</string>
     <string name="prompt_color_scheme">Color Scheme</string>
     <string name="prompt_instrument">Instrument</string>
-    <string name="prompt_label_type">Key Labels</string>
-    <string name="prompt_layout">Keyboard Layout</string>
+    <string name="prompt_label_type">Labels</string>
+    <string name="prompt_layout">Layout</string>
     <string name="copyright">Copyright © 2011, 2012 by David A. Randolph</string>
-    <string name="version">0.4</string>
-    <string-array name="numbers">
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
+    <string name="heading_jammer">Jammer (Wicki-Hayden)</string>
+    <string name="heading_sonome">Sonome (Harmonic Table)</string>
+    <string name="default_sonome_note">D</string>
+    <string name="default_jammer_octave">8</string>
+    <string name="default_sonome_octave">6</string>
+    <string name="default_jammer_note">C</string>
+    <string name="prompt_orientation">Orientation</string>
+    <string-array name="orientations">
+        <item>Landscape</item>
+        <item>Portrait</item>
     </string-array>
-    <string-array name="numbernames">
-        <item>One</item>
-        <item>Two</item>
-        <item>Three</item>
-    </string-array>
+    <string name="default_sonome_orientation">Portrait</string>
+    <string name="default_jammer_orientation">Horizontal</string>
+    <string name="prompt_scale">Scale</string>
+    <string name="default_scale">100</string>
+    <string name="heading_general">General</string>
+    <string name="summary_scale">Enter percentage to scale keys.</string>
 </resources>
