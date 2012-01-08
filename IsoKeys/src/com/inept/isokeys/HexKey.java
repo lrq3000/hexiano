@@ -174,7 +174,8 @@ public abstract class HexKey
     	{
     		return;	
     	}
-    	
+    
+    	String layoutPref = mPrefs.getString("layout", "Sonome");
 		String labelPref  = mPrefs.getString("labelType", "English");
 		String label = mNote.getDisplayString(labelPref, true);
 		
@@ -191,12 +192,24 @@ public abstract class HexKey
     		hexPath.offset(mCenter.x, mCenter.y);
     		canvas.drawPath(hexPath, mPaint);
     		canvas.drawPath(hexPath, mOverlayPaint);
-    		// String label = "" + mNote.getMidiNoteNumber();
+    		
     		Rect bounds = new Rect();
-    		mTextPaint.getTextBounds("X", 0, 1, bounds);
-    		Log.d("HexKey::paint", "Bottom: " + bounds.bottom + " Top: " + bounds.top);
+    		mTextPaint.getTextBounds(label, 0, 1, bounds);
     		int labelHeight = bounds.bottom - bounds.top;
-    		canvas.drawText(label, mCenter.x, mCenter.y + Math.abs(labelHeight/2), mTextPaint);
+    		int x = mCenter.x;
+    		int y = mCenter.y + Math.abs(labelHeight/2);
+    		
+    		if (layoutPref.equals("Sonome"))
+    		{
+    			canvas.drawText(label, x, y, mTextPaint);
+    		}
+    		else
+    		{
+    			canvas.save();
+    		    canvas.rotate(-90, mCenter.x, mCenter.y);
+    			canvas.drawText(label, x, y, mTextPaint);
+    			canvas.restore();
+    		}
     	}
     	
     	mDirty = false;
