@@ -43,10 +43,10 @@ import android.world.Posn;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class HexKeyboard extends View implements OnSharedPreferenceChangeListener
+public class HexKeyboard extends View 
 {
 	SharedPreferences mPrefs;
-	Resources mResources;
+	static Context mContext;
 	static Bitmap mBitmap;
 	static Paint mPaint = Image.WHITE;
 	static int mDisplayWidth = 0;
@@ -76,6 +76,7 @@ public class HexKeyboard extends View implements OnSharedPreferenceChangeListene
 				int kittyCornerX = (int)Math.round(x - mTileRadius * 1.5);
 				int kittyCornerY = y + mTileHeight/2;
 				JammerKey kittyCornerKey = new JammerKey(
+						mContext,
 						mTileRadius,
 						new Posn(kittyCornerX, kittyCornerY),
 						pitch,
@@ -85,6 +86,7 @@ public class HexKeyboard extends View implements OnSharedPreferenceChangeListene
 				pitch-=5;
 
 				JammerKey key = new JammerKey(
+						mContext,
 						mTileRadius,
 						new Posn(x, y),
 						pitch,
@@ -116,6 +118,7 @@ public class HexKeyboard extends View implements OnSharedPreferenceChangeListene
 				int kittyCornerX = (int)Math.round(x - mTileRadius * 1.5);
 				int kittyCornerY = y + mTileHeight/2;
 				SonomeKey kittyCornerKey = new SonomeKey(
+						mContext,
 						mTileRadius,
 						new Posn(kittyCornerX, kittyCornerY),
 						pitch,
@@ -125,6 +128,7 @@ public class HexKeyboard extends View implements OnSharedPreferenceChangeListene
 				pitch+=4;
 
 				SonomeKey key = new SonomeKey(
+						mContext,
 						mTileRadius,
 						new Posn(x, y),
 						pitch,
@@ -143,11 +147,6 @@ public class HexKeyboard extends View implements OnSharedPreferenceChangeListene
 	
 	void setUpBoard()
 	{
-//		if (! mKeys.isEmpty())
-//		{
-//			return;
-//		}
-
 		mKeys.clear();
 		
 		String layoutPref = mPrefs.getString("layout", "Sonome");
@@ -168,10 +167,10 @@ public class HexKeyboard extends View implements OnSharedPreferenceChangeListene
 	public HexKeyboard(Context context, int height, int width, int tileRadius)
 	{
 		super(context);
+		
+		mContext = context;
 	
-		mResources = getResources();
 		mPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-        mPrefs.registerOnSharedPreferenceChangeListener(this);
         
 		mTileRadius = tileRadius;
 		mInstrument = new Piano(context);
@@ -403,9 +402,4 @@ public class HexKeyboard extends View implements OnSharedPreferenceChangeListene
 		return true;
 	}
 
-	@Override
-	public void onSharedPreferenceChanged(SharedPreferences arg0, String arg1) {
-		// TODO Auto-generated method stub
-		
-	}
 }

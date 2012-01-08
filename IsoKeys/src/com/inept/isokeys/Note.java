@@ -1,6 +1,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *   IsoKeys, Copyright 2011 David A. Randolph                             *
+ *   IsoKeys, an isomorphic musical keyboard for Android
+ *   Copyright 2011, 2012 David A. Randolph                             *
  *                                                                         *
  *   FILE: Note.java                                                       *
  *                                                                         *
@@ -27,13 +28,88 @@ package com.inept.isokeys;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.text.Html;
+import android.text.Spanned;
+
 public class Note
 {
 	protected int mOctave;
 	protected String mFlatName;
     protected String mSharpName;
 	protected int mMidiNoteNumber;
+	
+	static final HashMap<String, String> mToGerman;
+	static
+	{
+		mToGerman = new HashMap<String, String>();
+		mToGerman.put("A", "A");
+		mToGerman.put("A#", "ais");
+		mToGerman.put("Bb", "B");
+		mToGerman.put("B", "H");
+		mToGerman.put("C", "C");
+		mToGerman.put("C#", "cis");
+		mToGerman.put("Db", "des");
+		mToGerman.put("D", "D");
+		mToGerman.put("D#", "dis");
+		mToGerman.put("Eb", "es");
+		mToGerman.put("E", "E");
+		mToGerman.put("F", "F");
+		mToGerman.put("F#", "fis");
+		mToGerman.put("Gb", "ges");
+		mToGerman.put("G", "G");
+		mToGerman.put("G#", "gis");
+		mToGerman.put("Ab", "as");
+	}
 
+	// We should use \u266F for the sharp symbol, but this has a lot of
+	// extra space around it for some reason. So, for now, we will just
+	// use the # character.
+	static final HashMap<String, String> mToSolfege;
+	static
+	{
+		mToSolfege = new HashMap<String, String>();
+		mToSolfege.put("A", "La");
+		mToSolfege.put("A#", "La#");
+		mToSolfege.put("Bb", "Si\u266D");
+		mToSolfege.put("B", "Si");
+		mToSolfege.put("C", "Do");
+		mToSolfege.put("C#", "Do#");
+		mToSolfege.put("Db", "Re\u266D");
+		mToSolfege.put("D", "Re");
+		mToSolfege.put("D#", "Re#");
+		mToSolfege.put("Eb", "Mi\u266D");
+		mToSolfege.put("E", "Mi");
+		mToSolfege.put("F", "Fa");
+		mToSolfege.put("F#", "Fa#");
+		mToSolfege.put("Gb", "Sol\u266D");
+		mToSolfege.put("G", "Sol");
+		mToSolfege.put("G#", "Sol#");
+		mToSolfege.put("Ab", "La\u266D");
+	}
+	
+	static final HashMap<String, String> mToEnglish;
+	static
+	{
+		mToEnglish = new HashMap<String, String>();
+		mToEnglish.put("A", "A");
+		mToEnglish.put("A#", "A#");
+		mToEnglish.put("Bb", "B\u266D");
+		mToEnglish.put("B", "B");
+		mToEnglish.put("C", "C");
+		mToEnglish.put("C#", "C#");
+		mToEnglish.put("Db", "D\u266D");
+		mToEnglish.put("D", "D");
+		mToEnglish.put("D#", "D#");
+		mToEnglish.put("Eb", "E\u266D");
+		mToEnglish.put("E", "E");
+		mToEnglish.put("F", "F");
+		mToEnglish.put("F#", "F#");
+		mToEnglish.put("Gb", "G\u266D");
+		mToEnglish.put("G", "G");
+		mToEnglish.put("G#", "G#");
+		mToEnglish.put("Ab", "A\u266D");
+	}
+	
 	public Note(int midiNumber)
 	{
 	    mMidiNoteNumber = midiNumber;
@@ -55,6 +131,52 @@ public class Note
 	public int getMidiNoteNumber()
 	{
 		return mMidiNoteNumber;
+	}
+
+	public String getDisplayString(String labelType, boolean showOctave)
+	{
+		String noteStr = "?";
+	
+	    if (labelType.equals("None"))
+	    {
+	    	return "";
+	    }
+	    
+	    if (labelType.equals("MIDI Note Number"))
+	    {
+	    	return("" + mMidiNoteNumber);
+	    }
+	    
+	    if (labelType.equals("Whole Tone Number"))
+	    {
+	    	noteStr = "" + mMidiNoteNumber/2;
+	    	if (mMidiNoteNumber % 2 == 1)
+	    	{
+	    		noteStr += ".5";
+	    	}
+	    	
+	    	return(noteStr);
+	    }
+	    
+		if (labelType.equals("Deutsch"))
+		{
+		    noteStr = mToGerman.get(mSharpName);
+		}
+		else if (labelType.equals("English"))
+		{
+		    noteStr = mToEnglish.get(mSharpName);
+		}
+		else if (labelType.equals("Solfege"))
+		{
+		    noteStr = mToSolfege.get(mSharpName);
+		}
+	  
+		if (showOctave)
+		{
+			noteStr += mOctave;
+		}
+	    
+	    return(noteStr);
 	}
 	
 	static final HashMap<Integer, String> mFlatForNumber;

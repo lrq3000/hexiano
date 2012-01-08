@@ -24,16 +24,28 @@
 
 package com.inept.isokeys;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.image.ColorDatabase;
+import android.preference.PreferenceManager;
+import android.text.Spanned;
 import android.util.Log;
 import android.world.Posn;
 
 public abstract class HexKey
 {
+	static SharedPreferences mPrefs;
+	static String mBlackColor;
+	static String mBlackHighlightColor;
+	static String mWhiteColor;
+	static String mWhiteHighlightColor;
+	static String mTextColor;
+	static String mOutlineColor;
+	static String mPressedColor;
 	Posn mCenter;
 	Posn mLowerLeft;
 	Posn mLowerRight;
@@ -58,8 +70,12 @@ public abstract class HexKey
     protected Note mNote;
     protected int mMidiNoteNumber;
     
-	public HexKey(int radius, Posn center, int midiNoteNumber, Instrument instrument)
+	public HexKey(Context context, int radius, Posn center, int midiNoteNumber, Instrument instrument)
 	{
+		mPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+		
+		setColors();
+		
 		mInstrument = instrument;
 		mNote = new Note(midiNoteNumber);
 		mMidiNoteNumber = mNote.getMidiNoteNumber();
@@ -79,7 +95,7 @@ public abstract class HexKey
 		mUpperRight = new Posn(mCenter.x + mRadius/2, 
 			mCenter.y - (int)(Math.round(Math.sqrt(3.0) * mRadius)/2));
 	
-		int pressId = ColorDatabase.color("darkgray");
+		int pressId = ColorDatabase.color(mPressedColor);
         mPressPaint.setColor(pressId);
         mPressPaint.setAntiAlias(true);
         mPressPaint.setStyle(Paint.Style.FILL);
@@ -88,15 +104,52 @@ public abstract class HexKey
 		mKeyCount++;
 	}
 
-	protected String getTextColor(String keyColor)
+	protected void setColors()
 	{
-	    return "black";
+		String colorPref = mPrefs.getString("colorScheme", "Khaki");
+		if (colorPref.equals("Khaki"))
+		{
+			mBlackColor = "brown";
+			mBlackHighlightColor = "sienna";
+			mWhiteColor = "khaki";
+			mWhiteHighlightColor = "darkKhaki";
+			mOutlineColor = "black";
+			mTextColor = "black";
+			mPressedColor = "darkgray";
+		}
+		else if (colorPref.equals("Azure"))
+		{
+			mBlackColor = "steelblue";
+			mBlackHighlightColor = "cadetblue";
+			mWhiteColor = "azure";
+			mWhiteHighlightColor = "paleturquoise";
+			mOutlineColor = "black";
+			mTextColor = "black";
+			mPressedColor = "darkgray";
+		}
+		else if (colorPref.equals("White"))
+		{
+			mBlackColor = "darkslategray";
+			mBlackHighlightColor = "slategrey";
+			mWhiteColor = "white";
+			mWhiteHighlightColor = "silver";
+			mOutlineColor = "black";
+			mTextColor = "black";
+			mPressedColor = "darkgray";
+		}
+		else if (colorPref.equals("Black"))
+		{
+			mBlackColor = "black";
+			mBlackHighlightColor = "dimgray";
+			mWhiteColor = "darkgray";
+			mWhiteHighlightColor = "lightgray";
+			mOutlineColor = "white";
+			mTextColor = "white";
+			mPressedColor = "white";
+		}
 	}
 	
-	protected String getOverlayColor(String keyColor)
-	{
-	    return "black";
-	}
+	abstract String getColor();
 	
     protected Path getHexagonPath()
     {
@@ -122,6 +175,9 @@ public abstract class HexKey
     		return;	
     	}
     	
+		String labelPref  = mPrefs.getString("labelType", "English");
+		String label = mNote.getDisplayString(labelPref, true);
+		
     	if (mPressed)
     	{
     		Path hexPath = getHexagonPath();
@@ -135,7 +191,6 @@ public abstract class HexKey
     		hexPath.offset(mCenter.x, mCenter.y);
     		canvas.drawPath(hexPath, mPaint);
     		canvas.drawPath(hexPath, mOverlayPaint);
-    		String label = mNote.getSharpName();
     		// String label = "" + mNote.getMidiNoteNumber();
     		Rect bounds = new Rect();
     		mTextPaint.getTextBounds("X", 0, 1, bounds);

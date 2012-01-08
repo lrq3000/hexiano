@@ -1,6 +1,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *   IsoKeys, Copyright 2011 David A. Randolph                             *
+ *   IsoKeys, an isomorphic musical keyboard                               *
+ *   Copyright 2011 David A. Randolph                                      *
  *                                                                         *
  *   FILE: Piano.java                                                      *
  *                                                                         *

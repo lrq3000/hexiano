@@ -1,6 +1,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *   IsoKeys, Copyright 2011 David A. Randolph                             *
+ *   IsoKeys, an isomorphic musical keyboard                               *
+ *   Copyright 2011 David A. Randolph                                      *
  *                                                                         *
  *   FILE: SonomeKey.java                                                  *
  *                                                                         *
@@ -23,15 +24,17 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 package com.inept.isokeys;
 
+import android.content.Context;
 import android.graphics.Paint;
 import android.image.ColorDatabase;
 import android.world.Posn;
 
 public class SonomeKey extends HexKey
 {
-	public SonomeKey(int radius, Posn center, int midiNoteNumber, Instrument instrument)
+	public SonomeKey(Context context, int radius, Posn center,
+			int midiNoteNumber, Instrument instrument)
 	{
-		super(radius, center, midiNoteNumber, instrument);
+		super(context, radius, center, midiNoteNumber, instrument);
 
 		mColorStr = getColor();
 		mColorId = ColorDatabase.color(mColorStr);
@@ -40,13 +43,13 @@ public class SonomeKey extends HexKey
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setStrokeWidth(2);
        
-		int overlayId = ColorDatabase.color(this.getOverlayColor(mColorStr));
+		int overlayId = ColorDatabase.color(mOutlineColor);
         mOverlayPaint.setColor(overlayId);
         mOverlayPaint.setAntiAlias(true);
         mOverlayPaint.setStyle(Paint.Style.STROKE);
         mOverlayPaint.setStrokeWidth(2);
         
-		int textId = ColorDatabase.color(this.getTextColor(mColorStr));
+		int textId = ColorDatabase.color(mTextColor);
         mTextPaint.setColor(textId);
         mTextPaint.setAntiAlias(true);
         mTextPaint.setStyle(Paint.Style.FILL);
@@ -57,22 +60,21 @@ public class SonomeKey extends HexKey
 	protected String getColor()
 	{
 		String sharpName = mNote.getSharpName();
-		String color = "khaki";
+		String color = this.mWhiteColor;
 		if (sharpName.contains("#"))
 		{	
 			if (sharpName.contains("G"))
 			{
-				// color = "saddlebrown";
-				color = "chocolate";
+				color = mBlackHighlightColor;
 			}
 			else
 			{
-				color = "brown";
+				color = mBlackColor;
 			}	
 		}
 		else if (sharpName.contains("D"))
 		{
-			color = "darkkhaki";
+			color = mWhiteHighlightColor;
 		}
 		
 		return color;

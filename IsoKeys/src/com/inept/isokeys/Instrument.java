@@ -40,7 +40,6 @@ public abstract class Instrument {
 	protected HashMap<Integer, Integer> mRootNotes;
 	private AudioManager  mAudioManager;
 	private Context mContext;
-	
 
 	public Instrument(Context context)
 	{

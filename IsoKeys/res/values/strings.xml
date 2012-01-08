@@ -23,8 +23,10 @@
         <item>G#</item>
     </string-array>
     <string-array name="color_schemes">
+        <item>Azure</item>
+        <item>Black</item>
         <item>Khaki</item>
-        <item>Blue</item>
+        <item>White</item>
     </string-array>
     <string-array name="instruments">
         <item>Piano</item>
@@ -35,9 +37,11 @@
         <item>Jammer</item>
     </string-array>
     <string-array name="key_labels">
+        <item>Deutsch</item>
         <item>English</item>
         <item>MIDI Note Number</item>
-        <item>None</item>
+        <item>Solfege</item>
+        <item>Whole Tone Number</item>
     </string-array>
     <string-array name="base_octaves">
         <item>0</item>
@@ -57,7 +61,7 @@
     <string name="prompt_instrument">Instrument</string>
     <string name="prompt_label_type">Labels</string>
     <string name="prompt_layout">Layout</string>
-    <string name="copyright">Copyright © 2011, 2012 by David A. Randolph</string>
+    <string name="copyright">Copyright © 2011, 2012 by David A. Randolph\nDistributed by Floof Machine</string>
     <string name="heading_jammer">Jammer (Wicki-Hayden)</string>
     <string name="heading_sonome">Sonome (Harmonic Table)</string>
     <string name="default_sonome_note">D</string>
