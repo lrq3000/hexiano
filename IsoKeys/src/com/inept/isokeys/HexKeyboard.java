@@ -64,7 +64,12 @@ public class HexKeyboard extends View
 	protected void setUpJammerBoard()
 	{
 		int y = 0;
-		int pitch = 108; 
+		
+		String firstNote = mPrefs.getString("baseJammerNote", "C");
+		String firstOctaveStr = mPrefs.getString("baseJammerOctave", "8");
+		int firstOctave = Integer.parseInt(firstOctaveStr);
+		int pitch = Note.getNoteNumber(firstNote, firstOctave); 
+		Log.d("setUpJammerBoard", "" + pitch);
 		int rowFirstPitch = pitch;
 
 		for (int j = 0; j < mRowCount; j++)
@@ -106,7 +111,13 @@ public class HexKeyboard extends View
 	protected void setUpSonomeBoard()
 	{
 		int y = 0;
-		int pitch = 89; // Puts F6 in first hex key.
+		String firstNote = mPrefs.getString("baseSonomeNote", "E");
+		String firstOctaveStr = mPrefs.getString("baseSonomeOctave", "1");
+		int firstOctave = Integer.parseInt(firstOctaveStr);
+		int pitch = Note.getNoteNumber(firstNote, firstOctave); 
+		pitch += (mRowCount - 1) * 7;
+		Log.d("setUpSonomeBoard", "pitch: " + pitch);
+		Log.d("setUpSonomeBoard", "rowCount: " + mRowCount);
 		int rowFirstPitch = pitch;
 
 		for (int j = 0; j < mRowCount; j++)
@@ -186,8 +197,22 @@ public class HexKeyboard extends View
 		}
 		
 		mTileHeight = (int)(Math.round(Math.sqrt(3.0) * mTileRadius));
-		mRowCount = mDisplayHeight/mTileHeight + 2;
-		mColumnCount = mDisplayWidth/(mTileRadius * 3) + 2;
+		mRowCount = mDisplayHeight/mTileHeight;
+		if (mDisplayHeight % mTileRadius > 0)
+		{
+			mRowCount++;
+		}
+		mColumnCount = mDisplayWidth/(mTileRadius * 3);
+		int remainder = mDisplayWidth % (mTileRadius * 3);
+		
+		if (remainder > 0)
+		{
+			mColumnCount++;
+			if (remainder > 2 * mTileRadius)
+			{
+				mColumnCount++;
+			}
+		}
 		
 		setUpBoard();
 	}

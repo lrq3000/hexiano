@@ -198,8 +198,18 @@ public abstract class HexKey
     		int labelHeight = bounds.bottom - bounds.top;
     		int x = mCenter.x;
     		int y = mCenter.y + Math.abs(labelHeight/2);
-    		
+    	
+    		boolean wantLandscape = false;
     		if (layoutPref.equals("Sonome"))
+    		{
+    			wantLandscape  = mPrefs.getBoolean("sonomeLandscape", true);
+    		}
+    		else
+    		{
+    			wantLandscape  = mPrefs.getBoolean("jammerLandscape", false);
+    		}
+    		
+    		if (wantLandscape)
     		{
     			canvas.drawText(label, x, y, mTextPaint);
     		}

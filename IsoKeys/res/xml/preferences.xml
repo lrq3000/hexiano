@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
     <PreferenceCategory android:title="@string/heading_general" android:key="general">
-        <ListPreference android:title="@string/prompt_layout" android:defaultValue="@string/default_layout" android:entryValues="@array/layouts" android:key="layout" android:entries="@array/layouts" android:enabled="true" android:selectable="true"/><ListPreference android:entries="@array/color_schemes"
+        <ListPreference android:title="@string/prompt_layout" android:defaultValue="@string/default_layout" android:entryValues="@array/layouts" android:key="layout" android:entries="@array/layouts" android:enabled="true" android:selectable="true" android:summary="@string/summary_layout"/><ListPreference android:entries="@array/color_schemes"
             android:selectable="true"
             android:enabled="true"
-            android:key="colorScheme" android:title="@string/prompt_color_scheme" android:entryValues="@array/color_schemes" android:defaultValue="@string/default_color_scheme"/>
-        <ListPreference android:selectable="true" android:defaultValue="@string/none" android:enabled="true" android:entryValues="@array/key_labels" android:key="labelType" android:title="@string/prompt_label_type" android:entries="@array/key_labels"/>
+            android:key="colorScheme" android:title="@string/prompt_color_scheme" android:entryValues="@array/color_schemes" android:defaultValue="@string/default_color_scheme" android:summary="@string/summary_color_scheme"/>
+        <ListPreference android:selectable="true" android:defaultValue="@string/none" android:enabled="true" android:entryValues="@array/key_labels" android:key="labelType" android:title="@string/prompt_label_type" android:entries="@array/key_labels" android:summary="@string/summary_label_type"/>
         <EditTextPreference android:title="@string/prompt_scale" android:key="scale" android:defaultValue="@string/default_scale" android:enabled="true" android:selectable="true" android:summary="@string/summary_scale"/>
-        <ListPreference android:key="instrument" android:title="@string/prompt_instrument" android:defaultValue="@string/default_instrument" android:entryValues="@array/instruments" android:entries="@array/instruments" android:enabled="false" android:selectable="false"/>
+        <ListPreference android:key="instrument" android:title="@string/prompt_instrument" android:defaultValue="@string/default_instrument" android:entryValues="@array/instruments" android:entries="@array/instruments" android:enabled="false" android:selectable="false" android:summary="@string/summary_instrument"/>
     </PreferenceCategory>
     
     <PreferenceCategory android:key="sonome" android:title="@string/heading_sonome">
-        <ListPreference android:title="@string/prompt_base_note" android:entryValues="@array/base_notes" android:key="baseSonomeNote" android:defaultValue="@string/default_sonome_note" android:entries="@array/base_notes"/>
-        <ListPreference android:entryValues="@array/base_octaves" android:key="baseSonomeOctave" android:title="@string/prompt_base_octave" android:defaultValue="6" android:entries="@array/base_octaves"/>
-        <ListPreference android:key="sonomeOrientation" android:entryValues="@array/orientations" android:entries="@array/orientations" android:defaultValue="@string/default_sonome_orientation" android:title="@string/prompt_orientation" android:selectable="false" android:enabled="false"/>
+        <ListPreference android:title="@string/prompt_lowest_note" android:entryValues="@array/base_notes" android:key="baseSonomeNote" android:defaultValue="@string/default_sonome_note" android:entries="@array/base_notes" android:summary="@string/summary_lowest_note"/>
+        <ListPreference android:entryValues="@array/base_octaves" android:key="baseSonomeOctave" android:title="@string/prompt_lowest_note_octave" android:defaultValue="6" android:entries="@array/base_octaves" android:summary="@string/summary_lowest_note_octave"/>
+        <CheckBoxPreference android:key="sonomeLandscape" android:defaultValue="true" android:title="@string/prompt_landscape_labels" android:summary="@string/summary_landscape"/>
     </PreferenceCategory>
     
     <PreferenceCategory android:key="jammer" android:title="@string/heading_jammer">
-        <ListPreference android:title="@string/prompt_base_note" android:entryValues="@array/base_notes" android:key="baseJammerNote" android:defaultValue="@string/default_jammer_note" android:entries="@array/base_notes"/>
-        <ListPreference android:entryValues="@array/base_octaves" android:key="baseJammerOctave" android:title="@string/prompt_base_octave" android:defaultValue="6" android:entries="@array/base_octaves"/>
-        <ListPreference android:title="@string/prompt_orientation" android:key="jammerOrientation" android:entryValues="@array/orientations" android:entries="@array/orientations" android:defaultValue="@string/default_jammer_orientation" android:selectable="false" android:enabled="false"/>
+        <ListPreference android:title="@string/prompt_highest_note" android:entryValues="@array/base_notes" android:key="baseJammerNote" android:defaultValue="@string/default_jammer_note" android:entries="@array/base_notes" android:summary="@string/summary_highest_note"/>
+        <ListPreference android:entryValues="@array/base_octaves" android:key="baseJammerOctave" android:title="@string/prompt_highest_note_octave" android:defaultValue="8" android:entries="@array/base_octaves" android:summary="@string/summary_highest_note_octave"/>
+        <CheckBoxPreference android:key="jammerLandscape" android:defaultValue="false" android:title="@string/prompt_landscape_labels" android:summary="@string/summary_landscape"/>
     </PreferenceCategory>
     
 </PreferenceScreen>

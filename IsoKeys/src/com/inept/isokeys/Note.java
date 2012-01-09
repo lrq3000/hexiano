@@ -214,6 +214,30 @@ public class Note
 	    mSharpForNumber.put(10, "A#");
 	    mSharpForNumber.put(11, "B");
 	}
+
+	static final HashMap<String, Integer> mNumberForSharp;
+	static
+	{
+	    mNumberForSharp = new HashMap<String, Integer>();
+	    mNumberForSharp.put("C", 0);
+	    mNumberForSharp.put("C#", 1);
+	    mNumberForSharp.put("D", 2);
+	    mNumberForSharp.put("D#", 3);
+	    mNumberForSharp.put("E", 4);
+	    mNumberForSharp.put("F", 5);
+	    mNumberForSharp.put("F#", 6);
+	    mNumberForSharp.put("G", 7);
+	    mNumberForSharp.put("G#", 8);
+	    mNumberForSharp.put("A", 9);
+	    mNumberForSharp.put("A#", 10);
+	    mNumberForSharp.put("B", 11);
+	}
+
+	public static int getNoteNumber(String sharpName, int octave)
+	{
+		int noteNumber = octave * 12 + mNumberForSharp.get(sharpName) + 12;
+		return noteNumber;
+	}
 	
 	public String getFlatNameForNoteNumber(int midiNoteNumber)
 	{		

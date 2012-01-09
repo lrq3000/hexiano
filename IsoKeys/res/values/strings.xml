@@ -9,9 +9,6 @@
     <string name="default_instrument">Piano</string>
     <string name="default_layout">Sonome</string>
     <string-array name="base_notes">
-        <item>A</item>
-        <item>A#</item>
-        <item>B</item>
         <item>C</item>
         <item>C#</item>
         <item>D</item>
@@ -21,6 +18,9 @@
         <item>F#</item>
         <item>G</item>
         <item>G#</item>
+        <item>A</item>
+        <item>A#</item>
+        <item>B</item>
     </string-array>
     <string-array name="color_schemes">
         <item>Azure</item>
@@ -55,8 +55,6 @@
         <item>8</item>
     </string-array>
     <string name="prompt_preferences">Preferences</string>
-    <string name="prompt_base_note">Base Note</string>
-    <string name="prompt_base_octave">Base Octave</string>
     <string name="prompt_color_scheme">Color Scheme</string>
     <string name="prompt_instrument">Instrument</string>
     <string name="prompt_label_type">Labels</string>
@@ -74,9 +72,23 @@
         <item>Portrait</item>
     </string-array>
     <string name="default_sonome_orientation">Portrait</string>
-    <string name="default_jammer_orientation">Horizontal</string>
-    <string name="prompt_scale">Scale</string>
+    <string name="default_jammer_orientation">Landscape</string>
+    <string name="prompt_scale">Key Size</string>
     <string name="default_scale">100</string>
     <string name="heading_general">General</string>
-    <string name="summary_scale">Enter percentage to scale keys.</string>
+    <string name="summary_scale">Enter percentage to scale keys. Default = 100. Smaller number shrink keys. Larger numbers expand them.</string>
+    <string name="prompt_landscape_labels">Landscape</string>
+    <string name="summary_label_type">What labels do you want to see on the keys?</string>
+    <string name="summary_color_scheme">What colors do you want to see?</string>
+    <string name="summary_instrument">What sounds do you want to hear?</string>
+    <string name="summary_landscape">Do you want to play looking at a landscape (wide) display?</string>
+    <string name="summary_layout">What note arrangement on the keys do you want to use?</string>
+    <string name="summary_highest_note_octave">The octave of the highest note to include.</string>
+    <string name="summary_lowest_note">The lowest playable note to include.</string>
+    <string name="summary_highest_note">The highest playable note to include.</string>
+    <string name="prompt_lowest_note">Lowest Note</string>
+    <string name="prompt_lowest_note_octave">Lowest Note Octave</string>
+    <string name="prompt_highest_note">Highest Note</string>
+    <string name="summary_lowest_note_octave">The octave of the lowest playable note to include.</string>
+    <string name="prompt_highest_note_octave">Highest Note Octave</string>
 </resources>
