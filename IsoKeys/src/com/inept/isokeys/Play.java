@@ -25,6 +25,7 @@
 package com.inept.isokeys;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -43,6 +44,7 @@ import android.view.WindowManager;
 
 public class Play extends Activity implements OnSharedPreferenceChangeListener
 {
+	final int ABOUT_DIALOG_ID = 1;
 	SharedPreferences mPrefs;
 	HexKeyboard mBoard;
 	/**
@@ -95,6 +97,16 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 		return true; 
 	}
 
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        switch (id) {
+            case ABOUT_DIALOG_ID:
+                return new AboutDialog(this);
+            default:
+                return null;
+        }
+    }
+    
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
@@ -102,6 +114,12 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 		{
 		    case R.id.preferences:
 			    startActivity(new Intent(this, Prefer.class)); 
+			    break;
+		    case R.id.quit:
+			    finish();
+			    break;
+		    case R.id.about:
+			    showDialog(ABOUT_DIALOG_ID);
 			    break;
 		}
 

@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *   IsoKeys, an isomorphic musical keyboard for Android                   *
+ *   IsoKeys, an isomorphic musical keyboard                               *
  *   Copyright (C) 2011, 2012 David A. Randolph                            *
  *                                                                         *
  *   FILE: HexKeyboard.java                                                *
@@ -29,12 +29,8 @@ import java.lang.Math;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.image.*;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -48,7 +44,6 @@ public class HexKeyboard extends View
 	SharedPreferences mPrefs;
 	static Context mContext;
 	static Bitmap mBitmap;
-	static Paint mPaint = Image.WHITE;
 	static int mDisplayWidth = 0;
 	static int mDisplayHeight = 0;
 	static int mRowCount = 0;

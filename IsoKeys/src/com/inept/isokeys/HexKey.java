@@ -32,13 +32,13 @@ import android.graphics.Path;
 import android.graphics.Rect;
 import android.image.ColorDatabase;
 import android.preference.PreferenceManager;
-import android.text.Spanned;
 import android.util.Log;
 import android.world.Posn;
 
 public abstract class HexKey
 {
 	static SharedPreferences mPrefs;
+	static String mBlankColor;
 	static String mBlackColor;
 	static String mBlackHighlightColor;
 	static String mWhiteColor;
@@ -59,7 +59,7 @@ public abstract class HexKey
 	Paint mPressPaint = new Paint();
 	Paint mOverlayPaint = new Paint();
 	Paint mTextPaint = new Paint();
-	Paint mReversePaint;
+	Paint mBlankPaint = new Paint();
 	static int mKeyCount = 0;
 	static int mRadius;
 	int mStreamId;
@@ -100,7 +100,7 @@ public abstract class HexKey
         mPressPaint.setAntiAlias(true);
         mPressPaint.setStyle(Paint.Style.FILL);
         mPressPaint.setStrokeWidth(2);
-        
+       
 		mKeyCount++;
 	}
 
@@ -109,6 +109,7 @@ public abstract class HexKey
 		String colorPref = mPrefs.getString("colorScheme", "Khaki");
 		if (colorPref.equals("Khaki"))
 		{
+			mBlankColor = "black";
 			mBlackColor = "brown";
 			mBlackHighlightColor = "sienna";
 			mWhiteColor = "khaki";
@@ -119,6 +120,7 @@ public abstract class HexKey
 		}
 		else if (colorPref.equals("Azure"))
 		{
+			mBlankColor = "black";
 			mBlackColor = "steelblue";
 			mBlackHighlightColor = "cadetblue";
 			mWhiteColor = "azure";
@@ -129,6 +131,7 @@ public abstract class HexKey
 		}
 		else if (colorPref.equals("White"))
 		{
+			mBlankColor = "black";
 			mBlackColor = "darkslategray";
 			mBlackHighlightColor = "slategrey";
 			mWhiteColor = "white";
@@ -139,7 +142,8 @@ public abstract class HexKey
 		}
 		else if (colorPref.equals("Black"))
 		{
-			mBlackColor = "black";
+			mBlankColor = "white";
+			mBlackColor = "black"; 
 			mBlackHighlightColor = "dimgray";
 			mWhiteColor = "darkgray";
 			mWhiteHighlightColor = "lightgray";
@@ -178,17 +182,22 @@ public abstract class HexKey
     	String layoutPref = mPrefs.getString("layout", "Sonome");
 		String labelPref  = mPrefs.getString("labelType", "English");
 		String label = mNote.getDisplayString(labelPref, true);
-		
-    	if (mPressed)
+	
+  		Path hexPath = getHexagonPath();
+  		
+		if (this.mMidiNoteNumber < 21 || this.mMidiNoteNumber > 108)
+		{
+    		hexPath.offset(mCenter.x, mCenter.y);
+    		canvas.drawPath(hexPath, mBlankPaint);
+		}
+		else if (mPressed)
     	{
-    		Path hexPath = getHexagonPath();
     		hexPath.offset(mCenter.x, mCenter.y);
     		canvas.drawPath(hexPath, mPressPaint);
     		canvas.drawPath(hexPath, mOverlayPaint);
     	}
     	else
     	{
-    		Path hexPath = getHexagonPath();
     		hexPath.offset(mCenter.x, mCenter.y);
     		canvas.drawPath(hexPath, mPaint);
     		canvas.drawPath(hexPath, mOverlayPaint);

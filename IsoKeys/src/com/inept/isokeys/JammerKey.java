@@ -55,6 +55,10 @@ public class JammerKey extends HexKey
         mTextPaint.setStyle(Paint.Style.FILL);
         mTextPaint.setTextSize(20);
         mTextPaint.setTextAlign(Paint.Align.CENTER);
+        
+		int blankId = ColorDatabase.color(mBlankColor);
+        mBlankPaint.setColor(blankId);
+        mBlankPaint.setStyle(Paint.Style.FILL);
 	}
 	
 	protected String getColor()

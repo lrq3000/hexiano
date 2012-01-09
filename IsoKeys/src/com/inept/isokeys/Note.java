@@ -26,10 +26,6 @@
 package com.inept.isokeys;
 
 import java.util.HashMap;
-import java.util.Map;
-
-import android.text.Html;
-import android.text.Spanned;
 
 public class Note
 {
