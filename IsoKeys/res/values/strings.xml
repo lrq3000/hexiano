@@ -94,56 +94,30 @@
     <string name="prompt_license">License</string>
     <string name="prompt_quit">Exit</string>
     <string name="version">version</string>
-    <string name="description">IsoKeys is an isomorphic musical keyboard. All intervals, chords, and scales have identical patterns, regardless of the key in which one plays.</string>
+    <string name="description">IsoKeys is an isomorphic musical keyboard. All intervals, chords, and
+    scales have identical patterns, regardless of the key in which one plays. Similar in spirit to
+    Musix for the iPad, IsoKeys aims to provide a starter isomorphic keyboard for Android users.
+    See http://www.altkeyboards.com for more information about these instruments.</string>
     <string name="open_source">For more information about this project, please visit http://isokeys.sourceforge.net. Support requests may be made through this site, and source code is also available there under the terms of GNU Public License (version 3).</string>
     <string name="distribution">Distributed by Ineptisoft, a division of Ineptico, a figment of my imagination.</string>
-    <string name="license">This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For the complete license, see http://www.gnu.org/licenses/.</string>
-    <string name="credit_piano">Sounds from the acoustic grand piano soundfont (Yamaha Disklavier Pro), release 2008-09-10
-116 samples, 44100Hz, 16bit, by Roberto Gordo Saez, were adapted for use in IsoKeys.
-Specifically, we translated one velocity layer from the soundfont into Ogg Vorbis format, with
-an enormous loss of fidelity. Please do not take the IsoKeys piano sound as representative
+    <string name="license">This program is free software; you can redistribute it and/or modify it under the
+    terms of the GNU General Public License as published by the Free Software Foundation;
+    either version 3 of the License, or (at your option) any later version.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    For the complete license, see http://www.gnu.org/licenses.</string>
+    <string name="credit_piano">Sounds from the acoustic grand piano soundfont (Yamaha Disklavier Pro), release 2008-09-10,
+by Roberto Gordo Saez (roberto.gordo@gmail.com), were adapted for use in IsoKeys. (See http://zenvoid.org/audio.html.)
+Specifically, we translated a set of files (mostly from the third velocity layer) from the soundfont into Ogg Vorbis format, with
+a rather drastic loss of fidelity. Please do not take the IsoKeys piano sound as representative
 of the quality of this excellent soundfont. It just helped to start from a high-quality source.
 
-The acoustic grand piano soundfont is free. It is built from the Zenph
-Studios Yamaha Disklavier Pro Piano Multisamples for OLPC.
+This soundfont was built using the Zenph Studios Yamaha Disklavier Pro Piano Multisamples for OLPC,
+which was created by Dr. Mikhail Krishtal, Director of Music Research and Production, and
+his team at Zenph Studios.
 
-The soundfont itself and all modifications made to the original
-samples by Roberto Gordo Saez, published under a Creative Commons
-Attribution 3.0 license.
-
-Copyright 2008, Roberto Gordo Saez roberto.gordo@gmail.com Creative 
-Commons Attribution 3.0 license http://creativecommons.org/licenses/by/3.0/
-
-Zenph Studios Yamaha Disklavier Pro Piano Multisamples for OLPC:
-
-A collection of Grand Piano samples played by a Yamaha Disklavier
-Pro. Performed by computer and specifically recorded for OLPC by
-Dr. Mikhail Krishtal, Director of Music Research and Production, and
-his team at Zenph Studios. They are included in the OLPC sound
-sample library.
-
-How is it being done: "The Disklavier Pro has an internal
-electronically-controlled mechanism that allows it to play sounds
-with very precise specifications. It has its own file format known
-as XP MIDI, an extension of standard midi. I Mikhail Krishtal
-prepare the files for it to play -- in this case, representing notes
-of different registers, durations, and dynamic levels."
-
-http://csounds.com/olpc/pianoSamplesMikhail/pianoMikhail.html
-Produced by Zenph Studios in Chapel Hill, North Carolina. The main
-studio location is in Raleigh, North Carolina.
-
-http://zenph.com/
-Samples from the OLPC sound sample library:
-
-This huge collection of new and original samples have been donated
-to Dr. Richard Boulanger @ cSounds.com specifically to support the
-OLPC developers, students, XO users, and computer and electronic
-musicians everywhere. They are FREE and are offered under a CC-BY
-license.
-
-http://wiki.laptop.org/go/Sound_samples http://csounds.com/boulanger
-
-Creative Commons Attribution 3.0 license
-http://creativecommons.org/licenses/by/3.0/</string>
+Neither Dr. Krishtal nor Mr. Saez in any way endorses IsoKeys. Their work is used under the terms of the Creative 
+Commons Attribution 3.0 license. See http://creativecommons.org/licenses/by/3.0 for details.
+</string>
 </resources>
