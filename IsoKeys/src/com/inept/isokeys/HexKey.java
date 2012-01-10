@@ -203,7 +203,7 @@ public abstract class HexKey
     		canvas.drawPath(hexPath, mOverlayPaint);
     		
     		Rect bounds = new Rect();
-    		mTextPaint.getTextBounds(label, 0, 1, bounds);
+    		mTextPaint.getTextBounds(label, 0, label.length(), bounds);
     		int labelHeight = bounds.bottom - bounds.top;
     		int x = mCenter.x;
     		int y = mCenter.y + Math.abs(labelHeight/2);

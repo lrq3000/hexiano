@@ -32,6 +32,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.preference.PreferenceManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -44,6 +45,7 @@ public class HexKeyboard extends View
 	SharedPreferences mPrefs;
 	static Context mContext;
 	static Bitmap mBitmap;
+	static int mDpi = 0;
 	static int mDisplayWidth = 0;
 	static int mDisplayHeight = 0;
 	static int mRowCount = 0;
@@ -154,6 +156,35 @@ public class HexKeyboard extends View
 	void setUpBoard()
 	{
 		mKeys.clear();
+
+        mTileRadius = (3 * mDpi) / 8;
+	    String scaleStr = mPrefs.getString("scale", "100");
+	    int scalePct = Integer.parseInt(scaleStr);
+	    mTileRadius = (mTileRadius * scalePct) / 100;
+		
+		mTileHeight = (int)(Math.round(Math.sqrt(3.0) * mTileRadius));
+		Log.d("HexKeyboard", "mDisplayWidth: " + mDisplayWidth);
+		Log.d("HexKeyboard", "mDisplayHeight: " + mDisplayHeight);
+		Log.d("HexKeyboard", "mTileRadius: " + mTileRadius);
+		Log.d("HexKeyboard", "mTileHeight: " + mTileHeight);
+		mRowCount = mDisplayHeight/mTileHeight + 1; // Add one in case there is an extra kitty-corner half-row.
+		if (mDisplayHeight % mTileHeight > 0)
+		{
+			mRowCount++;
+		}
+		Log.d("HexKeyboard", "mRowCount: " + mRowCount);
+		
+		mColumnCount = mDisplayWidth/(mTileRadius * 3) + 1; // Add one for the possible extra kitty-korner.
+		int remainder = mDisplayWidth % (mTileRadius * 3);
+		
+		if (remainder > 0)
+		{
+			mColumnCount++;
+			if (remainder > 2 * mTileRadius)
+			{
+				mColumnCount++;
+			}
+		}
 		
 		String layoutPref = mPrefs.getString("layout", "Sonome");
 		if (layoutPref.equals("Sonome"))
@@ -170,15 +201,14 @@ public class HexKeyboard extends View
 		this.onDraw(tempCanvas);
 	}
 
-	public HexKeyboard(Context context, int height, int width, int tileRadius)
+	public HexKeyboard(Context context, int height, int width, int dpi)
 	{
 		super(context);
 		
 		mContext = context;
-	
+        mDpi = dpi;	
 		mPrefs = PreferenceManager.getDefaultSharedPreferences(context);
         
-		mTileRadius = tileRadius;
 		mInstrument = new Piano(context);
 		if (height > width)
 		{
@@ -189,24 +219,6 @@ public class HexKeyboard extends View
 		{
 			mDisplayWidth = width;
 			mDisplayHeight = height;
-		}
-		
-		mTileHeight = (int)(Math.round(Math.sqrt(3.0) * mTileRadius));
-		mRowCount = mDisplayHeight/mTileHeight;
-		if (mDisplayHeight % mTileRadius > 0)
-		{
-			mRowCount++;
-		}
-		mColumnCount = mDisplayWidth/(mTileRadius * 3);
-		int remainder = mDisplayWidth % (mTileRadius * 3);
-		
-		if (remainder > 0)
-		{
-			mColumnCount++;
-			if (remainder > 2 * mTileRadius)
-			{
-				mColumnCount++;
-			}
 		}
 		
 		setUpBoard();

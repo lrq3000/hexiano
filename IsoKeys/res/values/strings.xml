@@ -39,6 +39,7 @@
         <item>Deutsch</item>
         <item>English</item>
         <item>MIDI Note Number</item>
+        <item>None</item>
         <item>Solfege</item>
         <item>Whole Tone Number</item>
     </string-array>
@@ -61,10 +62,10 @@
     <string name="copyright">Copyright © 2011, 2012 by David A. Randolph.</string>
     <string name="heading_jammer">Jammer (Wicki-Hayden)</string>
     <string name="heading_sonome">Sonome (Harmonic Table)</string>
-    <string name="default_sonome_note">D</string>
-    <string name="default_jammer_octave">8</string>
-    <string name="default_sonome_octave">6</string>
+    <string name="default_sonome_note">E</string>
+    <string name="default_sonome_octave">1</string>
     <string name="default_jammer_note">C</string>
+    <string name="default_jammer_octave">8</string>
     <string name="prompt_orientation">Orientation</string>
     <string-array name="orientations">
         <item>Landscape</item>

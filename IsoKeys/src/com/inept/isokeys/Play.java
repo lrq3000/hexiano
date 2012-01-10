@@ -76,13 +76,9 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 		DisplayMetrics dm = new DisplayMetrics();
 		getWindowManager().getDefaultDisplay().getMetrics(dm);
 		int dpi = dm.densityDpi;
-        int keyRadius = 3 * dpi / 8;
-	    String scaleStr = mPrefs.getString("scale", "100");
-	    int scalePct = Integer.parseInt(scaleStr);
-	    keyRadius = (keyRadius * scalePct) / 100;
 		
 		Context con = this.getApplicationContext();
-		mBoard = new HexKeyboard(con, displayHeight, displayWidth, keyRadius);	
+		mBoard = new HexKeyboard(con, displayHeight, displayWidth, dpi);	
 		mBoard.invalidate();
 
 		this.setContentView(mBoard);
