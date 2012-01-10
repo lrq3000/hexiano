@@ -24,6 +24,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 package com.inept.isokeys;
 
+import com.google.ads.*;
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -44,6 +47,8 @@ import android.view.WindowManager;
 
 public class Play extends Activity implements OnSharedPreferenceChangeListener
 {
+	GoogleAnalyticsTracker mTracker;
+	
 	final int ABOUT_DIALOG_ID = 1;
 	SharedPreferences mPrefs;
 	HexKeyboard mBoard;
@@ -55,6 +60,15 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 	{
 		super.onCreate(savedInstanceState);
 		
+		mTracker = GoogleAnalyticsTracker.getInstance();
+
+	    // Start the tracker in manual dispatch mode...
+	    mTracker.startNewSession("UA-28224231-1", this);
+
+	    // ...alternatively, the tracker can be started with a dispatch interval (in seconds).
+	    //mTracker.startNewSession("UA-28224231-1", 20, this);
+
+		
 		mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         mPrefs.registerOnSharedPreferenceChangeListener(this);
         
@@ -63,6 +77,20 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
         
         loadKeyboard();
+        
+        // Create the adView
+        // adView = new AdView(this, AdSize.BANNER, MY_AD_UNIT_ID);
+
+        // Lookup your LinearLayout assuming it’s been given
+        // the attribute android:id="@+id/mainLayout"
+        // LinearLayout layout = (LinearLayout)findViewById(R.id.mainLayout);
+
+        // Add the adView to it
+        // layout.addView(adView);
+
+        // Initiate a generic request to load it with an ad
+        // adView.loadAd(new AdRequest());
+
 	}
 	
 	protected void loadKeyboard()
@@ -109,12 +137,15 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 		switch (item.getItemId())
 		{
 		    case R.id.preferences:
+		    	mTracker.trackPageView("/preferences");
 			    startActivity(new Intent(this, Prefer.class)); 
 			    break;
 		    case R.id.quit:
+		    	mTracker.trackPageView("/user_exit");
 			    finish();
 			    break;
 		    case R.id.about:
+		    	mTracker.trackPageView("/about");
 			    showDialog(ABOUT_DIALOG_ID);
 			    break;
 		}
@@ -130,4 +161,11 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 		mBoard.setUpBoard();
 		mBoard.invalidate();
 	}
+	
+	  @Override
+	  protected void onDestroy() {
+	    super.onDestroy();
+	    // Stop the tracker when it is no longer needed.
+	    mTracker.stopSession();
+	  }
 }
