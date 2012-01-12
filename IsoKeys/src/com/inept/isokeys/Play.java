@@ -35,23 +35,35 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 public class Play extends Activity implements OnSharedPreferenceChangeListener
 {
 	GoogleAnalyticsTracker mTracker;
 	
+	final String MY_AD_UNIT_ID = "a14f0bbe2e7d0ab";
 	final int ABOUT_DIALOG_ID = 1;
 	SharedPreferences mPrefs;
+	FrameLayout mFrame;
 	HexKeyboard mBoard;
+	AdView mAd;
+
+	
 	/**
 	 * @see android.app.Activity#onCreate(Bundle)
 	 */
@@ -60,56 +72,51 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 	{
 		super.onCreate(savedInstanceState);
 		
+		// setContentView(R.layout.main);
+		
 		mTracker = GoogleAnalyticsTracker.getInstance();
 
 	    // Start the tracker in manual dispatch mode...
-	    mTracker.startNewSession("UA-28224231-1", this);
+	    // mTracker.startNewSession("UA-28224231-1", this);
 
 	    // ...alternatively, the tracker can be started with a dispatch interval (in seconds).
-	    //mTracker.startNewSession("UA-28224231-1", 20, this);
+	    mTracker.startNewSession("UA-28224231-1", 100, this);
 
-		
 		mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         mPrefs.registerOnSharedPreferenceChangeListener(this);
         
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        
+       
         loadKeyboard();
-        
-        // Create the adView
-        // adView = new AdView(this, AdSize.BANNER, MY_AD_UNIT_ID);
-
-        // Lookup your LinearLayout assuming it’s been given
-        // the attribute android:id="@+id/mainLayout"
-        // LinearLayout layout = (LinearLayout)findViewById(R.id.mainLayout);
-
-        // Add the adView to it
-        // layout.addView(adView);
-
-        // Initiate a generic request to load it with an ad
-        // adView.loadAd(new AdRequest());
-
 	}
 	
 	protected void loadKeyboard()
 	{
 		this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 		
-		Display display = getWindowManager().getDefaultDisplay();
-		int displayWidth = display.getWidth();
-		int displayHeight = display.getHeight(); 
-	
-		DisplayMetrics dm = new DisplayMetrics();
-		getWindowManager().getDefaultDisplay().getMetrics(dm);
-		int dpi = dm.densityDpi;
-		
 		Context con = this.getApplicationContext();
-		mBoard = new HexKeyboard(con, displayHeight, displayWidth, dpi);	
+		
+        AdRequest adRequest = new AdRequest();
+        adRequest.addTestDevice(AdRequest.TEST_EMULATOR);
+        mAd = new AdView(this, AdSize.BANNER, MY_AD_UNIT_ID);
+        
+		mFrame = new FrameLayout(con);
+		mBoard = new HexKeyboard(con, mAd);
 		mBoard.invalidate();
 
-		this.setContentView(mBoard);
+		mFrame.addView(mBoard);
+		LayoutParams layoutParams = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
+				LayoutParams.WRAP_CONTENT, Gravity.TOP | Gravity.CENTER_HORIZONTAL); 
+        mAd.setLayoutParams(layoutParams);
+        mFrame.addView(mAd);
+        
+        // adRequest.addTestDevice("TEST_DEVICE_ID"); 
+        mAd.loadAd(adRequest);
+		
+		this.setContentView(mFrame);
+		// this.setContentView(mBoard);
 	}
 
 	@Override
@@ -167,5 +174,6 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 	    super.onDestroy();
 	    // Stop the tracker when it is no longer needed.
 	    mTracker.stopSession();
+	    mAd.destroy();
 	  }
 }

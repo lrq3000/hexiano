@@ -76,7 +76,7 @@
     <string name="prompt_scale">Key Size</string>
     <string name="default_scale">100</string>
     <string name="heading_general">General</string>
-    <string name="summary_scale">Enter percentage to scale keys. Default = 100. Smaller number shrink keys. Larger numbers expand them.</string>
+    <string name="summary_scale">Enter percentage to scale keys. Default = 100. Smaller numbers shrink keys. Larger numbers expand them.</string>
     <string name="prompt_landscape_labels">Landscape</string>
     <string name="summary_label_type">What labels do you want to see on the keys?</string>
     <string name="summary_color_scheme">What colors do you want to see?</string>

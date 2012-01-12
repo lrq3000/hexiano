@@ -5,9 +5,11 @@
     android:layout_height="fill_parent"
     >
 
-    <ImageView
-        android:id="@+id/glassPlate"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
+    <com.inept.isokeys.HexKeyboard
+        android:id="@+id/keyboard" />
+    
+    <com.google.ads.AdView
+        android:id="@+id/ad"
+        android:gravity="center_horizontal|bottom" />
 
 </FrameLayout>

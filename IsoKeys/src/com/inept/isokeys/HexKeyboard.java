@@ -27,24 +27,34 @@ package com.inept.isokeys;
 
 import java.lang.Math;
 
+import android.app.Service;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.world.Posn;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
+
+import com.google.ads.AdView;
+
+import android.view.WindowManager;
 
 public class HexKeyboard extends View 
 {
 	SharedPreferences mPrefs;
 	static Context mContext;
 	static Bitmap mBitmap;
+	static AdView mAd;
 	static int mDpi = 0;
 	static int mDisplayWidth = 0;
 	static int mDisplayHeight = 0;
@@ -52,12 +62,34 @@ public class HexKeyboard extends View
 	static int mColumnCount = 0;
 	static int mTileRadius = 64; 
 	static int mTileHeight = 0;
-
+	private long mLastRedrawEpochTime = 0;
+	private long mAdDelayMilliseconds = 12000;
+	
 	static HashMap<Integer, Integer> mTouches = new HashMap<Integer, Integer>();
 	static Instrument mInstrument;
 
 	static ArrayList<HexKey> mKeys = new ArrayList<HexKey>();
 
+	private AdHandler mAdHandler = new AdHandler();
+	
+	private class AdHandler extends Handler
+	{
+		@Override  
+	    public void handleMessage(Message msg)
+		{  
+			Calendar cal = Calendar.getInstance();
+			long currentEpochTime = cal.getTimeInMillis();
+			
+			if (currentEpochTime - mLastRedrawEpochTime > mAdDelayMilliseconds)
+			{
+				mAd.setVisibility(View.VISIBLE);
+			}
+			
+			this.removeMessages(0);  
+			sendMessageDelayed(obtainMessage(0), mAdDelayMilliseconds);  
+	    }  
+	}
+	
 	protected void setUpJammerBoard()
 	{
 		int y = 0;
@@ -159,6 +191,12 @@ public class HexKeyboard extends View
 
         mTileRadius = (3 * mDpi) / 8;
 	    String scaleStr = mPrefs.getString("scale", "100");
+	    scaleStr = scaleStr.replaceAll("[^0-9]", "");
+	    if (scaleStr.length() == 0)
+	    {
+	    	scaleStr = "100";
+	    }
+	    
 	    int scalePct = Integer.parseInt(scaleStr);
 	    mTileRadius = (mTileRadius * scalePct) / 100;
 		
@@ -201,13 +239,25 @@ public class HexKeyboard extends View
 		this.onDraw(tempCanvas);
 	}
 
-	public HexKeyboard(Context context, int height, int width, int dpi)
+	public HexKeyboard(Context context, AdView ad)
 	{
 		super(context);
-		
+		mAd = ad;
+		init(context);
+        mAdHandler.handleMessage(new Message());	 
+	}
+	
+	private void init(Context context)
+	{
 		mContext = context;
-        mDpi = dpi;	
 		mPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+		Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+		DisplayMetrics dm = new DisplayMetrics();
+		display.getMetrics(dm);
+		int width = dm.widthPixels;
+		int height = dm.heightPixels;
+		mDpi = dm.densityDpi;
         
 		mInstrument = new Piano(context);
 		if (height > width)
@@ -357,10 +407,18 @@ public class HexKeyboard extends View
 		{
 			k.paint(tempCanvas);
 		}
-
 		canvas.drawBitmap(mBitmap, 0, 0, null);
+
+		Calendar cal = Calendar.getInstance();
+		mLastRedrawEpochTime = cal.getTimeInMillis();
 	}
 
+
+//	public void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
+//	{
+//		setMeasuredDimension(widthMeasureSpec, heightMeasureSpec);
+//	}
+	
 	public boolean onTouchEvent(MotionEvent event){
 		Log.v("onMouse", event.toString());
 
@@ -382,6 +440,7 @@ public class HexKeyboard extends View
 					
 					mKeys.get(touchingId).play();
 					mTouches.put(pointerId, touchingId);
+					mAd.setVisibility(View.INVISIBLE);
 					this.invalidate();
 				}
 			}

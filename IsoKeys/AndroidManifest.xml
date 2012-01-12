@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<manifest android:versionCode="1" android:versionName="0.7"
+<manifest android:versionCode="2" android:versionName="0.71"
     package="com.inept.isokeys" xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-sdk android:minSdkVersion="4" android:targetSdkVersion="10"/>
     <uses-permission android:name="android.permission.INTERNET" />
@@ -12,7 +12,10 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity android:name="com.google.ads.AdActivity"
+              android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"/>
         <activity android:name=".Prefer"
             android:label="@string/prompt_preferences"/>
+  
     </application>
 </manifest>
