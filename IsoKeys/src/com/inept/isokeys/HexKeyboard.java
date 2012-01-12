@@ -27,13 +27,13 @@ package com.inept.isokeys;
 
 import java.lang.Math;
 
-import android.app.Service;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.os.Handler;
 import android.os.Message;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -42,7 +42,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.world.Posn;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 
 import com.google.ads.AdView;
@@ -54,7 +53,7 @@ public class HexKeyboard extends View
 	SharedPreferences mPrefs;
 	static Context mContext;
 	static Bitmap mBitmap;
-	static AdView mAd;
+	static View mAdView;
 	static int mDpi = 0;
 	static int mDisplayWidth = 0;
 	static int mDisplayHeight = 0;
@@ -62,33 +61,45 @@ public class HexKeyboard extends View
 	static int mColumnCount = 0;
 	static int mTileRadius = 64; 
 	static int mTileHeight = 0;
-	private long mLastRedrawEpochTime = 0;
-	private long mAdDelayMilliseconds = 20000;
+	private static long mLastRedrawTime = 0L;
+	private static final long mAdDelayMilliseconds = 15000L;
+	private static long mStartTime = 0L;
 	
 	static HashMap<Integer, Integer> mTouches = new HashMap<Integer, Integer>();
 	static Instrument mInstrument;
 
 	static ArrayList<HexKey> mKeys = new ArrayList<HexKey>();
 
-	private AdHandler mAdHandler = new AdHandler();
+	private Handler mAdHandler = new Handler();
 	
-	private class AdHandler extends Handler
+	private Runnable mAdUpdater = new Runnable()
 	{
-		@Override  
-	    public void handleMessage(Message msg)
-		{  
-			Calendar cal = Calendar.getInstance();
-			long currentEpochTime = cal.getTimeInMillis();
-			
-			if (currentEpochTime - mLastRedrawEpochTime > mAdDelayMilliseconds)
+		public void run()
+		{
+			long now = SystemClock.uptimeMillis();
+
+			Log.d("HexKeyboard.AdHandler", "mLastRedrawTime: " + mLastRedrawTime);
+			Log.d("HexKeyboard.AdHandler", "            now: " + now);
+
+			if (now > mLastRedrawTime + mAdDelayMilliseconds)
 			{
-				mAd.setVisibility(AdView.VISIBLE);
+				Log.d("HexKeyboard::mAdUpdater", "Make VISIBLE");
+				mAdView.setVisibility(View.VISIBLE);
 			}
-			
-			this.removeMessages(0);  
-			sendMessageDelayed(obtainMessage(0), mAdDelayMilliseconds);  
-	    }  
-	}
+
+			mAdHandler.postDelayed(mAdUpdater, mAdDelayMilliseconds);
+		}
+	};
+		
+	OnClickListener mStartListener = new OnClickListener() {
+		   public void onClick(View v) {
+		       if (mStartTime == 0L) {
+		            mStartTime = System.currentTimeMillis();
+		            mAdHandler.removeCallbacks(mAdUpdater);
+		            mAdHandler.postDelayed(mAdUpdater, mAdDelayMilliseconds);
+		       }
+		   }
+		};
 	
 	protected void setUpJammerBoard()
 	{
@@ -239,12 +250,17 @@ public class HexKeyboard extends View
 		this.onDraw(tempCanvas);
 	}
 
-	public HexKeyboard(Context context, AdView ad)
+	public HexKeyboard(Context context, View ad)
 	{
 		super(context);
-		mAd = ad;
+		mAdView = ad;
 		init(context);
-        mAdHandler.handleMessage(new Message());	 
+		if (mStartTime == 0L)
+		{
+			mStartTime = SystemClock.uptimeMillis();
+			mAdHandler.removeCallbacks(mAdUpdater);
+			mAdHandler.postDelayed(mAdUpdater, mAdDelayMilliseconds);
+		}
 	}
 	
 	private void init(Context context)
@@ -399,7 +415,7 @@ public class HexKeyboard extends View
 		}
 		return false;
 	}
-
+	
 	public void onDraw(Canvas canvas)
 	{ 
 		Canvas tempCanvas = new Canvas(mBitmap);
@@ -409,16 +425,10 @@ public class HexKeyboard extends View
 		}
 		canvas.drawBitmap(mBitmap, 0, 0, null);
 
-		Calendar cal = Calendar.getInstance();
-		mLastRedrawEpochTime = cal.getTimeInMillis();
+		mLastRedrawTime = SystemClock.uptimeMillis();
+		Log.d("onDraw", "Last redraw: " + mLastRedrawTime);
 	}
 
-
-//	public void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
-//	{
-//		setMeasuredDimension(widthMeasureSpec, heightMeasureSpec);
-//	}
-	
 	public boolean onTouchEvent(MotionEvent event){
 		Log.v("onMouse", event.toString());
 
@@ -440,7 +450,7 @@ public class HexKeyboard extends View
 					
 					mKeys.get(touchingId).play();
 					mTouches.put(pointerId, touchingId);
-					mAd.setVisibility(AdView.GONE);
+					mAdView.setVisibility(AdView.INVISIBLE);
 					this.invalidate();
 				}
 			}

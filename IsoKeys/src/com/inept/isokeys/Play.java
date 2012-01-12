@@ -62,6 +62,7 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 	FrameLayout mFrame;
 	HexKeyboard mBoard;
 	AdView mAd;
+	FrameLayout mAdFrame;
 
 	
 	/**
@@ -101,16 +102,18 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
         AdRequest adRequest = new AdRequest();
         adRequest.addTestDevice(AdRequest.TEST_EMULATOR);
         mAd = new AdView(this, AdSize.BANNER, MY_AD_UNIT_ID);
-        
+       
 		mFrame = new FrameLayout(con);
-		mBoard = new HexKeyboard(con, mAd);
+        mAdFrame = new FrameLayout(con);
+		mBoard = new HexKeyboard(con, mAdFrame);
 		mBoard.invalidate();
 
 		mFrame.addView(mBoard);
 		LayoutParams layoutParams = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
 				LayoutParams.WRAP_CONTENT, Gravity.TOP | Gravity.CENTER_HORIZONTAL); 
-        mAd.setLayoutParams(layoutParams);
-        mFrame.addView(mAd);
+        mAdFrame.setLayoutParams(layoutParams);
+        mAdFrame.addView(mAd);
+        mFrame.addView(mAdFrame);
         
         // adRequest.addTestDevice("TEST_DEVICE_ID"); 
         mAd.loadAd(adRequest);
