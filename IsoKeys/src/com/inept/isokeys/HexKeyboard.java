@@ -63,7 +63,7 @@ public class HexKeyboard extends View
 	static int mTileRadius = 64; 
 	static int mTileHeight = 0;
 	private long mLastRedrawEpochTime = 0;
-	private long mAdDelayMilliseconds = 12000;
+	private long mAdDelayMilliseconds = 20000;
 	
 	static HashMap<Integer, Integer> mTouches = new HashMap<Integer, Integer>();
 	static Instrument mInstrument;
@@ -82,7 +82,7 @@ public class HexKeyboard extends View
 			
 			if (currentEpochTime - mLastRedrawEpochTime > mAdDelayMilliseconds)
 			{
-				mAd.setVisibility(View.VISIBLE);
+				mAd.setVisibility(AdView.VISIBLE);
 			}
 			
 			this.removeMessages(0);  
@@ -440,7 +440,7 @@ public class HexKeyboard extends View
 					
 					mKeys.get(touchingId).play();
 					mTouches.put(pointerId, touchingId);
-					mAd.setVisibility(View.INVISIBLE);
+					mAd.setVisibility(AdView.GONE);
 					this.invalidate();
 				}
 			}

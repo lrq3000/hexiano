@@ -107,7 +107,7 @@
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    For the complete license, see http://www.gnu.org/licenses.</string>
+    For the complete license, see http://www.gnu.org/licenses. </string>
     <string name="credit_piano">Sounds from the acoustic grand piano soundfont (Yamaha Disklavier Pro), release 2008-09-10,
 by Roberto Gordo Saez (roberto.gordo@gmail.com), were adapted for use in IsoKeys. (See http://zenvoid.org/audio.html.)
 Specifically, we translated a set of files (mostly from the third velocity layer) from the soundfont into Ogg Vorbis format, with
@@ -121,4 +121,5 @@ his team at Zenph Studios.
 Neither Dr. Krishtal nor Mr. Saez in any way endorses IsoKeys. Their work is used under the terms of the Creative 
 Commons Attribution 3.0 license. See http://creativecommons.org/licenses/by/3.0 for details.
 </string>
+    <string name="analytics_notice">To improve the quality of our application, we reserve the right to track and report user activity inside IsoKeys. All data collected will be anonymous. We respect your privacy and will not collect any information to identify you personally.</string>
 </resources>

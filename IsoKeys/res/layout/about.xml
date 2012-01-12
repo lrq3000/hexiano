@@ -43,7 +43,15 @@
                 android:textColor="#FFF"
                 android:paddingBottom="10dp"
                 android:autoLink="web" />
-           
+            
+            <TextView
+                android:id="@+id/analytics_notice"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:autoLink="web"
+                android:paddingBottom="10dp"
+                android:text="@string/analytics_notice"
+                android:textColor="#FFF" />           
             <TextView android:id="@+id/license"
                 android:text="@string/license" 
                 android:layout_width="fill_parent"
