@@ -26,6 +26,7 @@ package com.inept.isokeys;
 
 import android.content.Context;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.image.ColorDatabase;
 import android.world.Posn;
 
@@ -59,12 +60,14 @@ public class SonomeKey extends HexKey
 		int blankId = ColorDatabase.color(mBlankColor);
         mBlankPaint.setColor(blankId);
         mBlankPaint.setStyle(Paint.Style.FILL);
+        
+        mKeyOrientation = mPrefs.getString("jammerKeyOrientation", "Vertical");
 	}
-	
-	protected String getColor()
+
+	public String getColor()
 	{
 		String sharpName = mNote.getSharpName();
-		String color = this.mWhiteColor;
+		String color = mWhiteColor;
 		if (sharpName.contains("#"))
 		{	
 			if (sharpName.contains("G"))

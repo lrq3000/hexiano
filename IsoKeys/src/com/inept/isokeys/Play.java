@@ -56,13 +56,13 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 {
 	GoogleAnalyticsTracker mTracker;
 	
-	final String MY_AD_UNIT_ID = "a14f0bbe2e7d0ab";
-	final int ABOUT_DIALOG_ID = 1;
-	SharedPreferences mPrefs;
-	FrameLayout mFrame;
-	HexKeyboard mBoard;
-	AdView mAd;
-	FrameLayout mAdFrame;
+	final static String MY_AD_UNIT_ID = "a14f0bbe2e7d0ab";
+	final static int ABOUT_DIALOG_ID = 1;
+	static SharedPreferences mPrefs;
+	static FrameLayout mFrame;
+	static HexKeyboard mBoard;
+	static AdView mAd;
+	static FrameLayout mAdFrame;
 
 	
 	/**
@@ -92,11 +92,36 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
        
         loadKeyboard();
 	}
+
+	protected void setOrientation()
+	{
+		String layout = mPrefs.getString("layout", "Sonome");
+
+		int orientationId = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+
+		if (layout.equals("Sonome"))
+		{
+			boolean isLandscape = mPrefs.getBoolean("sonomeLandscape", true);
+			if (! isLandscape)
+			{
+				orientationId = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+			}
+		}
+		else if (layout.equals("Jammer"))
+		{
+			boolean isLandscape = mPrefs.getBoolean("jammerLandscape", false);
+			if (! isLandscape)
+			{
+				orientationId = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+			}
+		}
+
+		this.setRequestedOrientation(orientationId);
+	}
 	
 	protected void loadKeyboard()
 	{
-		this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-		
+	    setOrientation();	
 		Context con = this.getApplicationContext();
 		
         AdRequest adRequest = new AdRequest();
@@ -106,6 +131,7 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 		mFrame = new FrameLayout(con);
         mAdFrame = new FrameLayout(con);
 		mBoard = new HexKeyboard(con, mAdFrame);
+		mBoard.setUpBoard(this.getRequestedOrientation());
 		mBoard.invalidate();
 
 		mFrame.addView(mBoard);
@@ -149,6 +175,7 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 		    case R.id.preferences:
 		    	mTracker.trackPageView("/preferences");
 			    startActivity(new Intent(this, Prefer.class)); 
+			    setOrientation();
 			    break;
 		    case R.id.quit:
 		    	mTracker.trackPageView("/user_exit");
@@ -167,8 +194,8 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key)
 	{
-		// TODO Auto-generated method stub
-		mBoard.setUpBoard();
+		setOrientation();
+		mBoard.setUpBoard(this.getRequestedOrientation());
 		mBoard.invalidate();
 	}
 	

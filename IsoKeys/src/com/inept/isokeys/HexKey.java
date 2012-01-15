@@ -47,12 +47,6 @@ public abstract class HexKey
 	static String mOutlineColor;
 	static String mPressedColor;
 	Posn mCenter;
-	Posn mLowerLeft;
-	Posn mLowerRight;
-	Posn mMiddleLeft;
-	Posn mMiddleRight;
-	Posn mUpperLeft;
-	Posn mUpperRight;
 	String mColorStr;
 	int mColorId;
 	Paint mPaint = new Paint();
@@ -60,6 +54,7 @@ public abstract class HexKey
 	Paint mOverlayPaint = new Paint();
 	Paint mTextPaint = new Paint();
 	Paint mBlankPaint = new Paint();
+	static String mKeyOrientation = "Horizontal";
 	static int mKeyCount = 0;
 	static int mRadius;
 	int mStreamId;
@@ -73,7 +68,7 @@ public abstract class HexKey
 	public HexKey(Context context, int radius, Posn center, int midiNoteNumber, Instrument instrument)
 	{
 		mPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-		
+	
 		setColors();
 		
 		mInstrument = instrument;
@@ -84,23 +79,13 @@ public abstract class HexKey
 		mDirty = true;
 		mRadius = radius;
 		mCenter = center;
-		mMiddleLeft = new Posn(mCenter.x - mRadius, mCenter.y);
-		mMiddleRight = new Posn(mCenter.x + mRadius, mCenter.y);
-		mLowerLeft = new Posn(mCenter.x - mRadius/2, 
-			mCenter.y + (int)(Math.round(Math.sqrt(3.0) * mRadius)/2));
-		mLowerRight = new Posn(mCenter.x + mRadius/2, 
-			mCenter.y + (int)(Math.round(Math.sqrt(3.0) * mRadius)/2));
-		mUpperLeft = new Posn(mCenter.x - mRadius/2, 
-			mCenter.y - (int)(Math.round(Math.sqrt(3.0) * mRadius)/2));
-		mUpperRight = new Posn(mCenter.x + mRadius/2, 
-			mCenter.y - (int)(Math.round(Math.sqrt(3.0) * mRadius)/2));
-	
+
 		int pressId = ColorDatabase.color(mPressedColor);
         mPressPaint.setColor(pressId);
         mPressPaint.setAntiAlias(true);
         mPressPaint.setStyle(Paint.Style.FILL);
         mPressPaint.setStrokeWidth(2);
-       
+		
 		mKeyCount++;
 	}
 
@@ -153,24 +138,64 @@ public abstract class HexKey
 		}
 	}
 	
-	abstract String getColor();
+	abstract public String getColor();
 	
-    protected Path getHexagonPath()
+	static public String getKeyOrientation(Context context)
+	{
+		mPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+		if (mPrefs.getString("layout", "Sonome").equals("Sonome"))
+		{
+			return mPrefs.getString("sonomeKeyOrientation", "Vertical");
+		}
+		return mPrefs.getString("jammerKeyOrientation", "Horizontal");
+	}
+	
+	protected Path getHexagonPath()
+	{
+		if (mKeyOrientation.equals("Vertical"))
+		{
+			return getVerticalHexagonPath();
+		}
+		
+		return getHorizontalHexagonPath();
+	}
+	
+    protected Path getVerticalHexagonPath()
     {
         Path hexy = new Path();
-        double first = Math.PI/6 + Math.PI/6;
-        double mult = 2*Math.PI/6;
-        hexy.moveTo((int)(mRadius*Math.cos(first)),
-                    (int)(mRadius*Math.sin(first)));
+        double angle = Math.PI / 3;
+        double increment = Math.PI / 3;
+        hexy.moveTo((int)(mRadius * Math.cos(angle)),
+                    (int)(mRadius * Math.sin(angle)));
         for(int i = 1; i < 6; i++)
         {
-            hexy.lineTo((int)(mRadius*Math.cos(first+i*mult)),
-                        (int)(mRadius*Math.sin(first+i*mult)));
+            hexy.lineTo((int)(mRadius * Math.cos(angle + i * increment)),
+                        (int)(mRadius * Math.sin(angle + i * increment)));
         }
+        
         hexy.close();
+        
         return hexy;
     }
-    
+	
+    protected Path getHorizontalHexagonPath()
+    {
+        Path hexy = new Path();
+        double angle = Math.PI / 2;
+        double increment = Math.PI / 3;
+        hexy.moveTo((int)(mRadius * Math.cos(angle)),
+                    (int)(mRadius * Math.sin(angle)));
+        for(int i = 1; i < 6; i++)
+        {
+            hexy.lineTo((int)(mRadius * Math.cos(angle + i * increment)),
+                        (int)(mRadius * Math.sin(angle + i * increment)));
+        }
+        
+        hexy.close();
+        
+        return hexy;
+    }
+   
     /** Paint this Polygon into the given graphics */
     public void paint(Canvas canvas)
     {
@@ -179,11 +204,11 @@ public abstract class HexKey
     		return;	
     	}
     
-    	String layoutPref = mPrefs.getString("layout", "Sonome");
+  		Path hexPath = getHexagonPath();
+    	
 		String labelPref  = mPrefs.getString("labelType", "English");
 		String label = mNote.getDisplayString(labelPref, true);
 	
-  		Path hexPath = getHexagonPath();
   		
 		if (this.mMidiNoteNumber < 21 || this.mMidiNoteNumber > 108)
 		{
@@ -207,28 +232,29 @@ public abstract class HexKey
     		int labelHeight = bounds.bottom - bounds.top;
     		int x = mCenter.x;
     		int y = mCenter.y + Math.abs(labelHeight/2);
+    		canvas.drawText(label, x, y, mTextPaint);
     	
-    		boolean wantLandscape = false;
-    		if (layoutPref.equals("Sonome"))
-    		{
-    			wantLandscape  = mPrefs.getBoolean("sonomeLandscape", true);
-    		}
-    		else
-    		{
-    			wantLandscape  = mPrefs.getBoolean("jammerLandscape", false);
-    		}
-    		
-    		if (wantLandscape)
-    		{
-    			canvas.drawText(label, x, y, mTextPaint);
-    		}
-    		else
-    		{
-    			canvas.save();
-    		    canvas.rotate(-90, mCenter.x, mCenter.y);
-    			canvas.drawText(label, x, y, mTextPaint);
-    			canvas.restore();
-    		}
+//    		boolean wantLandscape = false;
+//    		if (layoutPref.equals("Sonome"))
+//    		{
+//    			wantLandscape  = mPrefs.getBoolean("sonomeLandscape", true);
+//    		}
+//    		else
+//    		{
+//    			wantLandscape  = mPrefs.getBoolean("jammerLandscape", false);
+//    		}
+//    		
+//    		if (wantLandscape)
+//    		{
+//    			canvas.drawText(label, x, y, mTextPaint);
+//    		}
+//    		else
+//    		{
+//    			canvas.save();
+//    		    canvas.rotate(-90, mCenter.x, mCenter.y);
+//    			canvas.drawText(label, x, y, mTextPaint);
+//    			canvas.restore();
+//    		}
     	}
     	
     	mDirty = false;
@@ -262,6 +288,141 @@ public abstract class HexKey
 	
 	public boolean contains(int x, int y)
 	{
+		if (mKeyOrientation.equals("Vertical"))
+		{
+			return verticalContains(x, y);
+		}
+		
+		return horizontalContains(x, y);
+	}
+
+	public boolean horizontalContains(int x, int y)
+	{
+		Posn top = new Posn(mCenter.x, mCenter.y - mRadius);
+		Posn bottom = new Posn(mCenter.x, mCenter.y + mRadius);
+
+		double angle = Math.PI / 3;
+		Posn upperRight = new Posn((int)(mCenter.x + mRadius * Math.cos(angle)),
+				(int)(mCenter.y - mRadius * Math.sin(angle)));
+		Posn lowerRight = new Posn((int)(mCenter.x + mRadius * Math.cos(angle)),
+				(int)(mCenter.y + mRadius * Math.sin(angle)));
+		Posn lowerLeft = new Posn((int)(mCenter.x - mRadius * Math.cos(angle)),
+				(int)(mCenter.y - mRadius * Math.sin(angle)));
+		Posn upperLeft = new Posn((int)(mCenter.x - mRadius * Math.cos(angle)),
+				(int)(mCenter.y + mRadius * Math.sin(angle)));
+		
+		/*
+		 * 
+		 * We split the hexagon into three areas to determine if the specified coordinates
+		 * are included. These are a "center-cut" rectangle, where most positive examples are
+		 * expected, and a top and bottom triangle:
+		 * 
+		      /\
+		     /  \    <--- Top triangle
+		    /    \
+		   |------|
+		   |      |  <--- Center cut
+		   |      |
+		   |------|
+		    \    /
+		     \  /    <--- Bottom triangle
+		      \/
+		  
+		  */
+		if (x >= lowerLeft.x && x <= lowerRight.x &&
+			y >= upperLeft.y && y <= lowerLeft.y)
+		{
+			Log.d("HexKey::contains", "Center cut");
+			return true; // Center cut.
+		}
+		if (x < upperLeft.x || x > upperRight.x ||
+			y < top.y || y > bottom.y)
+		{
+			return false; // Air ball.
+		}
+		if (y <= upperLeft.y) // Could be in top "triangle."
+		{
+			if (x <= top.x)
+			{
+				// We are in left half of the top triangle if the
+				// slope formed by the line from the (x, y) to the top
+				// vertex is >= the slope from the upper-left vertex to the
+				// top vertex. We take the negative because the y-coordinate's
+				// sign is reversed.
+				double sideSlope = (-1.0) *
+						(top.y - upperLeft.y)/(top.x - upperLeft.x);
+				double pointSlope = (-1.0) * (top.y - y)/(top.x - x);
+				
+				Log.d("HexKey::verticalContains", "Upper-left side slope: " + sideSlope);
+				Log.d("HexKey::verticalContains", "Upper-left point slope: " + pointSlope);
+				
+				if (pointSlope >= sideSlope)
+				{
+					return true;
+				}
+			}
+			else
+			{
+				// We may be in the right half of the top triangle.
+				double sideSlope = (-1.0) *
+						(top.y - upperRight.y)/(top.x - upperRight.x);
+				double pointSlope = (-1.0) * (top.y - y)/(top.x - x);
+				Log.d("HexKey::verticalContains", "Lower-left side slope: " + sideSlope);
+				Log.d("HexKey::verticalContains", "Lower-left point slope: " + pointSlope);
+				if (pointSlope >= sideSlope)
+				{
+					return true;
+				}
+			}
+		}
+		else // Could be in bottom triangle
+		{
+			if (x <= top.x)
+			{
+				// We are in left half of the lower triangle if the
+				// slope formed by the line from the (x, y) to the bottom
+				// vertex is <= the slope from the lower-left vertex
+				// to the bottom vertex. We take the negative because 
+				// the y-coordinate's sign is reversed.
+				double sideSlope = (-1.0) *
+						(lowerLeft.y - bottom.y)/(lowerLeft.x - bottom.x);
+				double pointSlope = (-1.0) * (y - bottom.y)/(x - bottom.x);
+				Log.d("HexKey::verticalContains", "Lower-left side slope: " + sideSlope);
+				Log.d("HexKey::contains", "Lower-left point slope: " + pointSlope);
+				if (pointSlope <= sideSlope)
+				{
+					return true;
+				}
+			}
+			else // Check right half
+			{
+				double sideSlope = (-1.0) *
+						(lowerRight.y - bottom.y)/(lowerRight.x - bottom.x);
+				double pointSlope = (-1.0) * (y - bottom.y)/(x - bottom.x);
+				Log.d("HexKey::contains", "Lower-right side slope: " + sideSlope);
+				Log.d("HexKey::contains", "Lower-right point slope: " + pointSlope);
+				if (pointSlope <= sideSlope)
+				{
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	public boolean verticalContains(int x, int y)
+	{
+		Posn middleLeft = new Posn(mCenter.x - mRadius, mCenter.y);
+		Posn middleRight = new Posn(mCenter.x + mRadius, mCenter.y);
+		Posn lowerLeft = new Posn(mCenter.x - mRadius/2, 
+				mCenter.y + (int)(Math.round(Math.sqrt(3.0) * mRadius)/2));
+		Posn lowerRight = new Posn(mCenter.x + mRadius/2, 
+				mCenter.y + (int)(Math.round(Math.sqrt(3.0) * mRadius)/2));
+		Posn upperLeft = new Posn(mCenter.x - mRadius/2, 
+				mCenter.y - (int)(Math.round(Math.sqrt(3.0) * mRadius)/2));
+		Posn upperRight = new Posn(mCenter.x + mRadius/2, 
+				mCenter.y - (int)(Math.round(Math.sqrt(3.0) * mRadius)/2));
 		/*
 		 * 
 		 * We split the hexagon into three areas to determine if the specified coordinates
@@ -274,20 +435,20 @@ public abstract class HexKey
 		       \|____|/
 		  
 		  */
-		if (x >= mLowerLeft.x && x <= mLowerRight.x &&
-			y >= mUpperLeft.y && y <= mLowerLeft.y)
+		if (x >= lowerLeft.x && x <= lowerRight.x &&
+			y >= upperLeft.y && y <= lowerLeft.y)
 		{
 			Log.d("HexKey::contains", "Center cut");
 			return true; // Center cut.
 		}
-		if (x < mMiddleLeft.x || x > mMiddleRight.x ||
-			y < mUpperLeft.y || y > mLowerLeft.y)
+		if (x < middleLeft.x || x > middleRight.x ||
+			y < upperLeft.y || y > lowerLeft.y)
 		{
 			return false; // Air ball.
 		}
-		if (x <= mUpperLeft.x) // Could be in left "triangle."
+		if (x <= upperLeft.x) // Could be in left "triangle."
 		{
-			if (y <= mMiddleLeft.y)
+			if (y <= middleLeft.y)
 			{
 				// We are in upper half of the left triangle if the
 				// slope formed by the line from the (x, y) to the upper-left
@@ -295,11 +456,11 @@ public abstract class HexKey
 				// upper-left vertex. We take the negative because the y-coordinate's
 				// sign is reversed.
 				double sideSlope = (-1.0) *
-						(mUpperLeft.y - mMiddleLeft.y)/(mUpperLeft.x - mMiddleLeft.x);
-				double pointSlope = (-1.0) * (mUpperLeft.y - y)/(mUpperLeft.x - x);
+						(upperLeft.y - middleLeft.y)/(upperLeft.x - middleLeft.x);
+				double pointSlope = (-1.0) * (upperLeft.y - y)/(upperLeft.x - x);
 				
-				Log.d("HexKey::contains", "Upper-left side slope: " + sideSlope);
-				Log.d("HexKey::contains", "Upper-left point slope: " + pointSlope);
+				Log.d("HexKey::horizontalContains", "Upper-left side slope: " + sideSlope);
+				Log.d("HexKey::horizontalContains", "Upper-left point slope: " + pointSlope);
 				
 				if (pointSlope >= sideSlope)
 				{
@@ -310,10 +471,10 @@ public abstract class HexKey
 			{
 				// We may be in the lower half of the left triangle.
 				double sideSlope = (-1.0) *
-						(mLowerLeft.y - mMiddleLeft.y)/(mLowerLeft.x - mMiddleLeft.x);
-				double pointSlope = (-1.0) * (mMiddleLeft.y - y)/(mMiddleLeft.x - x);
-				Log.d("HexKey::contains", "Lower-left side slope: " + sideSlope);
-				Log.d("HexKey::contains", "Lower-left point slope: " + pointSlope);
+						(lowerLeft.y - middleLeft.y)/(lowerLeft.x - middleLeft.x);
+				double pointSlope = (-1.0) * (middleLeft.y - y)/(middleLeft.x - x);
+				Log.d("HexKey::horizontalContains", "Lower-left side slope: " + sideSlope);
+				Log.d("HexKey::horizontalContains", "Lower-left point slope: " + pointSlope);
 				if (pointSlope >= sideSlope)
 				{
 					return true;
@@ -322,7 +483,7 @@ public abstract class HexKey
 		}
 		else // Could be in right triangle
 		{
-			if (y <= mMiddleRight.y)
+			if (y <= middleRight.y)
 			{
 				// We are in upper half of the right triangle if the
 				// slope formed by the line from the (x, y) to the upper-right
@@ -330,10 +491,10 @@ public abstract class HexKey
 				// vertex to the upper-upper vertex. We take the negative because 
 				// the y-coordinate's sign is reversed.
 				double sideSlope = (-1.0) *
-						(mUpperRight.y - mMiddleRight.y)/(mUpperRight.x - mMiddleRight.x);
-				double pointSlope = (-1.0) *(mUpperRight.y - y)/(mUpperRight.x - x);
-				Log.d("HexKey::contains", "Upper-right side slope: " + sideSlope);
-				Log.d("HexKey::contains", "Upper-right point slope: " + pointSlope);
+						(upperRight.y - middleRight.y)/(upperRight.x - middleRight.x);
+				double pointSlope = (-1.0) *(upperRight.y - y)/(upperRight.x - x);
+				Log.d("HexKey::horizontalContains", "Upper-right side slope: " + sideSlope);
+				Log.d("HexKey::horizontalContains", "Upper-right point slope: " + pointSlope);
 				if (pointSlope <= sideSlope)
 				{
 					return true;
@@ -342,10 +503,10 @@ public abstract class HexKey
 			else
 			{
 				double sideSlope = (-1.0) *
-						(mLowerRight.y - mMiddleRight.y)/(mLowerRight.x - mMiddleRight.x);
-				double pointSlope = (-1.0) *(mMiddleRight.y - y)/(mMiddleRight.x - x);
-				Log.d("HexKey::contains", "Lower-right side slope: " + sideSlope);
-				Log.d("HexKey::contains", "Lower-right point slope: " + pointSlope);
+						(lowerRight.y - middleRight.y)/(lowerRight.x - middleRight.x);
+				double pointSlope = (-1.0) *(middleRight.y - y)/(middleRight.x - x);
+				Log.d("HexKey::horizontalContains", "Lower-right side slope: " + sideSlope);
+				Log.d("HexKey::horizontalContains", "Lower-right point slope: " + pointSlope);
 				if (pointSlope <= sideSlope)
 				{
 					return true;
@@ -375,4 +536,3 @@ public abstract class HexKey
 		return;
 	}
 }
-

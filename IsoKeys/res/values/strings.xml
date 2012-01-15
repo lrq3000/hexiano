@@ -122,4 +122,11 @@ Neither Dr. Krishtal nor Mr. Saez in any way endorses IsoKeys. Their work is use
 Commons Attribution 3.0 license. See http://creativecommons.org/licenses/by/3.0 for details.
 </string>
     <string name="analytics_notice">To improve the quality of our application, we reserve the right to track and report user activity inside IsoKeys. All data collected will be anonymous. We respect your privacy and will not collect any information to identify you personally.</string>
+    <string name="prompt_key_orientation">Key Orientation</string>
+    <string name="summary_key_orientation">Horizontal keys "point up and down"; vertical keys "point left and right."</string>
+    <string-array name="key_orientations">
+        <item>Horizontal</item>
+        <item>Vertical</item>
+    </string-array>
+    <string name="default_key_orientation">Vertical</string>
 </resources>

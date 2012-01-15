@@ -29,10 +29,10 @@ import java.lang.Math;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.os.Handler;
-import android.os.Message;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
@@ -50,7 +50,8 @@ import android.view.WindowManager;
 
 public class HexKeyboard extends View 
 {
-	SharedPreferences mPrefs;
+	static int mScreenOrientationId = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+	static SharedPreferences mPrefs;
 	static Context mContext;
 	static Bitmap mBitmap;
 	static View mAdView;
@@ -60,18 +61,18 @@ public class HexKeyboard extends View
 	static int mRowCount = 0;
 	static int mColumnCount = 0;
 	static int mTileRadius = 64; 
-	static int mTileHeight = 0;
+	static int mTileWidth = 0;
 	private static long mLastRedrawTime = 0L;
-	private static final long mAdDelayMilliseconds = 15000L;
+	private static final long mAdDelayMilliseconds = 12000L;
 	private static long mStartTime = 0L;
-	
+
 	static HashMap<Integer, Integer> mTouches = new HashMap<Integer, Integer>();
 	static Instrument mInstrument;
 
 	static ArrayList<HexKey> mKeys = new ArrayList<HexKey>();
 
 	private Handler mAdHandler = new Handler();
-	
+
 	private Runnable mAdUpdater = new Runnable()
 	{
 		public void run()
@@ -90,61 +91,111 @@ public class HexKeyboard extends View
 			mAdHandler.postDelayed(mAdUpdater, mAdDelayMilliseconds);
 		}
 	};
-		
-	OnClickListener mStartListener = new OnClickListener() {
-		   public void onClick(View v) {
-		       if (mStartTime == 0L) {
-		            mStartTime = System.currentTimeMillis();
-		            mAdHandler.removeCallbacks(mAdUpdater);
-		            mAdHandler.postDelayed(mAdUpdater, mAdDelayMilliseconds);
-		       }
-		   }
-		};
-	
+
+	OnClickListener mStartListener = new OnClickListener()
+	{
+		public void onClick(View v)
+		{
+			if (mStartTime == 0L)
+			{
+				mStartTime = System.currentTimeMillis();
+				mAdHandler.removeCallbacks(mAdUpdater);
+				mAdHandler.postDelayed(mAdUpdater, mAdDelayMilliseconds);
+			}
+		}
+	};
+
 	protected void setUpJammerBoard()
 	{
 		int y = 0;
-		
+
 		String firstNote = mPrefs.getString("baseJammerNote", "C");
 		String firstOctaveStr = mPrefs.getString("baseJammerOctave", "8");
 		int firstOctave = Integer.parseInt(firstOctaveStr);
 		int pitch = Note.getNoteNumber(firstNote, firstOctave); 
 		Log.d("setUpJammerBoard", "" + pitch);
-		int rowFirstPitch = pitch;
+		if (HexKey.getKeyOrientation(mContext).equals("Vertical"))
+		{
+			int rowFirstPitch = pitch;
 
-		for (int j = 0; j < mRowCount; j++)
-		{	
-			int x = mTileRadius;
+			for (int j = 0; j < mRowCount; j++)
+			{	
+				int x = mTileRadius;
 
-			for (int i = 0; i < mColumnCount; i++)
-			{
-				int kittyCornerX = (int)Math.round(x - mTileRadius * 1.5);
-				int kittyCornerY = y + mTileHeight/2;
-				JammerKey kittyCornerKey = new JammerKey(
-						mContext,
-						mTileRadius,
-						new Posn(kittyCornerX, kittyCornerY),
-						pitch,
-						mInstrument);
+				for (int i = 0; i < mColumnCount; i++)
+				{
+					int kittyCornerX = (int)Math.round(x - mTileRadius * 1.5);
+					int kittyCornerY = y + mTileWidth/2;
+					JammerKey kittyCornerKey = new JammerKey(
+							mContext,
+							mTileRadius,
+							new Posn(kittyCornerX, kittyCornerY),
+							pitch,
+							mInstrument);
 
-				mKeys.add(kittyCornerKey);
-				pitch-=5;
+					mKeys.add(kittyCornerKey);
+					pitch-=5;
 
-				JammerKey key = new JammerKey(
-						mContext,
-						mTileRadius,
-						new Posn(x, y),
-						pitch,
-						mInstrument);
-				mKeys.add(key);
-				pitch-=7;
+					JammerKey key = new JammerKey(
+							mContext,
+							mTileRadius,
+							new Posn(x, y),
+							pitch,
+							mInstrument);
+					mKeys.add(key);
+					pitch-=7;
 
-				x += 3 * mTileRadius;
+					x += 3 * mTileRadius;
+				}
+
+				pitch = rowFirstPitch - 2; // Down a full tone.
+				rowFirstPitch = pitch;
+				y += mTileWidth;
 			}
+		}
+		else
+		{
+			pitch -= (mRowCount - 1) * 2;
+		
+			y = mTileRadius;
+			
+			int rowFirstPitch = pitch;
+			
+			for (int j = 0; j < mRowCount; j++)
+			{	
+				int x = mTileWidth / 2;
 
-			pitch = rowFirstPitch - 2; // Down a full tone.
-			rowFirstPitch = pitch;
-			y += mTileHeight;
+				for (int i = 0; i < mColumnCount; i++)
+				{
+					int kittyCornerX = (int)Math.round(x - mTileWidth / 2);
+					int kittyCornerY = (int)Math.round(y - mTileRadius * 1.5);
+					JammerKey kittyCornerKey = new JammerKey(
+							mContext,
+							mTileRadius,
+							new Posn(kittyCornerX, kittyCornerY),
+							pitch,
+							mInstrument);
+					mKeys.add(kittyCornerKey);
+					
+					pitch-=5;
+
+					JammerKey key = new JammerKey(
+							mContext,
+							mTileRadius,
+							new Posn(x, y),
+							pitch,
+							mInstrument);
+					mKeys.add(key);
+					
+					pitch+=7;
+
+					x += mTileWidth;
+				}
+
+				pitch = rowFirstPitch - 12; // Down a full tone.
+				rowFirstPitch = pitch;
+				y += 3 * mTileRadius;
+			}
 		}
 	}
 
@@ -154,87 +205,234 @@ public class HexKeyboard extends View
 		String firstNote = mPrefs.getString("baseSonomeNote", "E");
 		String firstOctaveStr = mPrefs.getString("baseSonomeOctave", "1");
 		int firstOctave = Integer.parseInt(firstOctaveStr);
-		int pitch = Note.getNoteNumber(firstNote, firstOctave); 
-		pitch += (mRowCount - 1) * 7;
-		Log.d("setUpSonomeBoard", "pitch: " + pitch);
-		Log.d("setUpSonomeBoard", "rowCount: " + mRowCount);
-		int rowFirstPitch = pitch;
+		int pitch = Note.getNoteNumber(firstNote, firstOctave);
 
-		for (int j = 0; j < mRowCount; j++)
-		{	
-			int x = mTileRadius;
+		if (HexKey.getKeyOrientation(mContext).equals("Vertical"))
+		{
+			pitch += (mRowCount - 1) * 7;
+			Log.d("setUpSonomeBoard", "pitch: " + pitch);
+			Log.d("setUpSonomeBoard", "rowCount: " + mRowCount);
+			int rowFirstPitch = pitch;
 
-			for (int i = 0; i < mColumnCount; i++)
-			{
-				int kittyCornerX = (int)Math.round(x - mTileRadius * 1.5);
-				int kittyCornerY = y + mTileHeight/2;
-				SonomeKey kittyCornerKey = new SonomeKey(
-						mContext,
-						mTileRadius,
-						new Posn(kittyCornerX, kittyCornerY),
-						pitch,
-						mInstrument);
+			for (int j = 0; j < mRowCount; j++)
+			{	
+				int x = mTileRadius;
 
-				mKeys.add(kittyCornerKey);
-				pitch+=4;
+				for (int i = 0; i < mColumnCount; i++)
+				{
+					int kittyCornerX = (int)Math.round(x - mTileRadius * 1.5);
+					int kittyCornerY = y + mTileWidth/2;
+					SonomeKey kittyCornerKey = new SonomeKey(
+							mContext,
+							mTileRadius,
+							new Posn(kittyCornerX, kittyCornerY),
+							pitch,
+							mInstrument);
 
-				SonomeKey key = new SonomeKey(
-						mContext,
-						mTileRadius,
-						new Posn(x, y),
-						pitch,
-						mInstrument);
-				mKeys.add(key);
-				pitch-=3;
+					mKeys.add(kittyCornerKey);
+					pitch+=4;
 
-				x += 3 * mTileRadius;
+					SonomeKey key = new SonomeKey(
+							mContext,
+							mTileRadius,
+							new Posn(x, y),
+							pitch,
+							mInstrument);
+					mKeys.add(key);
+					pitch-=3;
+
+					x += 3 * mTileRadius;
+				}
+
+				pitch = rowFirstPitch - 7; // Down a fifth.
+				rowFirstPitch = pitch;
+				y += mTileWidth;
 			}
+		}
+		else
+		{
+			y = mTileRadius;
+			
+			int rowFirstPitch = pitch;
+			
+			for (int j = 0; j < mRowCount; j++)
+			{	
+				int x = mTileWidth / 2;
 
-			pitch = rowFirstPitch - 7; // Down a fifth.
-			rowFirstPitch = pitch;
-			y += mTileHeight;
+				for (int i = 0; i < mColumnCount; i++)
+				{
+					int kittyCornerX = (int)Math.round(x - mTileWidth / 2);
+					int kittyCornerY = (int)Math.round(y - mTileRadius * 1.5);
+					JammerKey kittyCornerKey = new JammerKey(
+							mContext,
+							mTileRadius,
+							new Posn(kittyCornerX, kittyCornerY),
+							pitch,
+							mInstrument);
+					mKeys.add(kittyCornerKey);
+					
+					pitch+=4;
+
+					JammerKey key = new JammerKey(
+							mContext,
+							mTileRadius,
+							new Posn(x, y),
+							pitch,
+							mInstrument);
+					mKeys.add(key);
+					
+					pitch+=3;
+
+					x += mTileWidth;
+				}
+
+				pitch = rowFirstPitch + 1; // Up a semitone.
+				rowFirstPitch = pitch;
+				y += 3 * mTileRadius;
+			}
 		}
 	}
-	
-	void setUpBoard()
+
+	boolean screenIsNaturallyLandscape()
+	{
+		if (mDisplayWidth > mDisplayHeight)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	private int getCanvasHeight()
+	{
+		int canvasHeight = mDisplayHeight;
+
+		if (mScreenOrientationId == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+		{
+			if (mDisplayWidth > mDisplayHeight) // Natural landscape display
+			{
+				canvasHeight = mDisplayWidth;
+			}
+		}
+		else // orientation is landscape
+		{
+			if (mDisplayWidth < mDisplayHeight) // Natural portrait display
+			{
+				canvasHeight = mDisplayWidth;
+			}
+		}
+
+		return canvasHeight;
+	}
+
+	private int getCanvasWidth()
+	{
+		int canvasWidth = mDisplayWidth;
+
+		if (mScreenOrientationId == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+		{
+			if (mDisplayWidth > mDisplayHeight) // Natural landscape display
+			{
+				canvasWidth = mDisplayHeight;
+			}
+		}
+		else // orientation is landscape
+		{
+			if (mDisplayWidth < mDisplayHeight) // Natural portrait display
+			{
+				canvasWidth = mDisplayHeight;
+			}
+		}
+
+		return canvasWidth;
+	}
+
+	private int getRowCount()
+	{
+		int rowCount = 0;
+
+		int canvasHeight = getCanvasHeight();
+		if (HexKey.getKeyOrientation(mContext).equals("Vertical"))
+		{
+			rowCount = canvasHeight/mTileWidth;
+			rowCount++; // Add one in case there is an extra kitty-corner half-row.
+			if (canvasHeight % mTileWidth > 0)
+			{
+				rowCount++;
+			}
+			Log.d("HexKeyboard", "mRowCount: " + mRowCount);
+		}
+		else
+		{
+			rowCount = canvasHeight/(3 * mTileRadius);
+			int remainder = canvasHeight % (mTileRadius * 3);
+			if (remainder > 0)
+			{
+				rowCount++;
+				if (remainder > 2 * mTileRadius)
+				{
+					rowCount++;
+				}
+			}
+		}
+
+		return rowCount;
+	}
+
+	private int getColumnCount()
+	{
+		int columnCount = 0;
+
+		int canvasWidth = getCanvasWidth();
+		if (HexKey.getKeyOrientation(mContext).equals("Vertical"))
+		{
+			columnCount = canvasWidth/(mTileRadius * 3) + 1; // Add one for the possible extra kitty-korner.
+			int remainder = canvasWidth % (mTileRadius * 3);
+
+			if (remainder > 0)
+			{
+				columnCount++;
+				if (remainder > 2 * mTileRadius)
+				{
+					columnCount++;
+				}
+			}
+		}
+		else
+		{
+			columnCount = canvasWidth/mTileWidth;
+			columnCount++; // Add one in case there is an extra kitty-corner half-row.
+			if (canvasWidth % mTileWidth > 0)
+			{
+				columnCount++;
+			}
+		}
+
+		return columnCount;
+	}
+
+	void setUpBoard(int screenOrientationId)
 	{
 		mKeys.clear();
 
-        mTileRadius = (3 * mDpi) / 8;
-	    String scaleStr = mPrefs.getString("scale", "100");
-	    scaleStr = scaleStr.replaceAll("[^0-9]", "");
-	    if (scaleStr.length() == 0)
-	    {
-	    	scaleStr = "100";
-	    }
-	    
-	    int scalePct = Integer.parseInt(scaleStr);
-	    mTileRadius = (mTileRadius * scalePct) / 100;
-		
-		mTileHeight = (int)(Math.round(Math.sqrt(3.0) * mTileRadius));
-		Log.d("HexKeyboard", "mDisplayWidth: " + mDisplayWidth);
-		Log.d("HexKeyboard", "mDisplayHeight: " + mDisplayHeight);
-		Log.d("HexKeyboard", "mTileRadius: " + mTileRadius);
-		Log.d("HexKeyboard", "mTileHeight: " + mTileHeight);
-		mRowCount = mDisplayHeight/mTileHeight + 1; // Add one in case there is an extra kitty-corner half-row.
-		if (mDisplayHeight % mTileHeight > 0)
+		mScreenOrientationId = screenOrientationId;
+		Log.d("setUpBoard", "screenOrientationId: " + mScreenOrientationId);
+
+		mTileRadius = (3 * mDpi) / 8;
+		String scaleStr = mPrefs.getString("scale", "100");
+		scaleStr = scaleStr.replaceAll("[^0-9]", "");
+		if (scaleStr.length() == 0)
 		{
-			mRowCount++;
+			scaleStr = "100";
 		}
-		Log.d("HexKeyboard", "mRowCount: " + mRowCount);
+
+		int scalePct = Integer.parseInt(scaleStr);
+		mTileRadius = (mTileRadius * scalePct) / 100;
+		mTileWidth = (int)(Math.round(Math.sqrt(3.0) * mTileRadius));
 		
-		mColumnCount = mDisplayWidth/(mTileRadius * 3) + 1; // Add one for the possible extra kitty-korner.
-		int remainder = mDisplayWidth % (mTileRadius * 3);
-		
-		if (remainder > 0)
-		{
-			mColumnCount++;
-			if (remainder > 2 * mTileRadius)
-			{
-				mColumnCount++;
-			}
-		}
-		
+		mRowCount = getRowCount();
+		mColumnCount = getColumnCount();
+
 		String layoutPref = mPrefs.getString("layout", "Sonome");
 		if (layoutPref.equals("Sonome"))
 		{
@@ -244,8 +442,10 @@ public class HexKeyboard extends View
 		{
 			this.setUpJammerBoard();
 		}
-		
-		mBitmap = Bitmap.createBitmap(mDisplayWidth, mDisplayHeight, Bitmap.Config.ARGB_8888);
+
+		int canvasWidth = getCanvasWidth();
+		int canvasHeight = getCanvasHeight();
+		mBitmap = Bitmap.createBitmap(canvasWidth, canvasHeight, Bitmap.Config.ARGB_8888);
 		Canvas tempCanvas = new Canvas(mBitmap);
 		this.onDraw(tempCanvas);
 	}
@@ -262,7 +462,7 @@ public class HexKeyboard extends View
 			mAdHandler.postDelayed(mAdUpdater, mAdDelayMilliseconds);
 		}
 	}
-	
+
 	private void init(Context context)
 	{
 		mContext = context;
@@ -274,20 +474,10 @@ public class HexKeyboard extends View
 		int width = dm.widthPixels;
 		int height = dm.heightPixels;
 		mDpi = dm.densityDpi;
-        
+
 		mInstrument = new Piano(context);
-		if (height > width)
-		{
-			mDisplayHeight = width;
-			mDisplayWidth = height;
-		}
-		else
-		{
-			mDisplayWidth = width;
-			mDisplayHeight = height;
-		}
-		
-		setUpBoard();
+		mDisplayWidth = width;
+		mDisplayHeight = height;
 	}
 
 	private int keyIdAt(int x, int y) throws Exception
@@ -306,7 +496,7 @@ public class HexKeyboard extends View
 
 	private int getLowerBound (int x, int y)
 	{
-		int lowerBound = mTileHeight/2;
+		int lowerBound = mTileWidth/2;
 		for (int j = 0; j <= mRowCount; j++)
 		{
 			if (y < lowerBound)
@@ -314,14 +504,14 @@ public class HexKeyboard extends View
 				break;
 			}
 
-			lowerBound += mTileHeight/2;
+			lowerBound += mTileWidth/2;
 
 			if (y < lowerBound)
 			{
 				break;
 			}
 
-			lowerBound += mTileHeight/2;
+			lowerBound += mTileWidth/2;
 		}
 
 		return lowerBound;
@@ -329,7 +519,7 @@ public class HexKeyboard extends View
 
 	private int getHorizontalSliceNumber(int x, int y)
 	{
-		int lowerBound = mTileHeight/2;
+		int lowerBound = mTileWidth/2;
 		for (int j = 0; j <= mRowCount; j++)
 		{
 			if (y < lowerBound)
@@ -337,14 +527,14 @@ public class HexKeyboard extends View
 				return(2*j);
 			}
 
-			lowerBound += mTileHeight/2;
+			lowerBound += mTileWidth/2;
 
 			if (y < lowerBound)
 			{
 				return(2*j + 1);
 			}
 
-			lowerBound += mTileHeight/2;
+			lowerBound += mTileWidth/2;
 		}
 
 		return -1;
@@ -415,7 +605,7 @@ public class HexKeyboard extends View
 		}
 		return false;
 	}
-	
+
 	public void onDraw(Canvas canvas)
 	{ 
 		Canvas tempCanvas = new Canvas(mBitmap);
@@ -447,7 +637,7 @@ public class HexKeyboard extends View
 					x = (int)event.getX(pointerId);
 					y = (int)event.getY(pointerId);
 					int touchingId = this.keyIdAt(x, y);
-					
+
 					mKeys.get(touchingId).play();
 					mTouches.put(pointerId, touchingId);
 					mAdView.setVisibility(AdView.INVISIBLE);
@@ -488,7 +678,7 @@ public class HexKeyboard extends View
 							mTouches.remove(touchedId);
 						}
 					}
-					
+
 					mKeys.get(touchingId).play();
 					mTouches.put(pointerId, touchingId);
 					this.invalidate();

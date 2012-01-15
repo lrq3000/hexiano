@@ -14,12 +14,14 @@
         <ListPreference android:title="@string/prompt_lowest_note" android:entryValues="@array/base_notes" android:key="baseSonomeNote" android:defaultValue="@string/default_sonome_note" android:entries="@array/base_notes" android:summary="@string/summary_lowest_note"/>
         <ListPreference android:entryValues="@array/base_octaves" android:key="baseSonomeOctave" android:title="@string/prompt_lowest_note_octave" android:defaultValue="6" android:entries="@array/base_octaves" android:summary="@string/summary_lowest_note_octave"/>
         <CheckBoxPreference android:key="sonomeLandscape" android:defaultValue="true" android:title="@string/prompt_landscape_labels" android:summary="@string/summary_landscape"/>
+        <ListPreference android:defaultValue="@string/default_key_orientation" android:entryValues="@array/key_orientations" android:summary="@string/summary_key_orientation" android:key="sonomeKeyOrientation" android:entries="@array/key_orientations" android:title="@string/prompt_key_orientation"/>
     </PreferenceCategory>
     
     <PreferenceCategory android:key="jammer" android:title="@string/heading_jammer">
         <ListPreference android:title="@string/prompt_highest_note" android:entryValues="@array/base_notes" android:key="baseJammerNote" android:defaultValue="@string/default_jammer_note" android:entries="@array/base_notes" android:summary="@string/summary_highest_note"/>
         <ListPreference android:entryValues="@array/base_octaves" android:key="baseJammerOctave" android:title="@string/prompt_highest_note_octave" android:defaultValue="8" android:entries="@array/base_octaves" android:summary="@string/summary_highest_note_octave"/>
         <CheckBoxPreference android:key="jammerLandscape" android:defaultValue="false" android:title="@string/prompt_landscape_labels" android:summary="@string/summary_landscape"/>
+        <ListPreference android:defaultValue="@string/default_key_orientation" android:entryValues="@array/key_orientations" android:summary="@string/summary_key_orientation" android:key="jammerKeyOrientation" android:entries="@array/key_orientations" android:title="@string/prompt_key_orientation"/>
     </PreferenceCategory>
     
 </PreferenceScreen>
