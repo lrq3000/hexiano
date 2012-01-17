@@ -26,13 +26,11 @@ package com.inept.isokeys;
 
 import android.content.Context;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.image.ColorDatabase;
-import android.world.Posn;
 
 public class SonomeKey extends HexKey
 {
-	public SonomeKey(Context context, int radius, Posn center,
+	public SonomeKey(Context context, int radius, Point center,
 			int midiNoteNumber, Instrument instrument)
 	{
 		super(context, radius, center, midiNoteNumber, instrument);
@@ -61,7 +59,7 @@ public class SonomeKey extends HexKey
         mBlankPaint.setColor(blankId);
         mBlankPaint.setStyle(Paint.Style.FILL);
         
-        mKeyOrientation = mPrefs.getString("jammerKeyOrientation", "Vertical");
+        mKeyOrientation = mPrefs.getString("sonomeKeyOrientation", "Vertical");
 	}
 
 	public String getColor()

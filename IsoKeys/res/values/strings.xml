@@ -34,6 +34,7 @@
     <string-array name="layouts">
         <item>Sonome</item>
         <item>Jammer</item>
+        <item>Janko</item>
     </string-array>
     <string-array name="key_labels">
         <item>Deutsch</item>
@@ -54,18 +55,31 @@
         <item>7</item>
         <item>8</item>
     </string-array>
+    <string-array name="janko_row_counts">
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+    </string-array>
     <string name="prompt_preferences">Preferences</string>
     <string name="prompt_color_scheme">Color Scheme</string>
     <string name="prompt_instrument">Instrument</string>
     <string name="prompt_label_type">Labels</string>
     <string name="prompt_layout">Layout</string>
+    <string name="prompt_janko_row_count">Rows per Octave</string>
+    <string name="summary_janko_row_count">Number of rows of whole-step keys to include for each octave.</string>
     <string name="copyright">Copyright © 2011, 2012 by David A. Randolph.</string>
     <string name="heading_jammer">Jammer (Wicki-Hayden)</string>
     <string name="heading_sonome">Sonome (Harmonic Table)</string>
+    <string name="heading_janko">Janko</string>
     <string name="default_sonome_note">E</string>
     <string name="default_sonome_octave">1</string>
     <string name="default_jammer_note">C</string>
     <string name="default_jammer_octave">8</string>
+    <string name="default_janko_note">F</string>
+    <string name="default_janko_octave">5</string>
+    <string name="default_janko_row_count">4</string>
     <string name="prompt_orientation">Orientation</string>
     <string-array name="orientations">
         <item>Landscape</item>
@@ -73,6 +87,7 @@
     </string-array>
     <string name="default_sonome_orientation">Portrait</string>
     <string name="default_jammer_orientation">Landscape</string>
+    <string name="default_janko_orientation">Landscape</string>
     <string name="prompt_scale">Key Size</string>
     <string name="default_scale">100</string>
     <string name="heading_general">General</string>
@@ -128,5 +143,7 @@ Commons Attribution 3.0 license. See http://creativecommons.org/licenses/by/3.0 
         <item>Horizontal</item>
         <item>Vertical</item>
     </string-array>
-    <string name="default_key_orientation">Vertical</string>
+    <string name="default_sonome_key_orientation">Vertical</string>
+    <string name="default_jammer_key_orientation">Horizontal</string>
+    <string name="default_janko_key_orientation">Horizontal</string>
 </resources>

@@ -40,7 +40,6 @@ import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
-import android.world.Posn;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -129,7 +128,7 @@ public class HexKeyboard extends View
 					JammerKey kittyCornerKey = new JammerKey(
 							mContext,
 							mTileRadius,
-							new Posn(kittyCornerX, kittyCornerY),
+							new Point(kittyCornerX, kittyCornerY),
 							pitch,
 							mInstrument);
 
@@ -139,7 +138,7 @@ public class HexKeyboard extends View
 					JammerKey key = new JammerKey(
 							mContext,
 							mTileRadius,
-							new Posn(x, y),
+							new Point(x, y),
 							pitch,
 							mInstrument);
 					mKeys.add(key);
@@ -172,7 +171,7 @@ public class HexKeyboard extends View
 					JammerKey kittyCornerKey = new JammerKey(
 							mContext,
 							mTileRadius,
-							new Posn(kittyCornerX, kittyCornerY),
+							new Point(kittyCornerX, kittyCornerY),
 							pitch,
 							mInstrument);
 					mKeys.add(kittyCornerKey);
@@ -182,7 +181,7 @@ public class HexKeyboard extends View
 					JammerKey key = new JammerKey(
 							mContext,
 							mTileRadius,
-							new Posn(x, y),
+							new Point(x, y),
 							pitch,
 							mInstrument);
 					mKeys.add(key);
@@ -199,6 +198,131 @@ public class HexKeyboard extends View
 		}
 	}
 
+	protected void setUpJankoBoard()
+	{
+		int y = 0;
+
+		String highestNote = mPrefs.getString("baseJankoNote", "F");
+		String highestOctaveStr = mPrefs.getString("baseJankoOctave", "5");
+		int highestOctave = Integer.parseInt(highestOctaveStr);
+		int pitch = Note.getNoteNumber(highestNote, highestOctave); 
+		String groupSizeStr = mPrefs.getString("jankoRowCount", "4");
+		groupSizeStr.replaceAll("[^0-9]", "");
+		if (groupSizeStr.length() == 0)
+		{
+			groupSizeStr = "4";
+		}
+	    int groupSize = Integer.parseInt(groupSizeStr);
+	   
+	    pitch -= (mColumnCount - 1) * 2;
+		Log.d("setUpJankoBoard", "" + pitch);
+		if (HexKey.getKeyOrientation(mContext).equals("Vertical"))
+		{
+			int rowFirstPitch = pitch;
+
+			for (int j = 0; j < mRowCount; j++)
+			{	
+				int x = mTileRadius;
+
+				for (int i = 0; i < mColumnCount; i++)
+				{
+					int kittyCornerX = (int)Math.round(x - mTileRadius * 1.5);
+					int kittyCornerY = y + mTileWidth/2;
+					JammerKey kittyCornerKey = new JammerKey(
+							mContext,
+							mTileRadius,
+							new Point(kittyCornerX, kittyCornerY),
+							pitch,
+							mInstrument);
+
+					mKeys.add(kittyCornerKey);
+					pitch-=5;
+
+					JammerKey key = new JammerKey(
+							mContext,
+							mTileRadius,
+							new Point(x, y),
+							pitch,
+							mInstrument);
+					mKeys.add(key);
+					pitch-=7;
+
+					x += 3 * mTileRadius;
+				}
+
+				pitch = rowFirstPitch - 2; // Down a full tone.
+				rowFirstPitch = pitch;
+				y += mTileWidth;
+			}
+		}
+		else
+		{
+			y = mTileRadius;
+			int rowFirstPitch = pitch;
+	
+			int octaveGroupNumber = 0;
+			int jankoRowNumber = 0;
+			
+			for (int j = 0; j <= mRowCount; j++)
+			{	
+				int x = mTileWidth / 2;
+
+				for (int i = 0; i < mColumnCount; i++)
+				{
+					int kittyCornerX = (int)Math.round(x - mTileWidth / 2);
+					int kittyCornerY = (int)Math.round(y - mTileRadius * 1.5);
+					JankoKey kittyCornerKey = new JankoKey(
+							mContext,
+							mTileRadius,
+							new Point(kittyCornerX, kittyCornerY),
+							pitch,
+							mInstrument,
+							octaveGroupNumber);
+					mKeys.add(kittyCornerKey);
+					pitch+=2;
+					x += mTileWidth;
+				}
+			
+				jankoRowNumber++;
+			    if (jankoRowNumber % groupSize == 0)
+			    {
+			    	octaveGroupNumber++;
+			    	rowFirstPitch-=12;
+			    }
+				pitch = rowFirstPitch + 1;
+				
+				x = mTileWidth / 2;
+				for (int i = 0; i < mColumnCount; i++)
+				{
+					JankoKey key = new JankoKey(
+							mContext,
+							mTileRadius,
+							new Point(x, y),
+							pitch,
+							mInstrument,
+							octaveGroupNumber);
+					mKeys.add(key);
+					
+					pitch+=2;
+
+					x+=mTileWidth;
+				}
+				
+				jankoRowNumber++;
+				
+				if (jankoRowNumber % groupSize == 0)
+				{
+				    pitch = rowFirstPitch - 12;
+				    rowFirstPitch = pitch;
+			    	octaveGroupNumber++;
+				}
+				pitch = rowFirstPitch;
+				
+				y += 3 * mTileRadius;
+			}
+		}
+	}
+	
 	protected void setUpSonomeBoard()
 	{
 		int y = 0;
@@ -225,7 +349,7 @@ public class HexKeyboard extends View
 					SonomeKey kittyCornerKey = new SonomeKey(
 							mContext,
 							mTileRadius,
-							new Posn(kittyCornerX, kittyCornerY),
+							new Point(kittyCornerX, kittyCornerY),
 							pitch,
 							mInstrument);
 
@@ -235,7 +359,7 @@ public class HexKeyboard extends View
 					SonomeKey key = new SonomeKey(
 							mContext,
 							mTileRadius,
-							new Posn(x, y),
+							new Point(x, y),
 							pitch,
 							mInstrument);
 					mKeys.add(key);
@@ -266,7 +390,7 @@ public class HexKeyboard extends View
 					JammerKey kittyCornerKey = new JammerKey(
 							mContext,
 							mTileRadius,
-							new Posn(kittyCornerX, kittyCornerY),
+							new Point(kittyCornerX, kittyCornerY),
 							pitch,
 							mInstrument);
 					mKeys.add(kittyCornerKey);
@@ -276,7 +400,7 @@ public class HexKeyboard extends View
 					JammerKey key = new JammerKey(
 							mContext,
 							mTileRadius,
-							new Posn(x, y),
+							new Point(x, y),
 							pitch,
 							mInstrument);
 					mKeys.add(key);
@@ -438,9 +562,13 @@ public class HexKeyboard extends View
 		{
 			this.setUpSonomeBoard();
 		}
-		else
+		else if (layoutPref.equals("Jammer"))
 		{
 			this.setUpJammerBoard();
+		}
+		else if (layoutPref.equals("Janko"))
+		{
+			this.setUpJankoBoard();
 		}
 
 		int canvasWidth = getCanvasWidth();

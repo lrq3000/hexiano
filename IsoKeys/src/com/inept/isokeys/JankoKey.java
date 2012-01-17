@@ -1,9 +1,9 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *   IsoKeys, an isomorphic musical keyboard for Android                   *
+ *   IsoKeys, an isomorphic musical keyboard                               *
  *   Copyright 2011 David A. Randolph                                      *
  *                                                                         *
- *   FILE: SonomeKey.java                                                  *
+ *   FILE: JankoKey.java                                                  *
  *                                                                         *
  *   This file is part of IsoKeys, an open-source project                  *
  *   hosted at http://isokeys.sourceforge.net.                             *
@@ -28,13 +28,18 @@ import android.content.Context;
 import android.graphics.Paint;
 import android.image.ColorDatabase;
 
-public class JammerKey extends HexKey
+public class JankoKey extends HexKey
 {
-	public JammerKey(Context context, int radius, Point center,
-			int midiNoteNumber, Instrument instrument)
+	private int mOctaveGroupNumber;
+	
+	public JankoKey(Context context, int radius, Point center,
+			int midiNoteNumber, Instrument instrument, int octaveGroupNumber)
 	{
 		super(context, radius, center, midiNoteNumber, instrument);
 
+        mKeyOrientation = mPrefs.getString("jankoKeyOrientation", "Vertical");
+        mOctaveGroupNumber = octaveGroupNumber;
+        
 		mColorStr = getColor();
 		mColorId = ColorDatabase.color(mColorStr);
         mPaint.setColor(mColorId);
@@ -58,10 +63,18 @@ public class JammerKey extends HexKey
 		int blankId = ColorDatabase.color(mBlankColor);
         mBlankPaint.setColor(blankId);
         mBlankPaint.setStyle(Paint.Style.FILL);
-        
-		mKeyOrientation = mPrefs.getString("jammerKeyOrientation", "Vertical");
 	}
 
+	private boolean inOddOctave()
+	{
+		if (mOctaveGroupNumber % 2 == 0)
+		{
+			return false;
+		}
+		
+		return true;
+	}
+	
 	public String getColor()
 	{
 		String sharpName = mNote.getSharpName();
@@ -69,12 +82,12 @@ public class JammerKey extends HexKey
 		if (sharpName.contains("#"))
 		{	
 			color = mBlackColor;
-			if (sharpName.contains("G"))
+			if (inOddOctave())
 			{
 				color = mBlackHighlightColor;
 			}
 		}
-		else if (sharpName.contains("C"))
+		else if (inOddOctave())
 		{
 			color = mWhiteHighlightColor;
 		}
