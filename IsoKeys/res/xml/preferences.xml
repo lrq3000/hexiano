@@ -19,7 +19,7 @@
         <ListPreference android:defaultValue="@string/default_jammer_key_orientation" android:entryValues="@array/key_orientations" android:summary="@string/summary_key_orientation" android:key="jammerKeyOrientation" android:entries="@array/key_orientations" android:title="@string/prompt_key_orientation"/>
     </PreferenceCategory>
     <PreferenceCategory android:key="janko" android:title="@string/heading_janko">
-        <ListPreference android:defaultValue="@string/default_janko_note" android:entries="@array/base_notes" android:entryValues="@array/base_notes" android:title="@string/prompt_lowest_note" android:key="baseJankoNote" android:summary="@string/summary_lowest_note"/>
+        <ListPreference android:defaultValue="@string/default_janko_note" android:entries="@array/base_notes" android:entryValues="@array/base_notes" android:title="@string/prompt_highest_note" android:key="baseJankoNote" android:summary="@string/summary_highest_note"/>
         <ListPreference android:defaultValue="@string/default_janko_octave" android:entries="@array/base_octaves" android:entryValues="@array/base_octaves" android:title="@string/prompt_highest_note_octave" android:key="baseJankoOctave" android:summary="@string/summary_highest_note_octave"/>
         <CheckBoxPreference android:key="jankoLandscape" android:title="@string/prompt_landscape_labels" android:summary="@string/summary_landscape" android:defaultValue="true"/>
         <ListPreference android:defaultValue="@string/default_janko_key_orientation" android:title="@string/prompt_key_orientation" android:key="jankoKeyOrientation" android:summary="@string/summary_key_orientation" android:entries="@array/key_orientations" android:entryValues="@array/key_orientations"/>

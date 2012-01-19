@@ -115,6 +115,14 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 				orientationId = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
 			}
 		}
+		else if (layout.equals("Janko"))
+		{
+			boolean isLandscape = mPrefs.getBoolean("jankoLandscape", true);
+			if (! isLandscape)
+			{
+				orientationId = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+			}
+		}
 
 		this.setRequestedOrientation(orientationId);
 	}

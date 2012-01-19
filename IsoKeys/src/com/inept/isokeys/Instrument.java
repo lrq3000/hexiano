@@ -35,9 +35,9 @@ public abstract class Instrument {
 
 	public static final int POLYPHONY_COUNT = 8;
 	private SoundPool mSoundPool; 
-	protected HashMap<Integer, Integer> mSounds; 
-	protected HashMap<Integer, Float> mRates;
-	protected HashMap<Integer, Integer> mRootNotes;
+	protected static HashMap<Integer, Integer> mSounds; 
+	protected static HashMap<Integer, Float> mRates;
+	protected static HashMap<Integer, Integer> mRootNotes;
 	private AudioManager  mAudioManager;
 	private Context mContext;
 

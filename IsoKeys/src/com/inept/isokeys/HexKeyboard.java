@@ -213,44 +213,78 @@ public class HexKeyboard extends View
 			groupSizeStr = "4";
 		}
 	    int groupSize = Integer.parseInt(groupSizeStr);
-	   
-	    pitch -= (mColumnCount - 1) * 2;
+	  
+	    int groupCount = mColumnCount / groupSize;
+	    if (mColumnCount % groupSize > 0)
+	    {
+	    	groupCount++;
+	    }
+	    
+	    pitch -= (mColumnCount - 1) * 2 - 1;
 		Log.d("setUpJankoBoard", "" + pitch);
+		
 		if (HexKey.getKeyOrientation(mContext).equals("Vertical"))
 		{
+			pitch -= (groupCount - 1) * 12;
 			int rowFirstPitch = pitch;
 
 			for (int j = 0; j < mRowCount; j++)
 			{	
 				int x = mTileRadius;
 
+				int octaveGroupNumber = 0;
+			    int jankoColumnNumber = 0;
+			    
 				for (int i = 0; i < mColumnCount; i++)
 				{
 					int kittyCornerX = (int)Math.round(x - mTileRadius * 1.5);
 					int kittyCornerY = y + mTileWidth/2;
-					JammerKey kittyCornerKey = new JammerKey(
+					JankoKey kittyCornerKey = new JankoKey(
 							mContext,
 							mTileRadius,
 							new Point(kittyCornerX, kittyCornerY),
-							pitch,
-							mInstrument);
-
+							pitch + 12 * octaveGroupNumber,
+							mInstrument,
+							octaveGroupNumber);
 					mKeys.add(kittyCornerKey);
-					pitch-=5;
+			
+					jankoColumnNumber++;
+				
+					if (jankoColumnNumber % groupSize == 0)
+					{
+						octaveGroupNumber++;
+					}
+					pitch--;
 
-					JammerKey key = new JammerKey(
+					JankoKey key = new JankoKey(
 							mContext,
 							mTileRadius,
 							new Point(x, y),
-							pitch,
-							mInstrument);
+							pitch + 12 * octaveGroupNumber,
+							mInstrument,
+							octaveGroupNumber);
 					mKeys.add(key);
-					pitch-=7;
+					pitch++;
+				
+					jankoColumnNumber++;
+					if (jankoColumnNumber % groupSize == 0)
+					{
+						octaveGroupNumber++;
+					}
 
 					x += 3 * mTileRadius;
 				}
 
-				pitch = rowFirstPitch - 2; // Down a full tone.
+				
+//				if (jankoRowNumber % groupSize == 0)
+//				{
+//				    pitch = rowFirstPitch - 12;
+//				    rowFirstPitch = pitch;
+//			    	octaveGroupNumber++;
+//				}
+				pitch = rowFirstPitch;
+				
+				pitch = rowFirstPitch + 2; 
 				rowFirstPitch = pitch;
 				y += mTileWidth;
 			}
