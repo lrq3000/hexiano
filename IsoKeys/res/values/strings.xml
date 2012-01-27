@@ -63,6 +63,7 @@
         <item>6</item>
     </string-array>
     <string name="prompt_preferences">Preferences</string>
+    <string name="prompt_inneract">Support IsoKeys</string>
     <string name="prompt_color_scheme">Color Scheme</string>
     <string name="prompt_instrument">Instrument</string>
     <string name="prompt_label_type">Labels</string>

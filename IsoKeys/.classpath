@@ -7,5 +7,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/AndroidWorld"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/GoogleAdMobAdsSdk"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/GoogleAnalytics"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Inneractive"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

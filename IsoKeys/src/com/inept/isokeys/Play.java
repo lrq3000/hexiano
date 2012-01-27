@@ -35,22 +35,17 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.preference.PreferenceManager;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
+import android.content.pm.PackageManager.NameNotFoundException;
 
 public class Play extends Activity implements OnSharedPreferenceChangeListener
 {
@@ -64,6 +59,23 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 	static AdView mAd;
 	static FrameLayout mAdFrame;
 
+	private String getVersionName()
+	{
+		String versionName = "";
+		
+		try
+		{
+			versionName = getPackageManager().
+					getPackageInfo(getPackageName(), 0).versionName;
+		}
+		catch (NameNotFoundException e)
+		{
+			Log.e("getVersionName", e.getMessage());
+		}
+		
+		return versionName;
+	}
+
 	
 	/**
 	 * @see android.app.Activity#onCreate(Bundle)
@@ -72,19 +84,20 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		
-		// setContentView(R.layout.main);
+
+		mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        mPrefs.registerOnSharedPreferenceChangeListener(this);
 		
 		mTracker = GoogleAnalyticsTracker.getInstance();
 
 	    // Start the tracker in manual dispatch mode...
 	    // mTracker.startNewSession("UA-28224231-1", this);
-
 	    // ...alternatively, the tracker can be started with a dispatch interval (in seconds).
 	    mTracker.startNewSession("UA-28224231-1", 100, this);
-
-		mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        mPrefs.registerOnSharedPreferenceChangeListener(this);
+    	String versionStr = this.getVersionName();
+    	mTracker.setCustomVar(1, "versionName", versionStr, 2);
+	    mTracker.trackPageView("/play");
+	    trackPreferences(3); // Page-level tracking.
         
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -174,6 +187,29 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
                 return null;
         }
     }
+   
+    private void trackPreferences(int scopeId)
+    {
+    	String layoutStr = mPrefs.getString(
+    			"layout", getString(R.string.default_layout));
+    	mTracker.setCustomVar(1, "layout", layoutStr, scopeId);
+    	
+    	String colorSchemeStr = mPrefs.getString(
+    			"colorScheme", getString(R.string.default_color_scheme));
+    	mTracker.setCustomVar(2, "colorScheme", colorSchemeStr, scopeId);
+    	
+    	String scaleStr = mPrefs.getString(
+    			"scale", getString(R.string.default_scale));
+    	mTracker.setCustomVar(3, "scale", scaleStr, scopeId);
+    	
+    	String labelTypeStr = mPrefs.getString(
+    			"labelType", getString(R.string.default_layout));
+    	mTracker.setCustomVar(4, "labelType", labelTypeStr, scopeId);
+    	
+    	String instrumentStr = mPrefs.getString(
+    			"instrument", getString(R.string.default_instrument));
+    	mTracker.setCustomVar(5, "instrument", instrumentStr, scopeId);
+    }
     
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
@@ -184,14 +220,18 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 		    	mTracker.trackPageView("/preferences");
 			    startActivity(new Intent(this, Prefer.class)); 
 			    setOrientation();
+			    mTracker.trackPageView("/play");
+			    trackPreferences(3); // Page level tracking.
 			    break;
 		    case R.id.quit:
 		    	mTracker.trackPageView("/user_exit");
+		    	startActivity(new Intent(this, Inneract.class));
 			    finish();
 			    break;
 		    case R.id.about:
 		    	mTracker.trackPageView("/about");
 			    showDialog(ABOUT_DIALOG_ID);
+			    mTracker.trackPageView("/play");
 			    break;
 		}
 
