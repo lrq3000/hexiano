@@ -24,9 +24,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 package com.inept.isokeys;
 
-import com.google.ads.*;
-import com.google.android.apps.analytics.GoogleAnalyticsTracker;
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -49,15 +46,10 @@ import android.content.pm.PackageManager.NameNotFoundException;
 
 public class Play extends Activity implements OnSharedPreferenceChangeListener
 {
-	GoogleAnalyticsTracker mTracker;
-	
-	final static String MY_AD_UNIT_ID = "a14f0bbe2e7d0ab";
 	final static int ABOUT_DIALOG_ID = 1;
 	static SharedPreferences mPrefs;
 	static FrameLayout mFrame;
 	static HexKeyboard mBoard;
-	static AdView mAd;
-	static FrameLayout mAdFrame;
 
 	private String getVersionName()
 	{
@@ -88,16 +80,7 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 		mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         mPrefs.registerOnSharedPreferenceChangeListener(this);
 		
-		mTracker = GoogleAnalyticsTracker.getInstance();
-
-	    // Start the tracker in manual dispatch mode...
-	    // mTracker.startNewSession("UA-28224231-1", this);
-	    // ...alternatively, the tracker can be started with a dispatch interval (in seconds).
-	    mTracker.startNewSession("UA-28224231-1", 100, this);
     	String versionStr = this.getVersionName();
-    	mTracker.setCustomVar(1, "versionName", versionStr, 2);
-	    mTracker.trackPageView("/play");
-	    trackPreferences(3); // Page-level tracking.
         
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -145,26 +128,15 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 	    setOrientation();	
 		Context con = this.getApplicationContext();
 		
-        AdRequest adRequest = new AdRequest();
-        adRequest.addTestDevice(AdRequest.TEST_EMULATOR);
-        mAd = new AdView(this, AdSize.BANNER, MY_AD_UNIT_ID);
-       
 		mFrame = new FrameLayout(con);
-        mAdFrame = new FrameLayout(con);
-		mBoard = new HexKeyboard(con, mAdFrame);
+		mBoard = new HexKeyboard(con);
 		mBoard.setUpBoard(this.getRequestedOrientation());
 		mBoard.invalidate();
 
 		mFrame.addView(mBoard);
 		LayoutParams layoutParams = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
 				LayoutParams.WRAP_CONTENT, Gravity.TOP | Gravity.CENTER_HORIZONTAL); 
-        mAdFrame.setLayoutParams(layoutParams);
-        mAdFrame.addView(mAd);
-        mFrame.addView(mAdFrame);
         
-        // adRequest.addTestDevice("TEST_DEVICE_ID"); 
-        mAd.loadAd(adRequest);
-		
 		this.setContentView(mFrame);
 		// this.setContentView(mBoard);
 	}
@@ -188,50 +160,20 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
         }
     }
    
-    private void trackPreferences(int scopeId)
-    {
-    	String layoutStr = mPrefs.getString(
-    			"layout", getString(R.string.default_layout));
-    	mTracker.setCustomVar(1, "layout", layoutStr, scopeId);
-    	
-    	String colorSchemeStr = mPrefs.getString(
-    			"colorScheme", getString(R.string.default_color_scheme));
-    	mTracker.setCustomVar(2, "colorScheme", colorSchemeStr, scopeId);
-    	
-    	String scaleStr = mPrefs.getString(
-    			"scale", getString(R.string.default_scale));
-    	mTracker.setCustomVar(3, "scale", scaleStr, scopeId);
-    	
-    	String labelTypeStr = mPrefs.getString(
-    			"labelType", getString(R.string.default_layout));
-    	mTracker.setCustomVar(4, "labelType", labelTypeStr, scopeId);
-    	
-    	String instrumentStr = mPrefs.getString(
-    			"instrument", getString(R.string.default_instrument));
-    	mTracker.setCustomVar(5, "instrument", instrumentStr, scopeId);
-    }
-    
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
 		switch (item.getItemId())
 		{
 		    case R.id.preferences:
-		    	mTracker.trackPageView("/preferences");
 			    startActivity(new Intent(this, Prefer.class)); 
 			    setOrientation();
-			    mTracker.trackPageView("/play");
-			    trackPreferences(3); // Page level tracking.
 			    break;
 		    case R.id.quit:
-		    	mTracker.trackPageView("/user_exit");
-		    	startActivity(new Intent(this, Inneract.class));
 			    finish();
 			    break;
 		    case R.id.about:
-		    	mTracker.trackPageView("/about");
 			    showDialog(ABOUT_DIALOG_ID);
-			    mTracker.trackPageView("/play");
 			    break;
 		}
 
@@ -250,8 +192,5 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 	  @Override
 	  protected void onDestroy() {
 	    super.onDestroy();
-	    // Stop the tracker when it is no longer needed.
-	    mTracker.stopSession();
-	    mAd.destroy();
 	  }
 }

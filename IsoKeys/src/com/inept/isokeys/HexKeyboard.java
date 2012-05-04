@@ -43,8 +43,6 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.google.ads.AdView;
-
 import android.view.WindowManager;
 
 public class HexKeyboard extends View 
@@ -53,7 +51,6 @@ public class HexKeyboard extends View
 	static SharedPreferences mPrefs;
 	static Context mContext;
 	static Bitmap mBitmap;
-	static View mAdView;
 	static int mDpi = 0;
 	static int mDisplayWidth = 0;
 	static int mDisplayHeight = 0;
@@ -84,7 +81,6 @@ public class HexKeyboard extends View
 			if (now > mLastRedrawTime + mAdDelayMilliseconds)
 			{
 				Log.d("HexKeyboard::mAdUpdater", "Make VISIBLE");
-				mAdView.setVisibility(View.VISIBLE);
 			}
 
 			mAdHandler.postDelayed(mAdUpdater, mAdDelayMilliseconds);
@@ -612,10 +608,9 @@ public class HexKeyboard extends View
 		this.onDraw(tempCanvas);
 	}
 
-	public HexKeyboard(Context context, View ad)
+	public HexKeyboard(Context context)
 	{
 		super(context);
-		mAdView = ad;
 		init(context);
 		if (mStartTime == 0L)
 		{
@@ -802,7 +797,6 @@ public class HexKeyboard extends View
 
 					mKeys.get(touchingId).play();
 					mTouches.put(pointerId, touchingId);
-					mAdView.setVisibility(AdView.INVISIBLE);
 					this.invalidate();
 				}
 			}
