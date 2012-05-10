@@ -42,6 +42,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Iterator;
 
 import android.view.WindowManager;
 
@@ -62,7 +65,7 @@ public class HexKeyboard extends View
 	private static final long mAdDelayMilliseconds = 12000L;
 	private static long mStartTime = 0L;
 
-	static HashMap<Integer, Integer> mTouches = new HashMap<Integer, Integer>();
+	static Set<Integer> old_pressed = new HashSet<Integer>();
 	static Instrument mInstrument;
 
 	static ArrayList<HexKey> mKeys = new ArrayList<HexKey>();
@@ -637,6 +640,7 @@ public class HexKeyboard extends View
 		mDisplayHeight = height;
 	}
 
+/*
 	private int keyIdAt(int x, int y) throws Exception
 	{
 		for (int i = 0; i < mKeys.size(); i++)
@@ -650,6 +654,7 @@ public class HexKeyboard extends View
 
 		throw new Exception("Key not found");
 	}
+*/
 
 	private int getLowerBound (int x, int y)
 	{
@@ -778,12 +783,76 @@ public class HexKeyboard extends View
 
 	public boolean onTouchEvent(MotionEvent event){
 		Log.v("onMouse", event.toString());
-
-		int x = -1;
-		int y = -1;
+		Log.v("onMouse", "" + event.getPointerCount());
 
 		int action = event.getAction();
 		int actionCode = action & MotionEvent.ACTION_MASK;
+		if (!(
+			actionCode == MotionEvent.ACTION_DOWN ||
+			actionCode == MotionEvent.ACTION_POINTER_DOWN ||
+			actionCode == MotionEvent.ACTION_UP ||
+			actionCode == MotionEvent.ACTION_POINTER_UP ||
+			actionCode == MotionEvent.ACTION_MOVE
+		)) {
+			return false;
+		}
+
+		Set<Integer> new_pressed = new HashSet<Integer>();
+		HashMap<Integer, Float> pressed_map = new HashMap<Integer, Float>();
+		for (int i = 0; i < mKeys.size(); i++)
+		{
+			HexKey key = mKeys.get(i);
+			for (int pointerIndex = 0; pointerIndex < event.getPointerCount(); pointerIndex++)
+			{
+				int x = (int)event.getX(pointerIndex);
+				int y = (int)event.getY(pointerIndex);
+				if (key.contains(x, y))
+				{
+					if (pressed_map.containsKey(i))
+					{
+						pressed_map.put(i, Math.max(event.getPressure(pointerIndex), pressed_map.get(i)));
+					} else {
+						pressed_map.put(i, event.getPressure(pointerIndex));
+					}
+					if (!(pointerIndex == event.getActionIndex() && (
+						actionCode == MotionEvent.ACTION_UP ||
+						actionCode == MotionEvent.ACTION_POINTER_UP )))
+					{
+						new_pressed.add(i);
+					}
+				}
+			}
+		}
+		Log.v("onMouse", "old" + old_pressed.toString());
+		Log.v("onMouse", "new" + new_pressed.toString());
+		Log.v("onMouse", "pressure" + pressed_map.toString());
+
+		Set<Integer> just_pressed = new HashSet<Integer>(new_pressed);
+		just_pressed.removeAll(old_pressed);
+		Iterator<Integer> it = just_pressed.iterator();
+		while (it.hasNext()) {
+			int i = it.next();
+			mKeys.get(i).play();
+			//this.invalidate();
+		}
+
+		Set<Integer> just_released = new HashSet<Integer>(old_pressed);
+		just_released.removeAll(new_pressed);
+		it = just_released.iterator();
+		while (it.hasNext()) {
+			int i = it.next();
+			mKeys.get(i).stop();
+			//this.invalidate();
+		}
+
+		// Set<Integer> same = new HashSet<Integer>(new_pressed);
+		// same.retainAll(old_pressed); // Intersection, not used.
+
+		// Log.v("onMouse", "new" + new_pressed.toString());
+		old_pressed = new_pressed;
+		this.invalidate();
+
+/*
 		try
 		{
 			if (actionCode == MotionEvent.ACTION_DOWN ||
@@ -845,8 +914,8 @@ public class HexKeyboard extends View
 		{
 			Log.e("HexKeyboard::onMouse", "HexKey not found at (" + x + ", " + y + ")");
 		}
+*/
 
 		return true;
 	}
-
 }
