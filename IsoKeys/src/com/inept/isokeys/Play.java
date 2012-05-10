@@ -133,12 +133,12 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 		mBoard.setUpBoard(this.getRequestedOrientation());
 		mBoard.invalidate();
 
-		mFrame.addView(mBoard);
+		// mFrame.addView(mBoard);
 		LayoutParams layoutParams = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
 				LayoutParams.WRAP_CONTENT, Gravity.TOP | Gravity.CENTER_HORIZONTAL); 
         
-		this.setContentView(mFrame);
-		// this.setContentView(mBoard);
+		// this.setContentView(mFrame);
+		this.setContentView(mBoard);
 	}
 
 	@Override
