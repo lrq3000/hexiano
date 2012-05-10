@@ -640,22 +640,6 @@ public class HexKeyboard extends View
 		mDisplayHeight = height;
 	}
 
-/*
-	private int keyIdAt(int x, int y) throws Exception
-	{
-		for (int i = 0; i < mKeys.size(); i++)
-		{
-			HexKey key = mKeys.get(i);
-			if (key.contains(x, y))
-			{
-				return i;
-			}
-		}
-
-		throw new Exception("Key not found");
-	}
-*/
-
 	private int getLowerBound (int x, int y)
 	{
 		int lowerBound = mTileWidth/2;
@@ -832,7 +816,14 @@ public class HexKeyboard extends View
 		Iterator<Integer> it = just_pressed.iterator();
 		while (it.hasNext()) {
 			int i = it.next();
-			mKeys.get(i).play();
+			try // TODO: Work out why keys that don't play and aren't drawn even exist anyway.
+			{
+				mKeys.get(i).play();
+			}
+			catch (Exception e)
+			{
+				Log.e("HexKeyboard::onMouse", "HexKey " + i + " not playable!");
+			}
 			//this.invalidate();
 		}
 
@@ -851,70 +842,6 @@ public class HexKeyboard extends View
 		// Log.v("onMouse", "new" + new_pressed.toString());
 		old_pressed = new_pressed;
 		this.invalidate();
-
-/*
-		try
-		{
-			if (actionCode == MotionEvent.ACTION_DOWN ||
-					actionCode == MotionEvent.ACTION_POINTER_DOWN)
-			{
-				for (int pointerId = 0; pointerId < event.getPointerCount(); pointerId++)
-				{
-					x = (int)event.getX(pointerId);
-					y = (int)event.getY(pointerId);
-					int touchingId = this.keyIdAt(x, y);
-
-					mKeys.get(touchingId).play();
-					mTouches.put(pointerId, touchingId);
-					this.invalidate();
-				}
-			}
-			else if (actionCode == MotionEvent.ACTION_UP ||
-					actionCode == MotionEvent.ACTION_POINTER_UP)
-			{
-				for (int i = 0; i < event.getPointerCount(); i++)
-				{
-					x = (int)event.getX(i);
-					y = (int)event.getY(i);
-					int touchingId = this.keyIdAt(x, y);
-					mKeys.get(touchingId).stop();
-					mTouches.remove(touchingId);
-					this.invalidate();
-				}
-			}
-			else if (actionCode == MotionEvent.ACTION_MOVE)
-			{
-				for (int pointerId = 0; pointerId < event.getPointerCount(); pointerId++)
-				{
-					x = (int)event.getX(pointerId);
-					y = (int)event.getY(pointerId);
-					int touchingId = this.keyIdAt(x, y);
-					if (mTouches.containsKey(pointerId))
-					{
-						int touchedId = mTouches.get(pointerId);
-						if (touchedId == touchingId)
-						{
-							// Nothing to do.
-							return true;
-						}
-						else
-						{
-							mKeys.get(touchedId).stop();
-							mTouches.remove(touchedId);
-						}
-					}
-
-					mKeys.get(touchingId).play();
-					mTouches.put(pointerId, touchingId);
-					this.invalidate();
-				}
-			}
-		}
-		catch (Exception e)
-		{
-			Log.e("HexKeyboard::onMouse", "HexKey not found at (" + x + ", " + y + ")");
-		}
-*/
 
 		return true;
 	}
