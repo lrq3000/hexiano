@@ -1,71 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:padding="10px" >
-    <ScrollView
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
-        
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/layout_root"
-            android:orientation="vertical"
-            android:scrollbars="vertical"
-            android:scrollbarAlwaysDrawVerticalTrack="true"                  
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
-            
-            <TextView android:id="@+id/copyright"
-                android:text="@string/copyright"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#FFF"
-                android:paddingBottom="10dp" />
-            
-            <TextView android:id="@+id/distribution"
-                android:text="@string/distribution"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#FFF"
-                android:paddingBottom="10dp" /> 
-            
-            <TextView android:id="@+id/description"
-                android:text="@string/description" 
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#FFF"
-                android:paddingBottom="10dp" />              
-            
-            <TextView android:id="@+id/open_source"
-                android:text="@string/open_source"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#FFF"
-                android:paddingBottom="10dp"
-                android:autoLink="web" />
-            
-            <TextView
-                android:id="@+id/analytics_notice"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:autoLink="web"
-                android:paddingBottom="10dp"
-                android:text="@string/analytics_notice"
-                android:textColor="#FFF" />           
-            <TextView android:id="@+id/license"
-                android:text="@string/license" 
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="10dp"
-                android:textColor="#FFF" />
-            
-            <TextView android:id="@+id/credit_piano"
-                android:text="@string/credit_piano" 
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="10dp"
-                android:textColor="#FFF" />
-        </LinearLayout>
-    </ScrollView>
-
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:padding="10px" >
+	<ScrollView
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent">
+
+		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			android:id="@+id/layout_root"
+			android:orientation="vertical"
+			android:scrollbars="vertical"
+			android:scrollbarAlwaysDrawVerticalTrack="true"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent">
+
+			<TextView android:id="@+id/copyright"
+				android:text="@string/copyright"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:textColor="#FFF"
+				android:paddingBottom="10dp" />
+
+			<TextView android:id="@+id/distribution"
+				android:text="@string/distribution"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:textColor="#FFF"
+				android:paddingBottom="10dp" />
+
+			<TextView android:id="@+id/description"
+				android:text="@string/description"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:textColor="#FFF"
+				android:paddingBottom="10dp" />
+
+			<TextView android:id="@+id/open_source"
+				android:text="@string/open_source"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:textColor="#FFF"
+				android:paddingBottom="10dp"
+				android:autoLink="web" />
+
+			<TextView
+				android:id="@+id/analytics_notice"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:autoLink="web"
+				android:paddingBottom="10dp"
+				android:text="@string/analytics_notice"
+				android:textColor="#FFF" />
+			<TextView android:id="@+id/license"
+				android:text="@string/license"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:paddingBottom="10dp"
+				android:textColor="#FFF" />
+
+			<TextView android:id="@+id/credit_piano"
+				android:text="@string/credit_piano"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:paddingBottom="10dp"
+				android:textColor="#FFF" />
+		</LinearLayout>
+	</ScrollView>
+
 </FrameLayout>

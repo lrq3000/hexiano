@@ -1,130 +1,130 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <resources>
-    <string name="heading_appearance">Appearance</string>
-    <string name="url">http://isokeys.sourceforge.net</string>
-    <string name="contact">rndlph@users.sourceforge.net</string>
-    <string name="app_name">IsoKeys</string>
-    <string name="none">None</string>
-    <string name="default_color_scheme">Khaki</string>
-    <string name="default_instrument">Piano</string>
-    <string name="default_layout">Sonome</string>
-    <string-array name="base_notes">
-        <item>C</item>
-        <item>C#</item>
-        <item>D</item>
-        <item>D#</item>
-        <item>E</item>
-        <item>F</item>
-        <item>F#</item>
-        <item>G</item>
-        <item>G#</item>
-        <item>A</item>
-        <item>A#</item>
-        <item>B</item>
-    </string-array>
-    <string-array name="color_schemes">
-        <item>Azure</item>
-        <item>Khaki</item>
-        <item>White</item>
-    </string-array>
-    <string-array name="instruments">
-        <item>Piano</item>
-        <item>Organ</item>
-    </string-array>
-    <string-array name="layouts">
-        <item>Sonome</item>
-        <item>Jammer</item>
-        <item>Janko</item>
-    </string-array>
-    <string-array name="key_labels">
-        <item>Deutsch</item>
-        <item>English</item>
-        <item>MIDI Note Number</item>
-        <item>None</item>
-        <item>Solfege</item>
-        <item>Whole Tone Number</item>
-    </string-array>
-    <string-array name="base_octaves">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
-        <item>6</item>
-        <item>7</item>
-        <item>8</item>
-    </string-array>
-    <string-array name="janko_row_counts">
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
-        <item>6</item>
-    </string-array>
-    <string name="prompt_preferences">Preferences</string>
-    <string name="prompt_inneract">Support IsoKeys</string>
-    <string name="prompt_color_scheme">Color Scheme</string>
-    <string name="prompt_instrument">Instrument</string>
-    <string name="prompt_label_type">Labels</string>
-    <string name="prompt_layout">Layout</string>
-    <string name="prompt_janko_row_count">Rows per Octave</string>
-    <string name="summary_janko_row_count">Number of rows of whole-step keys to include for each octave.</string>
-    <string name="copyright">Copyright © 2011, 2012 by David A. Randolph.</string>
-    <string name="heading_jammer">Jammer (Wicki-Hayden)</string>
-    <string name="heading_sonome">Sonome (Harmonic Table)</string>
-    <string name="heading_janko">Janko</string>
-    <string name="default_sonome_note">E</string>
-    <string name="default_sonome_octave">1</string>
-    <string name="default_jammer_note">C</string>
-    <string name="default_jammer_octave">8</string>
-    <string name="default_janko_note">F</string>
-    <string name="default_janko_octave">5</string>
-    <string name="default_janko_row_count">4</string>
-    <string name="prompt_orientation">Orientation</string>
-    <string-array name="orientations">
-        <item>Landscape</item>
-        <item>Portrait</item>
-    </string-array>
-    <string name="default_sonome_orientation">Portrait</string>
-    <string name="default_jammer_orientation">Landscape</string>
-    <string name="default_janko_orientation">Landscape</string>
-    <string name="prompt_scale">Key Size</string>
-    <string name="default_scale">100</string>
-    <string name="heading_general">General</string>
-    <string name="summary_scale">Enter percentage to scale keys. Default = 100. Smaller numbers shrink keys. Larger numbers expand them.</string>
-    <string name="prompt_landscape_labels">Landscape</string>
-    <string name="summary_label_type">What labels do you want to see on the keys?</string>
-    <string name="summary_color_scheme">What colors do you want to see?</string>
-    <string name="summary_instrument">What sounds do you want to hear?</string>
-    <string name="summary_landscape">Do you want to play looking at a landscape (wide) display?</string>
-    <string name="summary_layout">What note arrangement on the keys do you want to use?</string>
-    <string name="summary_highest_note_octave">The octave of the highest note to include.</string>
-    <string name="summary_lowest_note">The lowest playable note to include.</string>
-    <string name="summary_highest_note">The highest playable note to include.</string>
-    <string name="prompt_lowest_note">Lowest Note</string>
-    <string name="prompt_lowest_note_octave">Lowest Note Octave</string>
-    <string name="prompt_highest_note">Highest Note</string>
-    <string name="summary_lowest_note_octave">The octave of the lowest playable note to include.</string>
-    <string name="prompt_highest_note_octave">Highest Note Octave</string>
-    <string name="prompt_about">About IsoKeys</string>
-    <string name="prompt_license">License</string>
-    <string name="prompt_quit">Exit</string>
-    <string name="version">version</string>
-    <string name="description">IsoKeys is an isomorphic musical keyboard. All intervals, chords, and
-    scales have identical patterns, regardless of the key in which one plays. Similar in spirit to
-    Musix for the iPad, IsoKeys aims to provide a starter isomorphic keyboard for Android users.
-    See http://www.altkeyboards.com for more information about these instruments.</string>
-    <string name="open_source">For more information about this project, please visit http://isokeys.sourceforge.net. Support requests may be made through this site, and source code is also available there under the terms of GNU Public License (version 3).</string>
-    <string name="distribution">Distributed by Ineptisoft, a division of Ineptico, a figment of my imagination.</string>
-    <string name="license">This program is free software; you can redistribute it and/or modify it under the
-    terms of the GNU General Public License as published by the Free Software Foundation;
-    either version 3 of the License, or (at your option) any later version.
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    For the complete license, see http://www.gnu.org/licenses. </string>
-    <string name="credit_piano">Sounds from the acoustic grand piano soundfont (Yamaha Disklavier Pro), release 2008-09-10,
+	<string name="heading_appearance">Appearance</string>
+	<string name="url">http://isokeys.sourceforge.net</string>
+	<string name="contact">rndlph@users.sourceforge.net</string>
+	<string name="app_name">IsoKeys</string>
+	<string name="none">None</string>
+	<string name="default_color_scheme">Khaki</string>
+	<string name="default_instrument">Piano</string>
+	<string name="default_layout">Sonome</string>
+	<string-array name="base_notes">
+		<item>C</item>
+		<item>C#</item>
+		<item>D</item>
+		<item>D#</item>
+		<item>E</item>
+		<item>F</item>
+		<item>F#</item>
+		<item>G</item>
+		<item>G#</item>
+		<item>A</item>
+		<item>A#</item>
+		<item>B</item>
+	</string-array>
+	<string-array name="color_schemes">
+		<item>Azure</item>
+		<item>Khaki</item>
+		<item>White</item>
+	</string-array>
+	<string-array name="instruments">
+		<item>Piano</item>
+		<item>Organ</item>
+	</string-array>
+	<string-array name="layouts">
+		<item>Sonome</item>
+		<item>Jammer</item>
+		<item>Janko</item>
+	</string-array>
+	<string-array name="key_labels">
+		<item>Deutsch</item>
+		<item>English</item>
+		<item>MIDI Note Number</item>
+		<item>None</item>
+		<item>Solfege</item>
+		<item>Whole Tone Number</item>
+	</string-array>
+	<string-array name="base_octaves">
+		<item>0</item>
+		<item>1</item>
+		<item>2</item>
+		<item>3</item>
+		<item>4</item>
+		<item>5</item>
+		<item>6</item>
+		<item>7</item>
+		<item>8</item>
+	</string-array>
+	<string-array name="janko_row_counts">
+		<item>2</item>
+		<item>3</item>
+		<item>4</item>
+		<item>5</item>
+		<item>6</item>
+	</string-array>
+	<string name="prompt_preferences">Preferences</string>
+	<string name="prompt_inneract">Support IsoKeys</string>
+	<string name="prompt_color_scheme">Color Scheme</string>
+	<string name="prompt_instrument">Instrument</string>
+	<string name="prompt_label_type">Labels</string>
+	<string name="prompt_layout">Layout</string>
+	<string name="prompt_janko_row_count">Rows per Octave</string>
+	<string name="summary_janko_row_count">Number of rows of whole-step keys to include for each octave.</string>
+	<string name="copyright">Copyright © 2011, 2012 by David A. Randolph.</string>
+	<string name="heading_jammer">Jammer (Wicki-Hayden)</string>
+	<string name="heading_sonome">Sonome (Harmonic Table)</string>
+	<string name="heading_janko">Janko</string>
+	<string name="default_sonome_note">E</string>
+	<string name="default_sonome_octave">1</string>
+	<string name="default_jammer_note">C</string>
+	<string name="default_jammer_octave">8</string>
+	<string name="default_janko_note">F</string>
+	<string name="default_janko_octave">5</string>
+	<string name="default_janko_row_count">4</string>
+	<string name="prompt_orientation">Orientation</string>
+	<string-array name="orientations">
+		<item>Landscape</item>
+		<item>Portrait</item>
+	</string-array>
+	<string name="default_sonome_orientation">Portrait</string>
+	<string name="default_jammer_orientation">Landscape</string>
+	<string name="default_janko_orientation">Landscape</string>
+	<string name="prompt_scale">Key Size</string>
+	<string name="default_scale">100</string>
+	<string name="heading_general">General</string>
+	<string name="summary_scale">Enter percentage to scale keys. Default = 100. Smaller numbers shrink keys. Larger numbers expand them.</string>
+	<string name="prompt_landscape_labels">Landscape</string>
+	<string name="summary_label_type">What labels do you want to see on the keys?</string>
+	<string name="summary_color_scheme">What colors do you want to see?</string>
+	<string name="summary_instrument">What sounds do you want to hear?</string>
+	<string name="summary_landscape">Do you want to play looking at a landscape (wide) display?</string>
+	<string name="summary_layout">What note arrangement on the keys do you want to use?</string>
+	<string name="summary_highest_note_octave">The octave of the highest note to include.</string>
+	<string name="summary_lowest_note">The lowest playable note to include.</string>
+	<string name="summary_highest_note">The highest playable note to include.</string>
+	<string name="prompt_lowest_note">Lowest Note</string>
+	<string name="prompt_lowest_note_octave">Lowest Note Octave</string>
+	<string name="prompt_highest_note">Highest Note</string>
+	<string name="summary_lowest_note_octave">The octave of the lowest playable note to include.</string>
+	<string name="prompt_highest_note_octave">Highest Note Octave</string>
+	<string name="prompt_about">About IsoKeys</string>
+	<string name="prompt_license">License</string>
+	<string name="prompt_quit">Exit</string>
+	<string name="version">version</string>
+	<string name="description">IsoKeys is an isomorphic musical keyboard. All intervals, chords, and
+	scales have identical patterns, regardless of the key in which one plays. Similar in spirit to
+	Musix for the iPad, IsoKeys aims to provide a starter isomorphic keyboard for Android users.
+	See http://www.altkeyboards.com for more information about these instruments.</string>
+	<string name="open_source">For more information about this project, please visit http://isokeys.sourceforge.net. Support requests may be made through this site, and source code is also available there under the terms of GNU Public License (version 3).</string>
+	<string name="distribution">Distributed by Ineptisoft, a division of Ineptico, a figment of my imagination.</string>
+	<string name="license">This program is free software; you can redistribute it and/or modify it under the
+	terms of the GNU General Public License as published by the Free Software Foundation;
+	either version 3 of the License, or (at your option) any later version.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+	For the complete license, see http://www.gnu.org/licenses. </string>
+	<string name="credit_piano">Sounds from the acoustic grand piano soundfont (Yamaha Disklavier Pro), release 2008-09-10,
 by Roberto Gordo Saez (roberto.gordo@gmail.com), were adapted for use in IsoKeys. (See http://zenvoid.org/audio.html.)
 Specifically, we translated a set of files (mostly from the third velocity layer) from the soundfont into Ogg Vorbis format, with
 a rather drastic loss of fidelity. Please do not take the IsoKeys piano sound as representative
@@ -137,14 +137,14 @@ his team at Zenph Studios.
 Neither Dr. Krishtal nor Mr. Saez in any way endorses IsoKeys. Their work is used under the terms of the Creative 
 Commons Attribution 3.0 license. See http://creativecommons.org/licenses/by/3.0 for details.
 </string>
-    <string name="analytics_notice">To improve the quality of our application, we reserve the right to track and report user activity inside IsoKeys. All data collected will be anonymous. We respect your privacy and will not collect any information to identify you personally.</string>
-    <string name="prompt_key_orientation">Key Orientation</string>
-    <string name="summary_key_orientation">Horizontal keys "point up and down"; vertical keys "point left and right."</string>
-    <string-array name="key_orientations">
-        <item>Horizontal</item>
-        <item>Vertical</item>
-    </string-array>
-    <string name="default_sonome_key_orientation">Vertical</string>
-    <string name="default_jammer_key_orientation">Horizontal</string>
-    <string name="default_janko_key_orientation">Horizontal</string>
+	<string name="analytics_notice">To improve the quality of our application, we reserve the right to track and report user activity inside IsoKeys. All data collected will be anonymous. We respect your privacy and will not collect any information to identify you personally.</string>
+	<string name="prompt_key_orientation">Key Orientation</string>
+	<string name="summary_key_orientation">Horizontal keys "point up and down"; vertical keys "point left and right."</string>
+	<string-array name="key_orientations">
+		<item>Horizontal</item>
+		<item>Vertical</item>
+	</string-array>
+	<string name="default_sonome_key_orientation">Vertical</string>
+	<string name="default_jammer_key_orientation">Horizontal</string>
+	<string name="default_janko_key_orientation">Horizontal</string>
 </resources>
