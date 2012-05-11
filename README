@@ -1,0 +1,9 @@
+Project at:
+http://isokeys.sourceforge.net/
+https://gitorious.org/isokeys
+
+Build and install:
+$ cd ~/src/isokeys/IsoKeys
+$ android list targets # I build against API level 10.
+$ android update project --name IsoKeys --target 1 --path ./ # Only needed first time.
+$ ant debug && adb -d install -r bin/IsoKeys-debug.apk
