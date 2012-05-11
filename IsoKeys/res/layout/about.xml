@@ -31,6 +31,7 @@
 
 			<TextView android:id="@+id/description"
 				android:text="@string/description"
+				android:autoLink="web"
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
 				android:textColor="#FFF"
@@ -54,6 +55,7 @@
 				android:textColor="#FFF" />
 			<TextView android:id="@+id/license"
 				android:text="@string/license"
+				android:autoLink="web"
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
 				android:paddingBottom="10dp"
@@ -61,6 +63,7 @@
 
 			<TextView android:id="@+id/credit_piano"
 				android:text="@string/credit_piano"
+				android:autoLink="web"
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
 				android:paddingBottom="10dp"

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <resources>
 	<string name="heading_appearance">Appearance</string>
-	<string name="url">http://isokeys.sourceforge.net</string>
-	<string name="contact">rndlph@users.sourceforge.net</string>
+	<string name="url">http://isokeys.sourceforge.net/</string>
+	<string name="contact">See the Git repo for email addresses.</string>
 	<string name="app_name">IsoKeys</string>
 	<string name="none">None</string>
-	<string name="default_color_scheme">Khaki</string>
+	<string name="default_color_scheme">Azure</string>
 	<string name="default_instrument">Piano</string>
-	<string name="default_layout">Sonome</string>
+	<string name="default_layout">Jammer</string>
 	<string-array name="base_notes">
 		<item>C</item>
 		<item>C#</item>
@@ -70,7 +70,7 @@
 	<string name="prompt_layout">Layout</string>
 	<string name="prompt_janko_row_count">Rows per Octave</string>
 	<string name="summary_janko_row_count">Number of rows of whole-step keys to include for each octave.</string>
-	<string name="copyright">Copyright © 2011, 2012 by David A. Randolph.</string>
+	<string name="copyright">Copyright © 2011, 2012 by David A. Randolph, 2012 by James Haigh.</string>
 	<string name="heading_jammer">Jammer (Wicki-Hayden)</string>
 	<string name="heading_sonome">Sonome (Harmonic Table)</string>
 	<string name="heading_janko">Janko</string>
@@ -111,12 +111,9 @@
 	<string name="prompt_license">License</string>
 	<string name="prompt_quit">Exit</string>
 	<string name="version">version</string>
-	<string name="description">IsoKeys is an isomorphic musical keyboard. All intervals, chords, and
-	scales have identical patterns, regardless of the key in which one plays. Similar in spirit to
-	Musix for the iPad, IsoKeys aims to provide a starter isomorphic keyboard for Android users.
-	See http://www.altkeyboards.com for more information about these instruments.</string>
-	<string name="open_source">For more information about this project, please visit http://isokeys.sourceforge.net. Support requests may be made through this site, and source code is also available there under the terms of GNU Public License (version 3).</string>
-	<string name="distribution">Distributed by Ineptisoft, a division of Ineptico, a figment of my imagination.</string>
+	<string name="description">IsoKeys is an Open-source isomorphic musical keyboard. All intervals, chords, and scales have identical patterns, regardless of the key in which one plays. IsoKeys aims to deliver the isomorphic keyboard concept to Android users. See http://www.altkeyboards.com/ for more information about these instruments.</string>
+	<string name="open_source">For more information about this project, please visit http://isokeys.sourceforge.net/. Source code for this version fork is available at https://gitorious.org/isokeys under the terms of GNU General Public License (version 3).</string>
+	<string name="distribution"></string>
 	<string name="license">This program is free software; you can redistribute it and/or modify it under the
 	terms of the GNU General Public License as published by the Free Software Foundation;
 	either version 3 of the License, or (at your option) any later version.
