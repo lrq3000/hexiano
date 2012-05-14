@@ -1,6 +1,13 @@
+==== IsoKeys ====
+Copyright © 2011, 2012 by David Randolph,
+Copyright © 2012 by James Haigh.
+Licensed under the terms of the GPLv3.
+
 Project at:
 http://isokeys.sourceforge.net/
 https://gitorious.org/isokeys
+
+Uses sounds from http://zenvoid.org/audio.html under CC BY. Uses AndroidWorld.jar library from http://www.ccs.neu.edu/home/chadwick/javaworld/index.html under the GPL.
 
 
 ==== Build and install ====
