@@ -1,4 +1,4 @@
-package com.inept.isokeys;
+package @CONFIG.APP_PACKAGE_NAME@;
 
 import android.app.Dialog;
 import android.content.Context;

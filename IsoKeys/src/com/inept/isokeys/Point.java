@@ -1,4 +1,4 @@
-package com.inept.isokeys;
+package @CONFIG.APP_PACKAGE_NAME@;
 
 public class Point {
 

@@ -22,7 +22,7 @@
  *   along with IsoKeys.  If not, see <http://www.gnu.org/licenses/>.      *
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-package com.inept.isokeys;
+package @CONFIG.APP_PACKAGE_NAME@;
 
 import android.app.Activity;
 import android.app.Dialog;

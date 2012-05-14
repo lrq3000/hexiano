@@ -75,7 +75,7 @@ http://creativecommons.org/licenses/by/3.0/
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-package com.inept.isokeys;
+package @CONFIG.APP_PACKAGE_NAME@;
 
 import java.lang.reflect.Field;
 import java.util.regex.Matcher;

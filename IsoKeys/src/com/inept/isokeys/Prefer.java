@@ -22,12 +22,12 @@
  *   along with IsoKeys.  If not, see <http://www.gnu.org/licenses/>.      *
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-package com.inept.isokeys;
+package @CONFIG.APP_PACKAGE_NAME@;
 
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 
-import com.inept.isokeys.R;
+import @CONFIG.APP_PACKAGE_NAME@.R;
 
 public class Prefer extends PreferenceActivity
 {

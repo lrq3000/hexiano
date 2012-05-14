@@ -5,7 +5,7 @@
 	android:layout_height="fill_parent"
 	>
 
-	<com.inept.isokeys.HexKeyboard
+	<@CONFIG.APP_PACKAGE_NAME@.HexKeyboard
 		android:id="@+id/keyboard" />
 
 	<com.google.ads.AdView

@@ -22,7 +22,7 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-package com.inept.isokeys;
+package @CONFIG.APP_PACKAGE_NAME@;
 
 import android.content.Context;
 import android.content.SharedPreferences;

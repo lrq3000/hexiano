@@ -2,8 +2,16 @@ Project at:
 http://isokeys.sourceforge.net/
 https://gitorious.org/isokeys
 
-Build and install:
+
+==== Build and install ====
+
 $ cd ~/src/isokeys/IsoKeys
+
+$ # Only needed first time:
 $ android list targets # I build against API level 10.
-$ android update project --name IsoKeys --target 1 --path ./ # Only needed first time.
-$ ant debug && adb -d install -r bin/IsoKeys-debug.apk
+$ android update project --name IsoKeys --target 1 --path ./
+$ git checkout build.xml # Update, not replace. Bad android update!
+$ echo 'app.packagename=your.package.name' >> local.properties
+
+$ # Everytime:
+$ ant filter-package && ant debug && adb -d install -r build/bin/IsoKeys-debug.apk
