@@ -107,8 +107,8 @@ public class HexKeyboard extends View
 	{
 		int y = 0;
 
-		String firstNote = mPrefs.getString("baseJammerNote", "C");
-		String firstOctaveStr = mPrefs.getString("baseJammerOctave", "8");
+		String firstNote = mPrefs.getString("baseJammerNote", null);
+		String firstOctaveStr = mPrefs.getString("baseJammerOctave", null);
 		int firstOctave = Integer.parseInt(firstOctaveStr);
 		int pitch = Note.getNoteNumber(firstNote, firstOctave); 
 		Log.d("setUpJammerBoard", "" + pitch);
@@ -201,11 +201,11 @@ public class HexKeyboard extends View
 	{
 		int y = 0;
 
-		String highestNote = mPrefs.getString("baseJankoNote", "F");
-		String highestOctaveStr = mPrefs.getString("baseJankoOctave", "5");
+		String highestNote = mPrefs.getString("baseJankoNote", null);
+		String highestOctaveStr = mPrefs.getString("baseJankoOctave", null);
 		int highestOctave = Integer.parseInt(highestOctaveStr);
 		int pitch = Note.getNoteNumber(highestNote, highestOctave); 
-		String groupSizeStr = mPrefs.getString("jankoRowCount", "4");
+		String groupSizeStr = mPrefs.getString("jankoRowCount", null);
 		groupSizeStr.replaceAll("[^0-9]", "");
 		if (groupSizeStr.length() == 0)
 		{
@@ -359,8 +359,8 @@ public class HexKeyboard extends View
 	protected void setUpSonomeBoard()
 	{
 		int y = 0;
-		String firstNote = mPrefs.getString("baseSonomeNote", "E");
-		String firstOctaveStr = mPrefs.getString("baseSonomeOctave", "1");
+		String firstNote = mPrefs.getString("baseSonomeNote", null);
+		String firstOctaveStr = mPrefs.getString("baseSonomeOctave", null);
 		int firstOctave = Integer.parseInt(firstOctaveStr);
 		int pitch = Note.getNoteNumber(firstNote, firstOctave);
 
@@ -576,7 +576,7 @@ public class HexKeyboard extends View
 		Log.d("setUpBoard", "screenOrientationId: " + mScreenOrientationId);
 
 		mTileRadius = (3 * mDpi) / 8;
-		String scaleStr = mPrefs.getString("scale", "100");
+		String scaleStr = mPrefs.getString("scale", null);
 		scaleStr = scaleStr.replaceAll("[^0-9]", "");
 		if (scaleStr.length() == 0)
 		{
@@ -590,7 +590,7 @@ public class HexKeyboard extends View
 		mRowCount = getRowCount();
 		mColumnCount = getColumnCount();
 
-		String layoutPref = mPrefs.getString("layout", "Sonome");
+		String layoutPref = mPrefs.getString("layout", null);
 		if (layoutPref.equals("Sonome"))
 		{
 			this.setUpSonomeBoard();

@@ -59,7 +59,7 @@ public class JammerKey extends HexKey
         mBlankPaint.setColor(blankId);
         mBlankPaint.setStyle(Paint.Style.FILL);
         
-		mKeyOrientation = mPrefs.getString("jammerKeyOrientation", "Vertical");
+		mKeyOrientation = mPrefs.getString("jammerKeyOrientation", null);
 	}
 
 	public String getColor()

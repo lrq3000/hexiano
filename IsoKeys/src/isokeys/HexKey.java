@@ -100,7 +100,7 @@ public abstract class HexKey
 
 	protected void setColors()
 	{
-		String colorPref = mPrefs.getString("colorScheme", "Khaki");
+		String colorPref = mPrefs.getString("colorScheme", null);
 		if (colorPref.equals("Khaki"))
 		{
 			mBlankColor = "black";
@@ -153,17 +153,17 @@ public abstract class HexKey
 	static public String getKeyOrientation(Context context)
 	{
 		mPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-		String layoutPref = mPrefs.getString("layout", "Sonome");
+		String layoutPref = mPrefs.getString("layout", null);
 		if (layoutPref.equals("Sonome"))
 		{
-			return mPrefs.getString("sonomeKeyOrientation", "Vertical");
+			return mPrefs.getString("sonomeKeyOrientation", null);
 		}
 		if (layoutPref.equals("Janko"))
 		{
-			return mPrefs.getString("jankoKeyOrientation", "Horizontal");
+			return mPrefs.getString("jankoKeyOrientation", null);
 		}
 		
-		return mPrefs.getString("jammerKeyOrientation", "Horizontal");
+		return mPrefs.getString("jammerKeyOrientation", null);
 	}
 	
 	protected Path getHexagonPath()
@@ -222,7 +222,7 @@ public abstract class HexKey
     
   		Path hexPath = getHexagonPath();
     	
-		String labelPref  = mPrefs.getString("labelType", "English");
+		String labelPref  = mPrefs.getString("labelType", null);
 		String label = mNote.getDisplayString(labelPref, true);
 	
 		if (this.mMidiNoteNumber < 21 || this.mMidiNoteNumber > 108)

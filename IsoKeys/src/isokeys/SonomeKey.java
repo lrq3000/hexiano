@@ -59,7 +59,7 @@ public class SonomeKey extends HexKey
         mBlankPaint.setColor(blankId);
         mBlankPaint.setStyle(Paint.Style.FILL);
         
-        mKeyOrientation = mPrefs.getString("sonomeKeyOrientation", "Vertical");
+        mKeyOrientation = mPrefs.getString("sonomeKeyOrientation", null);
 	}
 
 	public String getColor()

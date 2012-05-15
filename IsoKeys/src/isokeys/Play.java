@@ -44,6 +44,8 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.content.pm.PackageManager.NameNotFoundException;
 
+import @CONFIG.APP_PACKAGE_NAME@.R;
+
 public class Play extends Activity implements OnSharedPreferenceChangeListener
 {
 	final static int ABOUT_DIALOG_ID = 1;
@@ -77,6 +79,7 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 	{
 		super.onCreate(savedInstanceState);
 
+		PreferenceManager.setDefaultValues(this, R.xml.preferences, true);
 		mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         mPrefs.registerOnSharedPreferenceChangeListener(this);
 		
@@ -91,13 +94,13 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 
 	protected void setOrientation()
 	{
-		String layout = mPrefs.getString("layout", "Sonome");
+		String layout = mPrefs.getString("layout", null);
 
 		int orientationId = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
 
 		if (layout.equals("Sonome"))
 		{
-			boolean isLandscape = mPrefs.getBoolean("sonomeLandscape", true);
+			boolean isLandscape = mPrefs.getBoolean("sonomeLandscape", false);
 			if (! isLandscape)
 			{
 				orientationId = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
@@ -113,7 +116,7 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 		}
 		else if (layout.equals("Janko"))
 		{
-			boolean isLandscape = mPrefs.getBoolean("jankoLandscape", true);
+			boolean isLandscape = mPrefs.getBoolean("jankoLandscape", false);
 			if (! isLandscape)
 			{
 				orientationId = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;

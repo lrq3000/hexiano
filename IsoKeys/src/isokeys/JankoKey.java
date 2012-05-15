@@ -37,7 +37,7 @@ public class JankoKey extends HexKey
 	{
 		super(context, radius, center, midiNoteNumber, instrument);
 
-        mKeyOrientation = mPrefs.getString("jankoKeyOrientation", "Vertical");
+        mKeyOrientation = mPrefs.getString("jankoKeyOrientation", null);
         mOctaveGroupNumber = octaveGroupNumber;
         
 		mColorStr = getColor();
