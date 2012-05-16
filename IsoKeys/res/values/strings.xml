@@ -107,6 +107,8 @@
 	<string name="prompt_highest_note">Highest Note</string>
 	<string name="summary_lowest_note_octave">The octave of the lowest playable note to include.</string>
 	<string name="prompt_highest_note_octave">Highest Note Octave</string>
+	<string name="prompt_single_touch_chording">Single-touch Chording</string>
+	<string name="summary_single_touch_chording">Play adjacent notes with one finger (4ths and 5ths).</string>
 	<string name="prompt_about">About IsoKeys</string>
 	<string name="prompt_license">License</string>
 	<string name="prompt_quit">Exit</string>

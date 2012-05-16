@@ -62,6 +62,7 @@ public abstract class HexKey
 	Paint mTextPaint = new Paint();
 	Paint mBlankPaint = new Paint();
 	static String mKeyOrientation = null;
+	static boolean mKeyOverlap = false;
 	static int mKeyCount = 0;
 	static int mRadius;
 	int mStreamId;
@@ -161,10 +162,12 @@ public abstract class HexKey
 		String layoutPref = mPrefs.getString("layout", null);
 		if (layoutPref.equals("Sonome"))
 		{
+			mKeyOverlap = false;
 			return mPrefs.getString("sonomeKeyOrientation", null);
 		}
 		if (layoutPref.equals("Janko"))
 		{
+			mKeyOverlap = false;
 			return mPrefs.getString("jankoKeyOrientation", null);
 		}
 		
@@ -173,12 +176,11 @@ public abstract class HexKey
 	
 	protected Path getHexagonPath()
 	{
-		if (mKeyOrientation.equals("Vertical"))
+		if (mKeyOrientation.equals("Horizontal"))
 		{
-			return getVerticalHexagonPath();
+			return getHorizontalHexagonPath();
 		}
-		
-		return getHorizontalHexagonPath();
+		return getVerticalHexagonPath();
 	}
 	
     protected Path getVerticalHexagonPath()
@@ -286,24 +288,25 @@ public abstract class HexKey
 	
 	public boolean contains(int x, int y)
 	{
-		if (mKeyOrientation.equals("Vertical"))
+		if (mKeyOverlap)
 		{
-			return verticalContains(x, y);
+			return overlapContains(x, y);
 		}
-		
-		return horizontalContains(x, y);
+		else if (mKeyOrientation.equals("Horizontal"))
+		{
+			return horizontalContains(x, y);
+		}
+		return verticalContains(x, y);
 	}
 
 	private void setCriticalPoints()
 	{
-		if (mKeyOrientation.equals("Vertical"))
-		{
-			setVerticalCriticalPoints();
-		}
-		else
+		if (mKeyOrientation.equals("Horizontal") || mKeyOverlap)
 		{
 			setHorizontalCriticalPoints();
+			return;
 		}
+		setVerticalCriticalPoints();
 	}
 	
 	private void setHorizontalCriticalPoints()
@@ -346,7 +349,13 @@ public abstract class HexKey
 		mUpperRight = new Point(mCenter.x + mRadius/2, 
 				mCenter.y - (int)(Math.round(Math.sqrt(3.0) * mRadius)/2));
 	}
-	
+
+	public boolean overlapContains(int x, int y)
+	{
+		Log.e("HexKey::overlapContains", "Not supported by layout!");
+		return false;
+	}
+
 	public boolean horizontalContains(int x, int y)
 	{
 		/*

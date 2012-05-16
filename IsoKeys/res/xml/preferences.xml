@@ -15,6 +15,7 @@
 		<ListPreference android:entryValues="@array/base_octaves" android:key="baseJammerOctave" android:title="@string/prompt_highest_note_octave" android:defaultValue="@string/default_jammer_octave" android:entries="@array/base_octaves" android:summary="@string/summary_highest_note_octave"/>
 		<CheckBoxPreference android:key="jammerLandscape" android:defaultValue="false" android:title="@string/prompt_landscape_labels" android:summary="@string/summary_landscape"/>
 		<ListPreference android:defaultValue="@string/default_jammer_key_orientation" android:entryValues="@array/key_orientations" android:summary="@string/summary_key_orientation" android:key="jammerKeyOrientation" android:entries="@array/key_orientations" android:title="@string/prompt_key_orientation"/>
+		<CheckBoxPreference android:key="jammerKeyOverlap" android:defaultValue="false" android:title="@string/prompt_single_touch_chording" android:summary="@string/summary_single_touch_chording"/>
 	</PreferenceCategory>
 	<PreferenceCategory android:key="janko" android:title="@string/heading_janko">
 		<ListPreference android:defaultValue="@string/default_janko_note" android:entries="@array/base_notes" android:entryValues="@array/base_notes" android:title="@string/prompt_highest_note" android:key="baseJankoNote" android:summary="@string/summary_highest_note"/>

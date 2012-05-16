@@ -27,6 +27,7 @@ package @CONFIG.APP_PACKAGE_NAME@;
 import android.content.Context;
 import android.graphics.Paint;
 import android.image.ColorDatabase;
+import android.util.Log;
 
 public class JammerKey extends HexKey
 {
@@ -63,6 +64,7 @@ public class JammerKey extends HexKey
 	protected void getPrefs()
 	{
 		mKeyOrientation = mPrefs.getString("jammerKeyOrientation", null);
+		mKeyOverlap = mPrefs.getBoolean("jammerKeyOverlap", false);
 	}
 
 	public String getColor()
@@ -83,5 +85,16 @@ public class JammerKey extends HexKey
 		}
 		
 		return color;
+	}
+
+	public boolean overlapContains(int x, int y)
+	{
+		if (x >= mLowerLeft.x && x <= mLowerRight.x &&
+			y >= mTop.y && y <= mBottom.y)
+		{
+			Log.d("HexKey::overlapContains", "Contains");
+			return true;
+		}
+		return false;
 	}
 }
