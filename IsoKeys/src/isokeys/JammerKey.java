@@ -58,7 +58,10 @@ public class JammerKey extends HexKey
 		int blankId = ColorDatabase.color(mBlankColor);
         mBlankPaint.setColor(blankId);
         mBlankPaint.setStyle(Paint.Style.FILL);
-        
+	}
+
+	protected void getPrefs()
+	{
 		mKeyOrientation = mPrefs.getString("jammerKeyOrientation", null);
 	}
 

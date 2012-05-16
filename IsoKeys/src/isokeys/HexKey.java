@@ -61,7 +61,7 @@ public abstract class HexKey
 	Paint mOverlayPaint = new Paint();
 	Paint mTextPaint = new Paint();
 	Paint mBlankPaint = new Paint();
-	static String mKeyOrientation = "Horizontal";
+	static String mKeyOrientation = null;
 	static int mKeyCount = 0;
 	static int mRadius;
 	int mStreamId;
@@ -75,6 +75,7 @@ public abstract class HexKey
 	public HexKey(Context context, int radius, Point center, int midiNoteNumber, Instrument instrument)
 	{
 		mPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+		getPrefs();
 
 		setColors();
 		
@@ -96,6 +97,10 @@ public abstract class HexKey
         mPressPaint.setStrokeWidth(2);
 		
 		mKeyCount++;
+	}
+
+	protected void getPrefs()
+	{
 	}
 
 	protected void setColors()
