@@ -420,7 +420,7 @@ public class HexKeyboard extends View
 				{
 					int kittyCornerX = (int)Math.round(x - mTileWidth / 2);
 					int kittyCornerY = (int)Math.round(y - mTileRadius * 1.5);
-					JammerKey kittyCornerKey = new JammerKey(
+					SonomeKey kittyCornerKey = new SonomeKey(
 							mContext,
 							mTileRadius,
 							new Point(kittyCornerX, kittyCornerY),
@@ -430,7 +430,7 @@ public class HexKeyboard extends View
 					
 					pitch+=4;
 
-					JammerKey key = new JammerKey(
+					SonomeKey key = new SonomeKey(
 							mContext,
 							mTileRadius,
 							new Point(x, y),
