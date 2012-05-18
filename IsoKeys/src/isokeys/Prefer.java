@@ -25,7 +25,10 @@
 package @CONFIG.APP_PACKAGE_NAME@;
 
 import android.os.Bundle;
-import android.preference.PreferenceActivity;
+import android.preference.*;
+import android.util.Log;
+import android.content.Intent;
+import android.net.Uri;
 
 import @CONFIG.APP_PACKAGE_NAME@.R;
 
@@ -35,5 +38,82 @@ public class Prefer extends PreferenceActivity
 	{
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.preferences);
+
+		// MIDI
+		// FIXME: These links should be in the XML if only I new how.
+		// <ugly>
+		Preference donate = (Preference) findPreference("donate");
+		donate.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+				public boolean onPreferenceClick(Preference donate)
+				{
+					Log.d("Prefer", "onPreferenceClick, donate");
+					Uri webpage = Uri.parse("https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2UZVTYPPP9AUG&lc=GB&item_name=Librenotgratis%2Eorg&currency_code=GBP");
+					Intent webIntent = new Intent(Intent.ACTION_VIEW, webpage);
+					startActivity(webIntent);
+					return false;
+				}
+			}
+		);
+		Preference issue_45 = (Preference) findPreference("issue-45");
+		issue_45.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+				public boolean onPreferenceClick(Preference issue_45)
+				{
+					Log.d("Prefer", "onPreferenceClick, issue_45");
+					Uri webpage = Uri.parse("https://sourceforge.net/p/isokeys/tickets/45/");
+					Intent webIntent = new Intent(Intent.ACTION_VIEW, webpage);
+					startActivity(webIntent);
+					return false;
+				}
+			}
+		);
+		Preference issue_18812 = (Preference) findPreference("issue-18812");
+		issue_18812.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+				public boolean onPreferenceClick(Preference issue_18812)
+				{
+					Log.d("Prefer", "onPreferenceClick, issue_18812");
+					Uri webpage = Uri.parse("https://code.google.com/p/android/issues/detail?id=18812");
+					Intent webIntent = new Intent(Intent.ACTION_VIEW, webpage);
+					startActivity(webIntent);
+					return false;
+				}
+			}
+		);
+		Preference issue_30198 = (Preference) findPreference("issue-30198");
+		issue_30198.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+				public boolean onPreferenceClick(Preference issue_30198)
+				{
+					Log.d("Prefer", "onPreferenceClick, issue_30198");
+					Uri webpage = Uri.parse("https://code.google.com/p/android/issues/detail?id=30198");
+					Intent webIntent = new Intent(Intent.ACTION_VIEW, webpage);
+					startActivity(webIntent);
+					return false;
+				}
+			}
+		);
+		Preference issue_10176 = (Preference) findPreference("issue-10176");
+		issue_10176.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+				public boolean onPreferenceClick(Preference issue_10176)
+				{
+					Log.d("Prefer", "onPreferenceClick, issue_10176");
+					Uri webpage = Uri.parse("https://code.google.com/p/android/issues/detail?id=10176");
+					Intent webIntent = new Intent(Intent.ACTION_VIEW, webpage);
+					startActivity(webIntent);
+					return false;
+				}
+			}
+		);
+		Preference issue_8201 = (Preference) findPreference("issue-8201");
+		issue_8201.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+				public boolean onPreferenceClick(Preference issue_8201)
+				{
+					Log.d("Prefer", "onPreferenceClick, issue_8201");
+					Uri webpage = Uri.parse("https://code.google.com/p/android/issues/detail?id=8201");
+					Intent webIntent = new Intent(Intent.ACTION_VIEW, webpage);
+					startActivity(webIntent);
+					return false;
+				}
+			}
+		);
+		// </ugly>
 	}
 }

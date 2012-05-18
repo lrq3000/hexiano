@@ -8,6 +8,30 @@
 		<ListPreference android:selectable="true" android:defaultValue="English" android:enabled="true" android:entryValues="@array/key_labels" android:key="labelType" android:title="@string/prompt_label_type" android:entries="@array/key_labels" android:summary="@string/summary_label_type"/>
 		<EditTextPreference android:title="@string/prompt_scale" android:key="scale" android:defaultValue="@string/default_scale" android:enabled="true" android:selectable="true" android:summary="@string/summary_scale"/>
 		<ListPreference android:key="instrument" android:title="@string/prompt_instrument" android:defaultValue="@string/default_instrument" android:entryValues="@array/instruments" android:entries="@array/instruments" android:enabled="false" android:selectable="false" android:summary="@string/summary_instrument"/>
+		<PreferenceScreen android:title="MIDI Support">
+			<PreferenceCategory android:key="midi-out" android:title="MIDI OUT">
+				<Preference android:key="midi-out-usb-midi-host" android:enabled="false" android:title="USB-MIDI host-mode" android:summary="Not yet supported - needs a MIDI API or Free/Open-source MIDI library (18812)." />
+				<Preference android:key="midi-out-usb-midi-device" android:enabled="false" android:title="USB-MIDI device-mode" android:summary="Not yet possible - needs Google to support USB device-mode in Android's APIs (30198, 10176, 18812)." />
+				<Preference android:key="midi-out-ipmidi" android:enabled="false" android:title="ipMIDI" android:summary="Not yet supported - needs a MIDI API or Free/Open-source MIDI library (18812)." />
+				<Preference android:key="midi-out-rtp-midi" android:enabled="false" android:title="RTP-MIDI" android:summary="Not yet supported - needs a MIDI API or Free/Open-source MIDI library (18812)." />
+				<Preference android:key="midi-out-sonivox" android:enabled="false" android:title="Internal MIDI synthesiser" android:summary="Not yet possible - needs Google to care about music apps. (8201)" />
+			</PreferenceCategory>
+			<PreferenceCategory android:key="midi-in" android:title="MIDI IN">
+				<Preference android:key="midi-in-usb-midi-host" android:enabled="false" android:title="USB-MIDI host-mode" android:summary="Not yet supported - needs a MIDI API or Free/Open-source MIDI library (18812)." />
+				<Preference android:key="midi-in-usb-midi-device" android:enabled="false" android:title="USB-MIDI device-mode" android:summary="Not yet possible - needs Google to support USB device-mode in Android's APIs (30198, 10176, 18812)." />
+				<Preference android:key="midi-in-ipmidi" android:enabled="false" android:title="ipMIDI" android:summary="Not yet supported - needs a MIDI API or Free/Open-source MIDI library (18812)." />
+				<Preference android:key="midi-in-rtp-midi" android:enabled="false" android:title="RTP-MIDI" android:summary="Not yet supported - needs a MIDI API or Free/Open-source MIDI library (18812)." />
+			</PreferenceCategory>
+			<PreferenceCategory android:key="issues" android:title="Issues">
+				<Preference android:key="issues-star" android:selectable="false" android:summary="Please go and 'star' the Android issues if you want Google to notice. If you can help out with development, please get in touch." />
+				<Preference android:key="issue-45" android:title="Isokeys 45" android:summary="https://sourceforge.net/p/isokeys/tickets/45/" />
+				<Preference android:key="issue-18812" android:title="Android 18812" android:summary="https://code.google.com/p/android/issues/detail?id=18812" />
+				<Preference android:key="issue-30198" android:title="Android 30198" android:summary="https://code.google.com/p/android/issues/detail?id=30198" />
+				<Preference android:key="issue-10176" android:title="Android 10176" android:summary="https://code.google.com/p/android/issues/detail?id=10176" />
+				<Preference android:key="issue-8201" android:title="Android 8201" android:summary="https://code.google.com/p/android/issues/detail?id=8201" />
+			</PreferenceCategory>
+		</PreferenceScreen>
+		<Preference android:title="Donate" android:summary="(via PayPal)" android:key="donate" />
 	</PreferenceCategory>
 
 	<PreferenceCategory android:key="jammer" android:title="@string/heading_jammer">
@@ -29,5 +53,4 @@
 		<CheckBoxPreference android:key="sonomeLandscape" android:defaultValue="true" android:title="@string/prompt_landscape_labels" android:summary="@string/summary_landscape" />
 		<ListPreference android:defaultValue="@string/default_sonome_key_orientation" android:entryValues="@array/key_orientations" android:summary="@string/summary_key_orientation" android:key="sonomeKeyOrientation" android:entries="@array/key_orientations" android:title="@string/prompt_key_orientation" />
 	</PreferenceCategory>
-
 </PreferenceScreen>
