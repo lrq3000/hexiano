@@ -635,7 +635,6 @@ public class HexKeyboard extends View
 		int height = dm.heightPixels;
 		mDpi = dm.densityDpi;
 
-		mInstrument = new Piano(context);
 		mDisplayWidth = width;
 		mDisplayHeight = height;
 	}

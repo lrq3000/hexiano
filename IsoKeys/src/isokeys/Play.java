@@ -133,6 +133,13 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 		
 		mFrame = new FrameLayout(con);
 		mBoard = new HexKeyboard(con);
+		// This really speeds up orientation switches!
+		mBoard.mInstrument = (Instrument) getLastNonConfigurationInstance();
+		if (mBoard.mInstrument == null)
+		{
+			// If no retained audio, load it all up (slow).
+			mBoard.mInstrument = new Piano(mBoard.mContext);
+		}
 		mBoard.setUpBoard(this.getRequestedOrientation());
 		mBoard.invalidate();
 
@@ -142,6 +149,12 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
         
 		// this.setContentView(mFrame);
 		this.setContentView(mBoard);
+	}
+
+	public Object onRetainNonConfigurationInstance()
+	{
+		// Retain the audio across configuration changes.
+		return mBoard.mInstrument;
 	}
 
 	@Override
