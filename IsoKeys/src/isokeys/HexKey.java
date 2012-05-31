@@ -68,6 +68,7 @@ public abstract class HexKey
 	int mStreamId;
     private boolean mPressed;
     private boolean mDirty;
+	private boolean sound_loaded = false;
     
     protected static Instrument mInstrument;
     protected Note mNote;
@@ -222,6 +223,7 @@ public abstract class HexKey
     /** Paint this Polygon into the given graphics */
     public void paint(Canvas canvas)
     {
+		this.sound_not_loaded(); // Sets mDirty if just loaded.
     	if (! mDirty)
     	{
     		return;	
@@ -237,7 +239,7 @@ public abstract class HexKey
     		hexPath.offset(mCenter.x, mCenter.y);
     		canvas.drawPath(hexPath, mBlankPaint);
 		}
-		else if (mPressed)
+		else if (mPressed || this.sound_not_loaded())
     	{
     		hexPath.offset(mCenter.x, mCenter.y);
     		canvas.drawPath(hexPath, mPressPaint);
@@ -260,6 +262,23 @@ public abstract class HexKey
     	mDirty = false;
     }
     
+	public boolean sound_not_loaded() {
+		if (sound_loaded == true) {
+			return false;
+		} else {
+			// Not all keys have sounds to be loaded.
+			if (mInstrument.mRootNotes.containsKey(mMidiNoteNumber)) {
+				int index = mInstrument.mRootNotes.get(mMidiNoteNumber);
+				sound_loaded = mInstrument.mSounds.containsKey(index);
+			}
+			if (sound_loaded == true) {
+				// Set mDirty if just loaded.
+				mDirty = true;
+			}
+			return !sound_loaded;
+		}
+	}
+
     public boolean getPressed()
     {
     	return mPressed;
@@ -565,7 +584,9 @@ public abstract class HexKey
 	
 	public void play()
 	{
+		//if (mStreamId != -1) {return;}
 		mStreamId = mInstrument.play(mMidiNoteNumber);
+		if (mStreamId == -1) {return;} // May not yet be loaded.
 		String pitchStr = String.valueOf(mMidiNoteNumber);
 		Log.d("HexKey::play", pitchStr);
 		this.setPressed(true);
@@ -574,6 +595,7 @@ public abstract class HexKey
 	
 	public void stop()
 	{
+		if (mStreamId == -1) {return;} // May not have been loaded when played.
 		mInstrument.stop(mStreamId);
 		mStreamId = -1;
 		String pitchStr = String.valueOf(mMidiNoteNumber);

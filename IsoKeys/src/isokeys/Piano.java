@@ -80,6 +80,9 @@ package @CONFIG.APP_PACKAGE_NAME@;
 import java.lang.reflect.Field;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import android.content.Context;
 import android.util.Log;
@@ -93,6 +96,7 @@ public class Piano extends Instrument
 		Pattern pat = Pattern.compile("^pno0*([0-9]+)v");
 		Class raw = R.raw.class;
 		Field[] fields = raw.getFields();
+		List<int[]> sounds = new ArrayList<int[]>(); // Are there really no tuples in Java?!
 		for (Field field : fields)
 		{
 		    try
@@ -108,7 +112,8 @@ public class Piano extends Instrument
 		        		midiNoteNumber = Integer.parseInt(midiNoteNumberStr);
 		        		int fieldValue = field.getInt(null);	
 		        		Log.d("Piano", midiNoteNumberStr + ": " + fieldValue);
-		        		addSound(midiNoteNumber, fieldValue);
+						int[] tuple = {midiNoteNumber, fieldValue};
+						sounds.add(0, tuple);
 		        		mRootNotes.put(midiNoteNumber, midiNoteNumber);
 		        		mRates.put(midiNoteNumber, 1.0f);
 		        	}
@@ -119,6 +124,17 @@ public class Piano extends Instrument
 		            field.getName()));
 		    }
 		}
+
+		sound_load_queue = sounds.iterator();
+		Thread loader = new Thread(new Runnable() {
+				public void run() {
+					// Start loading the first sound, the rest are started from the OnLoadCompleteListener.
+					int[] tuple = sound_load_queue.next();
+					addSound(tuple[0], tuple[1]);
+				}
+		});
+		loader.start();
+		loader.setPriority(1);
 
 		float previousRate = 1.0f;
 		int previousRootNote = 21;

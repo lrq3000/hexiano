@@ -25,6 +25,7 @@
 package @CONFIG.APP_PACKAGE_NAME@;
 
 import java.util.HashMap;
+import java.util.Iterator;
 
 import android.content.Context;
 import android.media.AudioManager;
@@ -34,12 +35,13 @@ import android.util.Log;
 public abstract class Instrument {
 
 	public static final int POLYPHONY_COUNT = 8;
-	private SoundPool mSoundPool; 
+	public SoundPool mSoundPool;
 	protected static HashMap<Integer, Integer> mSounds; 
 	protected static HashMap<Integer, Float> mRates;
 	protected static HashMap<Integer, Integer> mRootNotes;
 	private AudioManager  mAudioManager;
 	private Context mContext;
+	public Iterator<int[]> sound_load_queue;
 
 	public Instrument(Context context)
 	{
@@ -65,6 +67,7 @@ public abstract class Instrument {
 	{ 
 		Log.d("Instrument", "play(" + midiNoteNumber + ")");
 		int index = mRootNotes.get(midiNoteNumber);
+		if (!mSounds.containsKey(index)) {return -1;}
 		Log.d("Instrument", "rootNote is " + index + ")");
 	    float rate = mRates.get(midiNoteNumber);
 	

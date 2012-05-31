@@ -43,6 +43,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.media.SoundPool;
 
 import @CONFIG.APP_PACKAGE_NAME@.R;
 
@@ -135,10 +136,25 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 		mBoard = new HexKeyboard(con);
 		// This really speeds up orientation switches!
 		mBoard.mInstrument = (Instrument) getLastNonConfigurationInstance();
-		if (mBoard.mInstrument == null)
-		{
+		if (mBoard.mInstrument == null) {
 			// If no retained audio, load it all up (slow).
 			mBoard.mInstrument = new Piano(mBoard.mContext);
+			// Redraw whenever a new note is ready.
+			mBoard.mInstrument.mSoundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+					// This runs from the 'loader' thread.
+					@Override
+					public void onLoadComplete(SoundPool mSoundPool, int sampleId, int status) {
+						mBoard.post(new Runnable() {
+								public void run() {
+									mBoard.invalidate();
+									if (mBoard.mInstrument.sound_load_queue.hasNext()) {
+										int[] tuple = mBoard.mInstrument.sound_load_queue.next();
+										mBoard.mInstrument.addSound(tuple[0], tuple[1]);
+									}
+								}
+						});
+					}
+			});
 		}
 		mBoard.setUpBoard(this.getRequestedOrientation());
 		mBoard.invalidate();
