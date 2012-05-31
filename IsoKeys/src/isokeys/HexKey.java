@@ -584,7 +584,11 @@ public abstract class HexKey
 	
 	public void play()
 	{
-		//if (mStreamId != -1) {return;}
+		if (mStreamId != -1) {
+			// Should never get here.
+			Log.e("HexKey::play", mMidiNoteNumber + ": Already playing!");
+			return;
+		}
 		mStreamId = mInstrument.play(mMidiNoteNumber);
 		if (mStreamId == -1) {return;} // May not yet be loaded.
 		String pitchStr = String.valueOf(mMidiNoteNumber);
