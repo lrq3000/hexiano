@@ -126,15 +126,9 @@ public class Piano extends Instrument
 		}
 
 		sound_load_queue = sounds.iterator();
-		Thread loader = new Thread(new Runnable() {
-				public void run() {
-					// Start loading the first sound, the rest are started from the OnLoadCompleteListener.
-					int[] tuple = sound_load_queue.next();
-					addSound(tuple[0], tuple[1]);
-				}
-		});
-		loader.start();
-		loader.setPriority(1);
+		// Start loading the first sound, the rest are started from the OnLoadCompleteListener.
+		int[] tuple = sound_load_queue.next();
+		addSound(tuple[0], tuple[1]);
 
 		float previousRate = 1.0f;
 		int previousRootNote = 21;
