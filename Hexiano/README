@@ -1,24 +1,23 @@
-==== IsoKeys ====
+==== Hexiano ====
 Copyright © 2011, 2012 by David Randolph,
 Copyright © 2012 by James Haigh.
 Licensed under the terms of the GPLv3.
 
 Project at:
-http://isokeys.sourceforge.net/
-https://gitorious.org/isokeys
+https://gitorious.org/hexiano
 
 Uses sounds from http://zenvoid.org/audio.html under CC BY. Uses AndroidWorld.jar library from http://www.ccs.neu.edu/home/chadwick/javaworld/index.html under the GPL.
 
 
 ==== Build and install ====
 
-$ cd ~/src/isokeys/IsoKeys
+$ cd ~/src/hexiano/Hexiano
 
 $ # Only needed first time:
 $ android list targets # I build against API level 10.
-$ android update project --name IsoKeys --target 1 --path ./
+$ android update project --name Hexiano --target 1 --path ./
 $ git checkout build.xml # Update, not replace. Bad android update!
 $ echo 'app.packagename=your.package.name' >> local.properties
 
 $ # Everytime:
-$ ant filter-package && ant debug && adb -d install -r build/bin/IsoKeys-debug.apk
+$ ant filter-package && ant debug && adb -d install -r build/bin/Hexiano-debug.apk
