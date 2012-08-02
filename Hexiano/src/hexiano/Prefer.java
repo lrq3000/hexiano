@@ -40,7 +40,7 @@ public class Prefer extends PreferenceActivity
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.preferences);
 
-		// MIDI
+		// Links.
 		// FIXME: These links should be in the XML if only I new how.
 		// <ugly>
 		Preference donate = (Preference) findPreference("donate");
@@ -48,7 +48,7 @@ public class Prefer extends PreferenceActivity
 				public boolean onPreferenceClick(Preference donate)
 				{
 					Log.d("Prefer", "onPreferenceClick, donate");
-					Uri webpage = Uri.parse("https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2UZVTYPPP9AUG&lc=GB&item_name=Librenotgratis%2Eorg&currency_code=GBP");
+					Uri webpage = Uri.parse("https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2UZVTYPPP9AUG&lc=GB&item_name=Hexiano%2Eorg&currency_code=GBP");
 					Intent webIntent = new Intent(Intent.ACTION_VIEW, webpage);
 					startActivity(webIntent);
 					return false;
