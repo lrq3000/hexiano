@@ -45,6 +45,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.media.SoundPool;
+import android.media.AudioManager;
 
 import @CONFIG.APP_PACKAGE_NAME@.R;
 
@@ -80,6 +81,9 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+
+		// Lock volume control to Media volume.
+		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
 		PreferenceManager.setDefaultValues(this, R.xml.preferences, true);
 		mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
