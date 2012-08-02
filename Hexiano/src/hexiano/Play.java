@@ -94,7 +94,7 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
         loadKeyboard();
 	}
 
-	protected void setOrientation()
+	protected int setOrientation()
 	{
 		String layout = mPrefs.getString("layout", null);
 
@@ -126,11 +126,12 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 		}
 
 		this.setRequestedOrientation(orientationId);
+		return orientationId;
 	}
 	
 	protected void loadKeyboard()
 	{
-	    setOrientation();	
+	    int orientationId = setOrientation();
 		Context con = this.getApplicationContext();
 		
 		mFrame = new FrameLayout(con);
@@ -152,7 +153,7 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 					}
 			});
 		}
-		mBoard.setUpBoard(this.getRequestedOrientation());
+		mBoard.setUpBoard(orientationId);
 		mBoard.invalidate();
 
 		// mFrame.addView(mBoard);
@@ -195,7 +196,6 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 		{
 		    case R.id.preferences:
 			    startActivity(new Intent(this, Prefer.class)); 
-			    setOrientation();
 			    break;
 		    case R.id.quit:
 			    finish();
@@ -212,8 +212,7 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key)
 	{
-		setOrientation();
-		mBoard.setUpBoard(this.getRequestedOrientation());
+		mBoard.setUpBoard(setOrientation());
 		mBoard.invalidate();
 	}
 	
