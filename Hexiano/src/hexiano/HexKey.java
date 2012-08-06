@@ -13,7 +13,7 @@
  *   as published by the Free Software Foundation, either version          *
  *   3 of the License, or (at your option) any later version.              *
  *                                                                         *
- *   AndroidWorld is distributed in the hope that it will be useful,       *
+ *   Hexiano is distributed in the hope that it will be useful,            *
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
  *   GNU General Public License for more details.                          *
@@ -31,24 +31,21 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
-import android.image.ColorDatabase;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
 public abstract class HexKey
 {
 	static SharedPreferences mPrefs;
-	static String mBlankColor;
-	static String mBlackColor;
-	static String mBlackHighlightColor;
-	static String mWhiteColor;
-	static String mWhiteHighlightColor;
-	static String mTextColor;
-	static String mOutlineColor;
-	static String mPressedColor;
+	static int mBlankColor;
+	static int mBlackColor;
+	static int mBlackHighlightColor;
+	static int mWhiteColor;
+	static int mWhiteHighlightColor;
+	static int mTextColor;
+	static int mOutlineColor;
+	static int mPressedColor;
 	Point mCenter;
-	String mColorStr;
-	int mColorId;
 	Point mTop;
 	Point mBottom;
 	Point mUpperLeft;
@@ -93,8 +90,7 @@ public abstract class HexKey
 		
 		setCriticalPoints();
 
-		int pressId = ColorDatabase.color(mPressedColor);
-        mPressPaint.setColor(pressId);
+		mPressPaint.setColor(mPressedColor);
         mPressPaint.setAntiAlias(true);
         mPressPaint.setStyle(Paint.Style.FILL);
         mPressPaint.setStrokeWidth(2);
@@ -108,55 +104,56 @@ public abstract class HexKey
 
 	protected void setColors()
 	{
+		// Colours have been left from the historically used AndroidWorld library.
 		String colorPref = mPrefs.getString("colorScheme", null);
 		if (colorPref.equals("Khaki"))
 		{
-			mBlankColor = "black";
-			mBlackColor = "brown";
-			mBlackHighlightColor = "chocolate";
-			// mBlackHighlightColor = "sienna";
-			mWhiteColor = "khaki";
-			mWhiteHighlightColor = "darkKhaki";
-			mOutlineColor = "black";
-			mTextColor = "black";
-			mPressedColor = "darkgray";
+			mBlankColor = 0xFF000000; // Black.
+			mBlackColor = 0xFF843C24; // Brown.
+			mBlackHighlightColor = 0xFFD2691E; // Chocolate.
+			//mBlackHighlightColor = 0xFFA0522D; // Sienna.
+			mWhiteColor = 0xFFF0E68C; // Khaki.
+			mWhiteHighlightColor = 0xFFBDB76B; // Dark khaki.
+			mOutlineColor = 0xFF000000; // Black.
+			mTextColor = 0xFF000000; // Black.
+			mPressedColor = 0xFFA9A9A9; // Dark grey.
 		}
 		else if (colorPref.equals("Azure"))
 		{
-			mBlankColor = "black";
-			mBlackColor = "steelblue";
-			mBlackHighlightColor = "cadetblue";
-			mWhiteColor = "azure";
-			mWhiteHighlightColor = "paleturquoise";
-			mOutlineColor = "black";
-			mTextColor = "black";
-			mPressedColor = "darkgray";
+			mBlankColor = 0xFF000000; // Black.
+			mBlackColor = 0xFF4682B4; // Steel blue.
+			mBlackHighlightColor = 0xFF5F9EA0; // Cadet blue.
+			mWhiteColor = 0xFFF0FFFF; // Azure.
+			mWhiteHighlightColor = 0xFFAFEEEE; // Pale turquoise.
+			mOutlineColor = 0xFF000000; // Black.
+			mTextColor = 0xFF000000; // Black.
+			mPressedColor = 0xFFA9A9A9; // Dark grey.
 		}
 		else if (colorPref.equals("White"))
 		{
-			mBlankColor = "black";
-			mBlackColor = "darkslategray";
-			mBlackHighlightColor = "slategrey";
-			mWhiteColor = "white";
-			mWhiteHighlightColor = "silver";
-			mOutlineColor = "black";
-			mTextColor = "black";
-			mPressedColor = "darkgray";
+			mBlankColor = 0xFF000000; // Black.
+			mBlackColor = 0xFF2F4F4F; // Dark slate grey.
+			mBlackHighlightColor = 0xFF708090; // Slate grey.
+			mWhiteColor = 0xFFFFFFFF; // White.
+			mWhiteHighlightColor = 0xFFC0C0C0; // Silver.
+			mOutlineColor = 0xFF000000; // Black.
+			mTextColor = 0xFF000000; // Black.
+			mPressedColor = 0xFFA9A9A9; // Dark grey.
 		}
 		else if (colorPref.equals("Black"))
 		{
-			mBlankColor = "white";
-			mBlackColor = "black"; 
-			mBlackHighlightColor = "dimgray";
-			mWhiteColor = "darkgray";
-			mWhiteHighlightColor = "lightgray";
-			mOutlineColor = "white";
-			mTextColor = "white";
-			mPressedColor = "white";
+			mBlankColor = 0xFFFFFFFF; // White.
+			mBlackColor = 0xFF000000; // Black.
+			mBlackHighlightColor = 0xFF696969; // Dim grey.
+			mWhiteColor = 0xFFA9A9A9; // Dark grey.
+			mWhiteHighlightColor = 0xFFD3D3D3; // Light grey.
+			mOutlineColor = 0xFFFFFFFF; // White.
+			mTextColor = 0xFFFFFFFF; // White.
+			mPressedColor = 0xFFFFFFFF; // White.
 		}
 	}
 	
-	abstract public String getColor();
+	abstract public int getColor();
 	
 	static public String getKeyOrientation(Context context)
 	{

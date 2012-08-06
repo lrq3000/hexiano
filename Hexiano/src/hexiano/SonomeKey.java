@@ -14,7 +14,7 @@
  *   as published by the Free Software Foundation, either version          *
  *   3 of the License, or (at your option) any later version.              *
  *                                                                         *
- *   AndroidWorld is distributed in the hope that it will be useful,       *
+ *   Hexiano is distributed in the hope that it will be useful,            *
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
  *   GNU General Public License for more details.                          *
@@ -27,7 +27,6 @@ package @CONFIG.APP_PACKAGE_NAME@;
 
 import android.content.Context;
 import android.graphics.Paint;
-import android.image.ColorDatabase;
 
 public class SonomeKey extends HexKey
 {
@@ -36,28 +35,23 @@ public class SonomeKey extends HexKey
 	{
 		super(context, radius, center, midiNoteNumber, instrument);
 
-		mColorStr = getColor();
-		mColorId = ColorDatabase.color(mColorStr);
-        mPaint.setColor(mColorId);
+		mPaint.setColor(getColor());
         mPaint.setAntiAlias(true);
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setStrokeWidth(2);
        
-		int overlayId = ColorDatabase.color(mOutlineColor);
-        mOverlayPaint.setColor(overlayId);
+		mOverlayPaint.setColor(mOutlineColor);
         mOverlayPaint.setAntiAlias(true);
         mOverlayPaint.setStyle(Paint.Style.STROKE);
         mOverlayPaint.setStrokeWidth(2);
         
-		int textId = ColorDatabase.color(mTextColor);
-        mTextPaint.setColor(textId);
+		mTextPaint.setColor(mTextColor);
         mTextPaint.setAntiAlias(true);
         mTextPaint.setStyle(Paint.Style.FILL);
         mTextPaint.setTextSize(20);
         mTextPaint.setTextAlign(Paint.Align.CENTER);
         
-		int blankId = ColorDatabase.color(mBlankColor);
-        mBlankPaint.setColor(blankId);
+		mBlankPaint.setColor(mBlankColor);
         mBlankPaint.setStyle(Paint.Style.FILL);
 	}
 
@@ -66,10 +60,10 @@ public class SonomeKey extends HexKey
 		mKeyOrientation = mPrefs.getString("sonomeKeyOrientation", null);
 	}
 
-	public String getColor()
+	public int getColor()
 	{
 		String sharpName = mNote.getSharpName();
-		String color = mWhiteColor;
+		int color = mWhiteColor;
 		if (sharpName.contains("#"))
 		{	
 			if (sharpName.contains("G"))
