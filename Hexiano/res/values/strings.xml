@@ -70,7 +70,7 @@
 	<string name="prompt_layout">Layout</string>
 	<string name="prompt_janko_row_count">Rows per Octave</string>
 	<string name="summary_janko_row_count">Number of rows of whole-step keys to include for each octave.</string>
-	<string name="copyright">Copyright © 2011, 2012 by David A. Randolph, 2012 by James Haigh.</string>
+	<string name="copyright">Hexiano™, copyright © 2012 by James Haigh, and 2011, 2012 by David A. Randolph.</string>
 	<string name="heading_jammer">Jammer (Wicki-Hayden)</string>
 	<string name="heading_sonome">Sonome (Harmonic Table)</string>
 	<string name="heading_janko">Janko</string>
@@ -122,7 +122,7 @@
 	This program is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-	For the complete license, see http://www.gnu.org/licenses.</string>
+	For the complete license, see http://www.gnu.org/licenses/.</string>
 	<string name="credit_piano">Sounds from the acoustic grand piano soundfont (Yamaha Disklavier Pro), release 2008-09-10,
 by Roberto Gordo Saez (roberto.gordo@gmail.com), were adapted for use in Hexiano. (See http://zenvoid.org/audio.html.)
 Specifically, we translated a set of files (mostly from the third velocity layer) from the soundfont into Ogg Vorbis format, with

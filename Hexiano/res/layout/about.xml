@@ -22,13 +22,14 @@
 				android:textColor="#FFF"
 				android:paddingBottom="10dp" />
 
+<!--
 			<TextView android:id="@+id/distribution"
 				android:text="@string/distribution"
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
 				android:textColor="#FFF"
 				android:paddingBottom="10dp" />
-
+-->
 			<TextView android:id="@+id/description"
 				android:text="@string/description"
 				android:autoLink="web"
