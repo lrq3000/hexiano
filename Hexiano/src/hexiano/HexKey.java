@@ -140,7 +140,7 @@ public abstract class HexKey
 			mTextColor = 0xFF000000; // Black.
 			mPressedColor = 0xFFA9A9A9; // Dark grey.
 		}
-		else if (colorPref.equals("Black"))
+		else if (colorPref.equals("Silhouette"))
 		{
 			mBlankColor = 0xFFFFFFFF; // White.
 			mBlackColor = 0xFF000000; // Black.

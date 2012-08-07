@@ -608,6 +608,7 @@ public class HexKeyboard extends View
 		int canvasWidth = getCanvasWidth();
 		int canvasHeight = getCanvasHeight();
 		mBitmap = Bitmap.createBitmap(canvasWidth, canvasHeight, Bitmap.Config.ARGB_8888);
+		mBitmap.eraseColor(mKeys.get(0).mBlankColor);
 		Canvas tempCanvas = new Canvas(mBitmap);
 		this.onDraw(tempCanvas);
 	}
