@@ -152,17 +152,6 @@ public abstract class HexKey
 			mTextColor = 0xFFFFFFFF; // White.
 			mPressedColor = 0xFFFFFFFF; // White.
 		}
-		else if (colorPref.equals("Black & White"))
-		{
-			mBlankColor = 0xFFCCCCCC;
-			mBlackColor = 0xFF000000; // Black.
-			mBlackHighlightColor = 0xFF222222;
-			mWhiteColor = 0xFFFFFFFF; // White.
-			mWhiteHighlightColor = 0xFFD3D3D3; // Light grey.
-			mOutlineColor = 0xFF666666;
-			mTextColor = 0xFF777777;
-			mPressedColor = 0xFFA9A9A9; // Dark grey.
-		}
 		else if (colorPref.equals("Grey & White"))
 		{
 			mBlankColor = 0xFF000000; // Black.
@@ -197,6 +186,18 @@ public abstract class HexKey
 			mWhiteHighlightColor = mBlankColor;
 			mOutlineColor = 0xFF000000; // Black.
 			mTextColor = mOutlineColor;
+			mPressedColor = 0xFFA9A9A9; // Dark grey.
+		}
+		else // Default: Black & White.
+		// Fail to default colour scheme if saved preference doesn't have a match.
+		{
+			mBlankColor = 0xFFCCCCCC;
+			mBlackColor = 0xFF000000; // Black.
+			mBlackHighlightColor = 0xFF222222;
+			mWhiteColor = 0xFFFFFFFF; // White.
+			mWhiteHighlightColor = 0xFFD3D3D3; // Light grey.
+			mOutlineColor = 0xFF666666;
+			mTextColor = 0xFF777777;
 			mPressedColor = 0xFFA9A9A9; // Dark grey.
 		}
 	}
