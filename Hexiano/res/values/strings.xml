@@ -25,7 +25,7 @@
 	<string-array name="color_schemes">
 		<item>Azure</item>
 		<item>Khaki</item>
-		<item>White</item>
+		<item>Slate</item>
 		<item>Silhouette</item>
 	</string-array>
 	<string-array name="instruments">
@@ -33,13 +33,13 @@
 		<item>Organ</item>
 	</string-array>
 	<string-array name="layouts">
-		<item>Sonome</item>
 		<item>Jammer</item>
+		<item>Sonome</item>
 		<item>Janko</item>
 	</string-array>
 	<string-array name="key_labels">
-		<item>Deutsch</item>
 		<item>English</item>
+		<item>Deutsch</item>
 		<item>MIDI Note Number</item>
 		<item>None</item>
 		<item>Solfege</item>

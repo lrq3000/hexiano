@@ -129,7 +129,8 @@ public abstract class HexKey
 			mTextColor = 0xFF000000; // Black.
 			mPressedColor = 0xFFA9A9A9; // Dark grey.
 		}
-		else if (colorPref.equals("White"))
+		else if (colorPref.equals("White") ||/*...renamed to...*/ colorPref.equals("Slate"))
+		// TODO: Remove 'White' preference when appropriate.
 		{
 			mBlankColor = 0xFF000000; // Black.
 			mBlackColor = 0xFF2F4F4F; // Dark slate grey.
