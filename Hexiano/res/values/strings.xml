@@ -28,10 +28,8 @@
 		<item>Slate</item>
 		<item>Silhouette</item>
 		<item>Grey &amp; White</item>
-		<!--item>Grey &amp; White (no highlight)</item-->
 		<item>Ebony &amp; Ivory</item>
 		<item>Khaki</item>
-		<!--item>Ebony &amp; Ivory (old)</item-->
 		<item>Blank</item>
 	</string-array>
 	<string-array name="instruments">

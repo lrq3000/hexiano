@@ -163,17 +163,6 @@ public abstract class HexKey
 			mTextColor = 0xFF777777;
 			mPressedColor = 0xFFA9A9A9; // Dark grey.
 		}
-		/*else if (colorPref.equals("Grey & White (no highlight)"))
-		{
-			mBlankColor = 0xFF000000; // Black.
-			mBlackColor = 0xFF555555;
-			mBlackHighlightColor = mBlackColor;
-			mWhiteColor = 0xFFFFFFFF; // White.
-			mWhiteHighlightColor = mWhiteColor;
-			mOutlineColor = 0xFF000000; // Black.
-			mTextColor = mOutlineColor;
-			mPressedColor = 0xFFA9A9A9; // Dark grey.
-		}*/
 		else if (colorPref.equals("Grey & White"))
 		{
 			mBlankColor = 0xFF000000; // Black.
@@ -185,18 +174,6 @@ public abstract class HexKey
 			mTextColor = mOutlineColor;
 			mPressedColor = 0xFFA9A9A9; // Dark grey.
 		}
-		/*else if (colorPref.equals("Ebony & Ivory (old)"))
-		{
-			mBlankColor = 0xFF000000; // Black.
-			//mBlackColor = 0xFF382c25; // WP:Ebony sample.
-			mBlackColor = 0xFF544238; // Lightened WP:Ebony sample.
-			mBlackHighlightColor = mBlackColor;
-			mWhiteColor = 0xFFFFFFEE; // Ivory.
-			mWhiteHighlightColor = mWhiteColor;
-			mOutlineColor = 0xFF000000; // Black.
-			mTextColor = mOutlineColor;
-			mPressedColor = 0xFFA9A9A9; // Dark grey.
-		}*/
 		else if (colorPref.equals("Ebony & Ivory"))
 		{
 			mBlankColor = 0xFF432620; // WP:Piano case sample.
