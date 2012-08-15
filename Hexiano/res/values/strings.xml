@@ -5,7 +5,7 @@
 	<string name="contact">See the Git repo for email addresses.</string>
 	<string name="app_name">Hexiano</string>
 	<string name="none">None</string>
-	<string name="default_color_scheme">Azure</string>
+	<string name="default_color_scheme">Black &amp; White</string>
 	<string name="default_instrument">Piano</string>
 	<string name="default_layout">Jammer</string>
 	<string-array name="base_notes">
