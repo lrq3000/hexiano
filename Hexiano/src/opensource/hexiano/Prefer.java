@@ -1,8 +1,8 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *   Hexianoâ„¢, an isomorphic musical keyboard for Android                  *
- *   Copyright Â© 2012 James Haigh                                          *
- *   Copyright Â© 2011, 2012 David A. Randolph                              *
+ *   Hexiano, an isomorphic musical keyboard for Android                  *
+ *   Copyright © 2012 James Haigh                                          *
+ *   Copyright © 2011, 2012 David A. Randolph                              *
  *                                                                         *
  *   FILE: Prefer.java                                                     *
  *                                                                         *
@@ -23,7 +23,7 @@
  *   along with Hexiano.  If not, see <http://www.gnu.org/licenses/>.      *
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-package @CONFIG.APP_PACKAGE_NAME@;
+package opensource.hexiano;
 
 import android.os.Bundle;
 import android.preference.*;
@@ -31,10 +31,11 @@ import android.util.Log;
 import android.content.Intent;
 import android.net.Uri;
 
-import @CONFIG.APP_PACKAGE_NAME@.R;
+import opensource.hexiano.R;
 
 public class Prefer extends PreferenceActivity
 {
+	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
@@ -43,8 +44,9 @@ public class Prefer extends PreferenceActivity
 		// Links.
 		// FIXME: These links should be in the XML if only I new how.
 		// <ugly>
-		Preference donate = (Preference) findPreference("donate");
+		Preference donate = findPreference("donate");
 		donate.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+				@Override
 				public boolean onPreferenceClick(Preference donate)
 				{
 					Log.d("Prefer", "onPreferenceClick, donate");
@@ -55,8 +57,9 @@ public class Prefer extends PreferenceActivity
 				}
 			}
 		);
-		Preference issue_45 = (Preference) findPreference("issue-45");
+		Preference issue_45 = findPreference("issue-45");
 		issue_45.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+				@Override
 				public boolean onPreferenceClick(Preference issue_45)
 				{
 					Log.d("Prefer", "onPreferenceClick, issue_45");
@@ -67,8 +70,9 @@ public class Prefer extends PreferenceActivity
 				}
 			}
 		);
-		Preference issue_18812 = (Preference) findPreference("issue-18812");
+		Preference issue_18812 = findPreference("issue-18812");
 		issue_18812.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+				@Override
 				public boolean onPreferenceClick(Preference issue_18812)
 				{
 					Log.d("Prefer", "onPreferenceClick, issue_18812");
@@ -79,8 +83,9 @@ public class Prefer extends PreferenceActivity
 				}
 			}
 		);
-		Preference issue_30198 = (Preference) findPreference("issue-30198");
+		Preference issue_30198 = findPreference("issue-30198");
 		issue_30198.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+				@Override
 				public boolean onPreferenceClick(Preference issue_30198)
 				{
 					Log.d("Prefer", "onPreferenceClick, issue_30198");
@@ -91,8 +96,9 @@ public class Prefer extends PreferenceActivity
 				}
 			}
 		);
-		Preference issue_10176 = (Preference) findPreference("issue-10176");
+		Preference issue_10176 = findPreference("issue-10176");
 		issue_10176.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+				@Override
 				public boolean onPreferenceClick(Preference issue_10176)
 				{
 					Log.d("Prefer", "onPreferenceClick, issue_10176");
@@ -103,8 +109,9 @@ public class Prefer extends PreferenceActivity
 				}
 			}
 		);
-		Preference issue_8201 = (Preference) findPreference("issue-8201");
+		Preference issue_8201 = findPreference("issue-8201");
 		issue_8201.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+				@Override
 				public boolean onPreferenceClick(Preference issue_8201)
 				{
 					Log.d("Prefer", "onPreferenceClick, issue_8201");

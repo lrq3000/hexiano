@@ -1,8 +1,8 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *   Hexianoâ„¢, an isomorphic musical keyboard for Android                  *
- *   Copyright Â© 2012 James Haigh                                          *
- *   Copyright Â© 2011 David A. Randolph                                    *
+ *   Hexiano, an isomorphic musical keyboard for Android                  *
+ *   Copyright © 2012 James Haigh                                          *
+ *   Copyright © 2011 David A. Randolph                                    *
  *                                                                         *
  *   FILE: SonomeKey.java                                                  *
  *                                                                         *
@@ -23,7 +23,7 @@
  *   along with Hexiano.  If not, see <http://www.gnu.org/licenses/>.      *
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-package @CONFIG.APP_PACKAGE_NAME@;
+package opensource.hexiano;
 
 import android.content.Context;
 import android.graphics.Paint;
@@ -56,12 +56,14 @@ public class JammerKey extends HexKey
         mBlankPaint.setStyle(Paint.Style.FILL);
 	}
 
+	@Override
 	protected void getPrefs()
 	{
 		mKeyOrientation = mPrefs.getString("jammerKeyOrientation", null);
 		mKeyOverlap = mPrefs.getBoolean("jammerKeyOverlap", false);
 	}
 
+	@Override
 	public int getColor()
 	{
 		String sharpName = mNote.getSharpName();
@@ -82,6 +84,7 @@ public class JammerKey extends HexKey
 		return color;
 	}
 
+	@Override
 	public boolean overlapContains(int x, int y)
 	{
 		if (x >= mLowerLeft.x && x <= mLowerRight.x &&

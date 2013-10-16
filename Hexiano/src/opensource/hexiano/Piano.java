@@ -1,8 +1,8 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *   Hexianoâ„¢, an isomorphic musical keyboard for Android                  *
- *   Copyright Â© 2012 James Haigh                                          *
- *   Copyright Â© 2011 David A. Randolph                                    *
+ *   Hexiano, an isomorphic musical keyboard for Android                  *
+ *   Copyright © 2012 James Haigh                                          *
+ *   Copyright © 2011 David A. Randolph                                    *
  *                                                                         *
  *   FILE: Piano.java                                                      *
  *                                                                         *
@@ -76,7 +76,7 @@ http://creativecommons.org/licenses/by/3.0/
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-package @CONFIG.APP_PACKAGE_NAME@;
+package opensource.hexiano;
 
 import java.lang.reflect.Field;
 import java.util.regex.Matcher;

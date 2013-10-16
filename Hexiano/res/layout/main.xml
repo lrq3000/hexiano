@@ -5,11 +5,7 @@
 	android:layout_height="fill_parent"
 	>
 
-	<@CONFIG.APP_PACKAGE_NAME@.HexKeyboard
+	<opensource.hexiano.HexKeyboard
 		android:id="@+id/keyboard" />
-
-	<com.google.ads.AdView
-		android:id="@+id/ad"
-		android:gravity="center_horizontal|bottom" />
 
 </FrameLayout>

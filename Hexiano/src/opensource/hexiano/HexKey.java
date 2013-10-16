@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *   Hexiano™, Copyright © 2012 James Haigh                                *
+ *   Hexiano, Copyright � 2012 James Haigh                                *
  *   Copyright © 2011 David A. Randolph                                    *
  *                                                                         *
  *   FILE: HexKey.java                                                     *
@@ -23,7 +23,7 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-package @CONFIG.APP_PACKAGE_NAME@;
+package opensource.hexiano;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -314,9 +314,9 @@ public abstract class HexKey
 			return false;
 		} else {
 			// Not all keys have sounds to be loaded.
-			if (mInstrument.mRootNotes.containsKey(mMidiNoteNumber)) {
-				int index = mInstrument.mRootNotes.get(mMidiNoteNumber);
-				sound_loaded = mInstrument.mSounds.containsKey(index);
+			if (Instrument.mRootNotes.containsKey(mMidiNoteNumber)) {
+				int index = Instrument.mRootNotes.get(mMidiNoteNumber);
+				sound_loaded = Instrument.mSounds.containsKey(index);
 			}
 			if (sound_loaded == true) {
 				// Set mDirty if just loaded.
@@ -340,6 +340,7 @@ public abstract class HexKey
     	}
     }
     
+	@Override
 	public String toString()
 	{
 		String str = new String("HexKey: ");

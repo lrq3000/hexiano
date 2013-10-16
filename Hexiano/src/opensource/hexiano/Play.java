@@ -1,8 +1,8 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *   Hexianoâ„¢, an isomorphic musical keyboard for Android                  *
- *   Copyright Â© 2012 James Haigh                                          *
- *   Copyright Â© 2011, 2012 David A. Randolph                              *
+ *   Hexiano, an isomorphic musical keyboard for Android                  *
+ *   Copyright © 2012 James Haigh                                          *
+ *   Copyright © 2011, 2012 David A. Randolph                              *
  *                                                                         *
  *   FILE: Play.java                                                       *
  *                                                                         *
@@ -23,7 +23,7 @@
  *   along with Hexiano.  If not, see <http://www.gnu.org/licenses/>.      *
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-package @CONFIG.APP_PACKAGE_NAME@;
+package opensource.hexiano;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -47,7 +47,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.media.SoundPool;
 import android.media.AudioManager;
 
-import @CONFIG.APP_PACKAGE_NAME@.R;
+import opensource.hexiano.R;
 
 public class Play extends Activity implements OnSharedPreferenceChangeListener
 {
@@ -141,18 +141,18 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 		mFrame = new FrameLayout(con);
 		mBoard = new HexKeyboard(con);
 		// This really speeds up orientation switches!
-		mBoard.mInstrument = (Instrument) getLastNonConfigurationInstance();
-		if (mBoard.mInstrument == null) {
+		HexKeyboard.mInstrument = (Instrument) getLastNonConfigurationInstance();
+		if (HexKeyboard.mInstrument == null) {
 			// If no retained audio, load it all up (slow).
-			mBoard.mInstrument = new Piano(mBoard.mContext);
+			HexKeyboard.mInstrument = new Piano(HexKeyboard.mContext);
 			// Redraw whenever a new note is ready.
-			mBoard.mInstrument.mSoundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+			HexKeyboard.mInstrument.mSoundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
 					@Override
 					public void onLoadComplete(SoundPool mSoundPool, int sampleId, int status) {
 						mBoard.invalidate();
-						if (mBoard.mInstrument.sound_load_queue.hasNext()) {
-							int[] tuple = mBoard.mInstrument.sound_load_queue.next();
-							mBoard.mInstrument.addSound(tuple[0], tuple[1]);
+						if (HexKeyboard.mInstrument.sound_load_queue.hasNext()) {
+							int[] tuple = HexKeyboard.mInstrument.sound_load_queue.next();
+							HexKeyboard.mInstrument.addSound(tuple[0], tuple[1]);
 						}
 					}
 			});
@@ -168,10 +168,11 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 		this.setContentView(mBoard);
 	}
 
+	@Override
 	public Object onRetainNonConfigurationInstance()
 	{
 		// Retain the audio across configuration changes.
-		return mBoard.mInstrument;
+		return HexKeyboard.mInstrument;
 	}
 
 	@Override

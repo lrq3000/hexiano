@@ -1,7 +1,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *   Hexiano™, Copyright © 2012 James Haigh                                *
- *   Copyright © 2011 David A. Randolph                                    *
+ *   Hexiano, Copyright © 2012 James Haigh                                *
+ *   Copyright � 2011 David A. Randolph                                    *
  *                                                                         *
  *   FILE: Instrument.java                                                 *
  *                                                                         *
@@ -23,7 +23,7 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-package @CONFIG.APP_PACKAGE_NAME@;
+package opensource.hexiano;
 
 import java.util.HashMap;
 import java.util.Iterator;

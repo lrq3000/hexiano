@@ -1,4 +1,4 @@
-package @CONFIG.APP_PACKAGE_NAME@;
+package opensource.hexiano;
 
 public class Point {
 
@@ -11,6 +11,7 @@ public class Point {
 		this.y = y;
 	}
 	
+	@Override
 	public String toString()
 	{
 		return "(" + x + ", " + y + ")";

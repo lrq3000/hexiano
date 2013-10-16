@@ -1,3 +1,4 @@
 local.properties
 proguard-project.txt
 build/
+bin/

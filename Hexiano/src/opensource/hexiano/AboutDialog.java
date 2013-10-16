@@ -1,4 +1,4 @@
-package @CONFIG.APP_PACKAGE_NAME@;
+package opensource.hexiano;
 
 import android.app.Dialog;
 import android.content.Context;

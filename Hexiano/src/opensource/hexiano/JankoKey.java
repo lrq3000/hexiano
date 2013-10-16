@@ -1,10 +1,10 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *   Hexianoâ„¢, an isomorphic musical keyboard for Android                  *
- *   Copyright Â© 2012 James Haigh                                          *
- *   Copyright Â© 2011 David A. Randolph                                    *
+ *   Hexiano, an isomorphic musical keyboard for Android                  *
+ *   Copyright © 2012 James Haigh                                          *
+ *   Copyright © 2011 David A. Randolph                                    *
  *                                                                         *
- *   FILE: SonomeKey.java                                                  *
+ *   FILE: JankoKey.java                                                   *
  *                                                                         *
  *   This file is part of Hexiano, an open-source project hosted at:       *
  *   https://gitorious.org/hexiano                                         *
@@ -23,18 +23,22 @@
  *   along with Hexiano.  If not, see <http://www.gnu.org/licenses/>.      *
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-package @CONFIG.APP_PACKAGE_NAME@;
+package opensource.hexiano;
 
 import android.content.Context;
 import android.graphics.Paint;
 
-public class SonomeKey extends HexKey
+public class JankoKey extends HexKey
 {
-	public SonomeKey(Context context, int radius, Point center,
-			int midiNoteNumber, Instrument instrument)
+	private int mOctaveGroupNumber;
+	
+	public JankoKey(Context context, int radius, Point center,
+			int midiNoteNumber, Instrument instrument, int octaveGroupNumber)
 	{
 		super(context, radius, center, midiNoteNumber, instrument);
 
+        mOctaveGroupNumber = octaveGroupNumber;
+        
 		mPaint.setColor(getColor());
         mPaint.setAntiAlias(true);
         mPaint.setStyle(Paint.Style.FILL);
@@ -55,27 +59,36 @@ public class SonomeKey extends HexKey
         mBlankPaint.setStyle(Paint.Style.FILL);
 	}
 
+	@Override
 	protected void getPrefs()
 	{
-		mKeyOrientation = mPrefs.getString("sonomeKeyOrientation", null);
+		mKeyOrientation = mPrefs.getString("jankoKeyOrientation", null);
 	}
 
+	private boolean inOddOctave()
+	{
+		if (mOctaveGroupNumber % 2 == 0)
+		{
+			return false;
+		}
+		
+		return true;
+	}
+	
+	@Override
 	public int getColor()
 	{
 		String sharpName = mNote.getSharpName();
 		int color = mWhiteColor;
 		if (sharpName.contains("#"))
 		{	
-			if (sharpName.contains("G"))
+			color = mBlackColor;
+			if (inOddOctave())
 			{
 				color = mBlackHighlightColor;
 			}
-			else
-			{
-				color = mBlackColor;
-			}	
 		}
-		else if (sharpName.contains("D"))
+		else if (inOddOctave())
 		{
 			color = mWhiteHighlightColor;
 		}

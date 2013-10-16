@@ -1,8 +1,8 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *   Hexianoâ„¢, an isomorphic musical keyboard for Android                  *
- *   Copyright Â© 2012 James Haigh                                          *
- *   Copyright Â© 2011, 2012 David A. Randolph                              *
+ *   Hexiano, an isomorphic musical keyboard for Android                  *
+ *   Copyright © 2012 James Haigh                                          *
+ *   Copyright © 2011, 2012 David A. Randolph                              *
  *                                                                         *
  *   FILE: HexKeyboard.java                                                *
  *                                                                         *
@@ -24,7 +24,7 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-package @CONFIG.APP_PACKAGE_NAME@;
+package opensource.hexiano;
 
 import java.lang.Math;
 
@@ -166,7 +166,7 @@ public class HexKeyboard extends View
 
 				for (int i = 0; i < mColumnCount; i++)
 				{
-					int kittyCornerX = (int)Math.round(x - mTileWidth / 2);
+					int kittyCornerX = Math.round(x - mTileWidth / 2);
 					int kittyCornerY = (int)Math.round(y - mTileRadius * 1.5);
 					JammerKey kittyCornerKey = new JammerKey(
 							mContext,
@@ -303,7 +303,7 @@ public class HexKeyboard extends View
 
 				for (int i = 0; i < mColumnCount; i++)
 				{
-					int kittyCornerX = (int)Math.round(x - mTileWidth / 2);
+					int kittyCornerX = Math.round(x - mTileWidth / 2);
 					int kittyCornerY = (int)Math.round(y - mTileRadius * 1.5);
 					JankoKey kittyCornerKey = new JankoKey(
 							mContext,
@@ -419,7 +419,7 @@ public class HexKeyboard extends View
 
 				for (int i = 0; i < mColumnCount; i++)
 				{
-					int kittyCornerX = (int)Math.round(x - mTileWidth / 2);
+					int kittyCornerX = Math.round(x - mTileWidth / 2);
 					int kittyCornerY = (int)Math.round(y - mTileRadius * 1.5);
 					SonomeKey kittyCornerKey = new SonomeKey(
 							mContext,
@@ -753,6 +753,7 @@ public class HexKeyboard extends View
 		return false;
 	}
 
+	@Override
 	public void onDraw(Canvas canvas)
 	{ 
 		Canvas tempCanvas = new Canvas(mBitmap);
@@ -766,6 +767,7 @@ public class HexKeyboard extends View
 		Log.d("onDraw", "Last redraw: " + mLastRedrawTime);
 	}
 
+	@Override
 	public boolean onTouchEvent(MotionEvent event){
 		Log.v("onMouse", event.toString());
 		Log.v("onMouse", "" + event.getPointerCount());
