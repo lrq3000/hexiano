@@ -31,6 +31,7 @@ import java.lang.Math;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.os.Handler;
@@ -53,9 +54,11 @@ public class HexKeyboard extends View
 {
 	static int mScreenOrientationId = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
 	static SharedPreferences mPrefs;
+	static SharedPreferences.Editor mPrefsEditor;
 	static Context mContext;
 	static Bitmap mBitmap;
 	static int mDpi = 0;
+	static double mDisplayInches = 0;
 	static int mDisplayWidth = 0;
 	static int mDisplayHeight = 0;
 	static int mRowCount = 0;
@@ -576,15 +579,40 @@ public class HexKeyboard extends View
 		mScreenOrientationId = screenOrientationId;
 		Log.d("setUpBoard", "screenOrientationId: " + mScreenOrientationId);
 
-		mTileRadius = (3 * mDpi) / 8;
-		String scaleStr = mPrefs.getString("scale", null);
+		String scaleStr = mPrefs.getString("scale", ""); // for backward compatibility, we still have to set it as a string and then do a regexp, even if we could just set android:numeric="integer" in the preferences, but that would break compatibility...
 		scaleStr = scaleStr.replaceAll("[^0-9]", "");
-		if (scaleStr.length() == 0)
-		{
-			scaleStr = "100";
+		int scalePct = 100;
+		if (scaleStr.length() != 0) {
+			scalePct = Integer.parseInt(scaleStr);
+		// if scale (size of keys) is not yet set in preferences, compute a good one relative to the size of the screen
+		} else {
+
+			// By default, set the size to the nominal one of 100
+			scalePct = 100;
+
+			// Find if the device has a wide screen, in which case we just leave the size to 100 
+			//Android Level 9 and up:
+			Configuration config = getResources().getConfiguration();
+			if (!((config.screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) ==  
+			    Configuration.SCREENLAYOUT_SIZE_XLARGE)) {
+				
+				// For small screens below magical size (8.9 inches), we compute a reduced size for keys (down to 50)
+				float magicDisplayInches = 8.9f;
+				if (mDisplayInches < magicDisplayInches) {
+					scalePct = (int) (mDisplayInches * 100 / magicDisplayInches);
+					// If size is too small (below 50) we set it to 50
+					if (scalePct < 50) {
+						scalePct = 50;
+					}
+				}
+			}
+			
+			// Store the computed scale in preferences
+			mPrefsEditor.putString("scale", Integer.toString(scalePct));
+			mPrefsEditor.commit();
 		}
 
-		int scalePct = Integer.parseInt(scaleStr);
+		mTileRadius = (3 * mDpi) / 8;
 		mTileRadius = (mTileRadius * scalePct) / 100;
 		mTileWidth = (int)(Math.round(Math.sqrt(3.0) * mTileRadius));
 		
@@ -610,7 +638,7 @@ public class HexKeyboard extends View
 		mBitmap = Bitmap.createBitmap(canvasWidth, canvasHeight, Bitmap.Config.ARGB_8888);
 		mBitmap.eraseColor(mKeys.get(0).mBlankColor);
 		Canvas tempCanvas = new Canvas(mBitmap);
-		this.onDraw(tempCanvas);
+		this.draw(tempCanvas);
 	}
 
 	public HexKeyboard(Context context)
@@ -629,6 +657,7 @@ public class HexKeyboard extends View
 	{
 		mContext = context;
 		mPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+		mPrefsEditor = mPrefs.edit();
 
 		Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
 		DisplayMetrics dm = new DisplayMetrics();
@@ -636,6 +665,10 @@ public class HexKeyboard extends View
 		int width = dm.widthPixels;
 		int height = dm.heightPixels;
 		mDpi = dm.densityDpi;
+
+		double x = Math.pow(dm.widthPixels/dm.xdpi,2);
+		double y = Math.pow(dm.heightPixels/dm.ydpi,2);
+		mDisplayInches = Math.sqrt(x+y);
 
 		mDisplayWidth = width;
 		mDisplayHeight = height;

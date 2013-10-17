@@ -6,7 +6,7 @@
 			android:enabled="true"
 			android:key="colorScheme" android:title="@string/prompt_color_scheme" android:entryValues="@array/color_schemes" android:defaultValue="@string/default_color_scheme" android:summary="@string/summary_color_scheme"/>
 		<ListPreference android:selectable="true" android:defaultValue="English" android:enabled="true" android:entryValues="@array/key_labels" android:key="labelType" android:title="@string/prompt_label_type" android:entries="@array/key_labels" android:summary="@string/summary_label_type"/>
-		<EditTextPreference android:title="@string/prompt_scale" android:key="scale" android:defaultValue="@string/default_scale" android:enabled="true" android:selectable="true" android:summary="@string/summary_scale"/>
+		<EditTextPreference android:title="@string/prompt_scale" android:key="scale" android:enabled="true" android:selectable="true" android:summary="@string/summary_scale"/>
 		<ListPreference android:key="instrument" android:title="@string/prompt_instrument" android:defaultValue="@string/default_instrument" android:entryValues="@array/instruments" android:entries="@array/instruments" android:enabled="false" android:selectable="false" android:summary="@string/summary_instrument"/>
 		<PreferenceScreen android:title="MIDI Support">
 			<PreferenceCategory android:key="midi-out" android:title="MIDI OUT">
