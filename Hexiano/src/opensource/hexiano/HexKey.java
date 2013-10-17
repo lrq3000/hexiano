@@ -188,16 +188,16 @@ public abstract class HexKey
 			mTextColor = mOutlineColor;
 			mPressedColor = 0xFFA9A9A9; // Dark grey.
 		}
-		else // Default: Black & White.
+		else // Default: Azure.
 		// Fail to default colour scheme if saved preference doesn't have a match.
 		{
-			mBlankColor = 0xFFCCCCCC;
-			mBlackColor = 0xFF000000; // Black.
-			mBlackHighlightColor = 0xFF222222;
-			mWhiteColor = 0xFFFFFFFF; // White.
-			mWhiteHighlightColor = 0xFFD3D3D3; // Light grey.
-			mOutlineColor = 0xFF666666;
-			mTextColor = 0xFF777777;
+			mBlankColor = 0xFF000000; // Black.
+			mBlackColor = 0xFF4682B4; // Steel blue.
+			mBlackHighlightColor = 0xFF5F9EA0; // Cadet blue.
+			mWhiteColor = 0xFFF0FFFF; // Azure.
+			mWhiteHighlightColor = 0xFFAFEEEE; // Pale turquoise.
+			mOutlineColor = 0xFF000000; // Black.
+			mTextColor = 0xFF000000; // Black.
 			mPressedColor = 0xFFA9A9A9; // Dark grey.
 		}
 	}
