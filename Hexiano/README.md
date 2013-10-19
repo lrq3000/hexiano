@@ -1,9 +1,9 @@
 Hexiano
 ======
 
-![](http://github.com/lrq3000/hexiano/wiki/images/hexiano-logo.png)
+![Hexiano logo](https://raw.github.com/lrq3000/hexiano/master/wiki/images/hexiano-logo.png)
 &nbsp;
-![](http://github.com/lrq3000/hexiano/wiki/images/hexiano-keyboard.jpg)
+![Example of Hexiano running](https://raw.github.com/lrq3000/hexiano/master/wiki/images/hexiano-keyboard.jpg)
 
 
 Description
