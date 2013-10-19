@@ -1,10 +1,9 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *   Hexiano, an isomorphic musical keyboard for Android                  *
- *   Copyright © 2012 James Haigh                                          *
- *   Copyright © 2011 David A. Randolph                                    *
+ *   Hexiano, an isomorphic musical keyboard for Android                   *
+ *   Copyleft 2013 Stephen Larroqu                                         *
  *                                                                         *
- *   FILE: JammerKey.java                                                  *
+ *   FILE: ModifierKey.java                                                  *
  *                                                                         *
  *   This file is part of Hexiano, an open-source project hosted at:       *
  *   https://gitorious.org/hexiano                                         *
@@ -29,9 +28,9 @@ import android.content.Context;
 import android.graphics.Paint;
 import android.util.Log;
 
-public class JammerKey extends HexKey
+public class SustainKey extends HexKey
 {
-	public JammerKey(Context context, int radius, Point center,
+	public SustainKey(Context context, int radius, Point center,
 			int midiNoteNumber, Instrument instrument)
 	{
 		super(context, radius, center, midiNoteNumber, instrument);
@@ -55,44 +54,36 @@ public class JammerKey extends HexKey
 		mBlankPaint.setColor(mBlankColor);
         mBlankPaint.setStyle(Paint.Style.FILL);
 	}
-
+	
 	@Override
-	protected void getPrefs()
-	{
-		mKeyOrientation = mPrefs.getString("jammerKeyOrientation", null);
-		mKeyOverlap = mPrefs.getBoolean("jammerKeyOverlap", false);
+	public int getColor() {
+		return mWhiteColor;
 	}
-
+	
 	@Override
-	public int getColor()
+	public void play()
 	{
-		String sharpName = mNote.getSharpName();
-		int color = mWhiteColor;
-		if (sharpName.contains("#"))
-		{	
-			color = mBlackColor;
-			if (sharpName.contains("G"))
-			{
-				color = mBlackHighlightColor;
-			}
+		if (HexKeyboard.mSustainHold == true && this.getPressed() == true) {
+			this.stop(true);
+		} else {
+			HexKeyboard.mSustain = true;
+			String pitchStr = String.valueOf(mMidiNoteNumber);
+			Log.d("HexKey::play", pitchStr);
+			this.setPressed(true);
 		}
-		else if (sharpName.contains("C"))
-		{
-			color = mWhiteHighlightColor;
-		}
-		
-		return color;
+		return;
 	}
-
+	
 	@Override
-	public boolean overlapContains(int x, int y)
+	public void stop(boolean force)
 	{
-		if (x >= mLowerLeft.x && x <= mLowerRight.x &&
-			y >= mTop.y && y <= mBottom.y)
-		{
-			Log.d("HexKey::overlapContains", "Contains");
-			return true;
+		if (this.getPressed() == true && (force == true | HexKeyboard.mSustainHold == false)) { // TODO: find why not all notes stops sometimes when sustain is released (whether mSustainHold is on or off doesn't matter for this bug)
+			String pitchStr = String.valueOf(mMidiNoteNumber);
+			Log.d("HexKey::stop", pitchStr);
+			this.setPressed(false);
+			HexKeyboard.mSustain = false;
+			HexKeyboard.stopAll(); // stop all previously sustained notes
 		}
-		return false;
+		return;
 	}
 }

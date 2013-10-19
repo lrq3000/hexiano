@@ -68,6 +68,11 @@ public class HexKeyboard extends View
 	private static long mLastRedrawTime = 0L;
 	private static final long mAdDelayMilliseconds = 12000L;
 	private static long mStartTime = 0L;
+	// Modifier keys options
+	static boolean mSustainHold = true;
+	static boolean mSustainAlwaysOn = false;
+	// Modifier keys state
+	static boolean mSustain = false;
 
 	static Set<Integer> old_pressed = new HashSet<Integer>();
 	static Instrument mInstrument;
@@ -115,9 +120,12 @@ public class HexKeyboard extends View
 		String firstOctaveStr = mPrefs.getString("baseJammerOctave", null);
 		int firstOctave = Integer.parseInt(firstOctaveStr);
 		int pitch = Note.getNoteNumber(firstNote, firstOctave); 
-		Log.d("setUpJammerBoard", "" + pitch);
 		if (HexKey.getKeyOrientation(mContext).equals("Vertical"))
 		{
+			Log.d("setUpJammerBoard", "orientation: vertical");
+			Log.d("setUpJammerBoard", "pitch: " + pitch);
+			Log.d("setUpJammerBoard", "rowCount: " + mRowCount);
+			Log.d("setUpJammerBoard", "columnCount: " + mColumnCount);
 			int rowFirstPitch = pitch;
 
 			for (int j = 0; j < mRowCount; j++)
@@ -157,6 +165,10 @@ public class HexKeyboard extends View
 		}
 		else
 		{
+			Log.d("setUpJammerBoard", "orientation: horizontal");
+			Log.d("setUpJammerBoard", "pitch: " + pitch);
+			Log.d("setUpJammerBoard", "rowCount: " + mRowCount);
+			Log.d("setUpJammerBoard", "columnCount: " + mColumnCount);
 			pitch -= (mRowCount - 1) * 2;
 		
 			y = mTileRadius;
@@ -371,6 +383,7 @@ public class HexKeyboard extends View
 		if (HexKey.getKeyOrientation(mContext).equals("Vertical"))
 		{
 			pitch += (mRowCount - 1) * 7;
+			Log.d("setUpSonomeBoard", "orientation: vertical");
 			Log.d("setUpSonomeBoard", "pitch: " + pitch);
 			Log.d("setUpSonomeBoard", "rowCount: " + mRowCount);
 			int rowFirstPitch = pitch;
@@ -413,7 +426,9 @@ public class HexKeyboard extends View
 		else
 		{
 			y = mTileRadius;
-			
+			Log.d("setUpSonomeBoard", "orientation: horizontal");
+			Log.d("setUpSonomeBoard", "pitch: " + pitch);
+			Log.d("setUpSonomeBoard", "rowCount: " + mRowCount);
 			int rowFirstPitch = pitch;
 			
 			for (int j = 0; j < mRowCount; j++)
@@ -571,10 +586,25 @@ public class HexKeyboard extends View
 
 		return columnCount;
 	}
+	
+	// Stop playing all sounds
+	static public void stopAll()
+	{
+		for(HexKey key : HexKeyboard.mKeys ) {
+			key.stop(true);
+		}
+	}
+	
+	private int getModifierKeysCount() {
+		return 1; // only Sustain key for now
+	}
 
 	void setUpBoard(int screenOrientationId)
 	{
 		mKeys.clear();
+		
+		mSustainHold = mPrefs.getBoolean("sustainHold", true);
+		mSustainAlwaysOn = mPrefs.getBoolean("sustainAlwaysOn", false);
 
 		mScreenOrientationId = screenOrientationId;
 		Log.d("setUpBoard", "screenOrientationId: " + mScreenOrientationId);
@@ -632,6 +662,8 @@ public class HexKeyboard extends View
 		{
 			this.setUpJankoBoard();
 		}
+		
+		this.setUpModifierKeys();
 
 		int canvasWidth = getCanvasWidth();
 		int canvasHeight = getCanvasHeight();
@@ -639,6 +671,18 @@ public class HexKeyboard extends View
 		mBitmap.eraseColor(mKeys.get(0).mBlankColor);
 		Canvas tempCanvas = new Canvas(mBitmap);
 		this.draw(tempCanvas);
+	}
+	
+	// Replace the first keys by modifier keys
+	private void setUpModifierKeys() {
+		// Sustain key
+		mKeys.set(0, new SustainKey(
+				mContext,
+				mTileRadius,
+				mKeys.get(0).mCenter,
+				-64,
+				mInstrument)
+		);
 	}
 
 	public HexKeyboard(Context context)

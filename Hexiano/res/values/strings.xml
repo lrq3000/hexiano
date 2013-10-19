@@ -22,6 +22,7 @@
 		<item>A#</item>
 		<item>B</item>
 	</string-array>
+	<string name="sustain_key">Sustain</string>
 	<string-array name="color_schemes">
 		<item>Black &amp; White</item>
 		<item>Azure</item>
@@ -75,7 +76,7 @@
 	<string name="prompt_layout">Layout</string>
 	<string name="prompt_janko_row_count">Rows per Octave</string>
 	<string name="summary_janko_row_count">Number of rows of whole-step keys to include for each octave.</string>
-	<string name="copyright">Hexiano™, copyright © 2012 by James Haigh, and 2011, 2012 by David A. Randolph.</string>
+	<string name="copyright">Hexiano, copyright © 2011, 2012 by David A. Randolph, 2012 by James Haigh, copyleft 2013 Stephen Larroque.</string>
 	<string name="heading_jammer">Jammer (Wicki-Hayden)</string>
 	<string name="heading_sonome">Sonome (Harmonic Table)</string>
 	<string name="heading_janko">Janko</string>
@@ -113,12 +114,16 @@
 	<string name="prompt_highest_note_octave">Highest Note Octave</string>
 	<string name="prompt_single_touch_chording">Single-touch Chording</string>
 	<string name="summary_single_touch_chording">Play adjacent notes with one finger (4ths and 5ths).</string>
+	<string name="prompt_hold_sustain">Hold Sustain</string>
+	<string name="summary_hold_sustain">Hold sustain modifier when pressed until pressed again.</string>
+	<string name="prompt_sustain_always_on">Sustain always on</string>
+	<string name="summary_sustain_always_on">Always enable sustain.</string>
 	<string name="prompt_about">About Hexiano</string>
 	<string name="prompt_license">License</string>
 	<string name="prompt_quit">Exit</string>
 	<string name="version">version</string>
 	<string name="description">Hexiano is an Open-source isomorphic musical keyboard. All intervals, chords, and scales have identical patterns, regardless of the key in which one plays. Hexiano aims to deliver the isomorphic keyboard concept to Android users. See http://www.altkeyboards.com/ for more information about these instruments.</string>
-	<string name="open_source">Source code for Hexiano is available at https://gitorious.org/hexiano under the terms of GNU General Public License (version 3).</string>
+	<string name="open_source">Source code for Hexiano is available at https://github.com/lrq3000/hexiano (James original Hexiano is at https://gitorious.org/hexiano) under the terms of GNU General Public License (version 3).</string>
 	<string name="distribution"></string>
 	<string name="license">This program is free software; you can redistribute it and/or modify it under the
 	terms of the GNU General Public License as published by the Free Software Foundation;

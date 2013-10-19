@@ -110,9 +110,15 @@ public class Note
 	public Note(int midiNumber)
 	{
 	    mMidiNoteNumber = midiNumber;
-	    mFlatName = this.getFlatNameForNoteNumber(mMidiNoteNumber);
-	    mSharpName = this.getSharpNameForNoteNumber(mMidiNoteNumber);
-	    mOctave = this.getOctaveForNoteNumber(mMidiNoteNumber); 
+	    if (midiNumber < 0) { // Modifier keys are set to negative to avoid conflicts with other notes
+	    	mFlatName = this.getModifierNameForNoteNumber(mMidiNoteNumber);
+		    mSharpName = mFlatName;
+		    mOctave = 1;
+	    } else {
+		    mFlatName = this.getFlatNameForNoteNumber(mMidiNoteNumber);
+		    mSharpName = this.getSharpNameForNoteNumber(mMidiNoteNumber);
+		    mOctave = this.getOctaveForNoteNumber(mMidiNoteNumber); 
+	    }
 	}
 	
 	public String getFlatName()
@@ -138,13 +144,11 @@ public class Note
 	    {
 	    	return "";
 	    }
-	    
-	    if (labelType.equals("MIDI Note Number"))
+	    else if (labelType.equals("MIDI Note Number"))
 	    {
 	    	return("" + mMidiNoteNumber);
 	    }
-	    
-	    if (labelType.equals("Whole Tone Number"))
+	    else if (labelType.equals("Whole Tone Number"))
 	    {
 	    	noteStr = "" + mMidiNoteNumber/2;
 	    	if (mMidiNoteNumber % 2 == 1)
@@ -154,8 +158,7 @@ public class Note
 	    	
 	    	return(noteStr);
 	    }
-	    
-		if (labelType.equals("Deutsch"))
+	    else if (labelType.equals("Deutsch"))
 		{
 		    noteStr = mToGerman.get(mSharpName);
 		}
@@ -168,12 +171,23 @@ public class Note
 		    noteStr = mToSolfege.get(mSharpName);
 		}
 	  
-		if (showOctave)
+		if (showOctave && mMidiNoteNumber > 0) // not a modifier key
 		{
 			noteStr += mOctave;
 		}
 	    
 	    return(noteStr);
+	}
+
+	static final HashMap<Integer, String> mModifierForNumber;
+	static
+	{
+	    mModifierForNumber = new HashMap<Integer, String>();
+	    mModifierForNumber.put(-1, "Mod");
+	    mModifierForNumber.put(-7, "Volume");
+	    mModifierForNumber.put(-10, "Pan");
+	    mModifierForNumber.put(-11, "Expression");
+	    mModifierForNumber.put(-64, "Sustain");
 	}
 	
 	static final HashMap<Integer, String> mFlatForNumber;
@@ -234,6 +248,11 @@ public class Note
 	{
 		int noteNumber = octave * 12 + mNumberForSharp.get(sharpName) + 12;
 		return noteNumber;
+	}
+	
+	public String getModifierNameForNoteNumber(int midiNoteNumber)
+	{		
+		return mFlatForNumber.get(midiNoteNumber);
 	}
 	
 	public String getFlatNameForNoteNumber(int midiNoteNumber)

@@ -221,8 +221,24 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 		mBoard.invalidate();
 	}
 	
-	  @Override
-	  protected void onDestroy() {
-	    super.onDestroy();
-	  }
+	// Clean all playing states (eg: sounds playing, etc)
+	public void cleanStates() {
+		HexKeyboard.stopAll();
+	}
+	
+	@Override
+	protected void onPause() {
+		// If app is closed/minimized (home button is pressed)
+		//if (this.isFinishing()){ // The function isFinishing() returns a boolean. True if your App is actually closing, False if your app is still running but for example the screen turns off.
+			// Clean all playing states
+			this.cleanStates();
+		//}
+		super.onPause();
+	}
+	
+	@Override
+	protected void onDestroy() {
+		cleanStates();
+		super.onDestroy();
+	}
 }

@@ -208,18 +208,20 @@ public abstract class HexKey
 	{
 		mPrefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String layoutPref = mPrefs.getString("layout", null);
-		if (layoutPref.equals("Sonome"))
+		if (layoutPref.equals("Sonome")) // Sonome
 		{
 			mKeyOverlap = false;
 			return mPrefs.getString("sonomeKeyOrientation", null);
 		}
-		if (layoutPref.equals("Janko"))
+		else if (layoutPref.equals("Janko")) // Janko
 		{
 			mKeyOverlap = false;
 			return mPrefs.getString("jankoKeyOrientation", null);
 		}
-		
-		return mPrefs.getString("jammerKeyOrientation", null);
+		else // Jammer
+		{
+			return mPrefs.getString("jammerKeyOrientation", null);
+		}
 	}
 	
 	protected Path getHexagonPath()
@@ -363,7 +365,10 @@ public abstract class HexKey
 		{
 			return horizontalContains(x, y);
 		}
-		return verticalContains(x, y);
+		else
+		{
+			return verticalContains(x, y);
+		}
 	}
 
 	private void setCriticalPoints()
@@ -371,9 +376,11 @@ public abstract class HexKey
 		if (mKeyOrientation.equals("Horizontal") || mKeyOverlap)
 		{
 			setHorizontalCriticalPoints();
-			return;
 		}
-		setVerticalCriticalPoints();
+		else
+		{
+			setVerticalCriticalPoints();
+		}
 	}
 	
 	private void setHorizontalCriticalPoints()
@@ -633,9 +640,12 @@ public abstract class HexKey
 	public void play()
 	{
 		if (mStreamId != -1) {
-			// Should never get here.
-			Log.e("HexKey::play", mMidiNoteNumber + ": Already playing!");
-			return;
+			//if (HexKeyboard.mSustain == true || HexKeyboard.mSustainAlwaysOn == true) {
+				this.stop(); // better always stop if there is already a stream playing, no matter the reason
+			//} else {
+				// Should never get here.
+			//	Log.e("HexKey::play", mMidiNoteNumber + ": Already playing and no sustain! Should not happen!");
+			//}
 		}
 		mStreamId = mInstrument.play(mMidiNoteNumber);
 		if (mStreamId == -1) {return;} // May not yet be loaded.
@@ -645,11 +655,17 @@ public abstract class HexKey
 		return;
 	}
 	
-	public void stop()
+	public void stop() {
+		this.stop(false);
+	}
+	
+	public void stop(boolean force)
 	{
 		if (mStreamId == -1) {return;} // May not have been loaded when played.
-		mInstrument.stop(mStreamId);
-		mStreamId = -1;
+		if (force == true | (HexKeyboard.mSustain == false && HexKeyboard.mSustainAlwaysOn == false)) {
+			mInstrument.stop(mStreamId);
+			mStreamId = -1;
+		}
 		String pitchStr = String.valueOf(mMidiNoteNumber);
 		Log.d("HexKey::stop", pitchStr);
 		this.setPressed(false);
