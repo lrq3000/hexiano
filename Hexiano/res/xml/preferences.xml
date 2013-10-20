@@ -57,4 +57,7 @@
 		<CheckBoxPreference android:key="sonomeLandscape" android:defaultValue="true" android:title="@string/prompt_landscape_labels" android:summary="@string/summary_landscape" />
 		<ListPreference android:defaultValue="@string/default_sonome_key_orientation" android:entryValues="@array/key_orientations" android:summary="@string/summary_key_orientation" android:key="sonomeKeyOrientation" android:entries="@array/key_orientations" android:title="@string/prompt_key_orientation" />
 	</PreferenceCategory>
+	<PreferenceScreen android:title="Advanced">
+		<EditTextPreference android:title="@string/prompt_polyphony_count" android:key="polyphonyCount" android:defaultValue="@integer/default_polyphony_count" android:numeric="integer" android:maxLength="2" android:enabled="true" android:selectable="true" android:summary="@string/summary_polyphony_count"/>
+	</PreferenceScreen>
 </PreferenceScreen>

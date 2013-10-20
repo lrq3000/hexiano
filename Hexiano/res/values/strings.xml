@@ -145,7 +145,6 @@ his team at Zenph Studios.
 Neither Dr. Krishtal nor Mr. Saez in any way endorses Hexiano. Their work is used under the terms of the Creative 
 Commons Attribution 3.0 license. See http://creativecommons.org/licenses/by/3.0 for details.
 </string>
-	<string name="analytics_notice">To improve the quality of our application, we reserve the right to track and report user activity inside IsoKeys. All data collected will be anonymous. We respect your privacy and will not collect any information to identify you personally.</string>
 	<string name="prompt_key_orientation">Key Orientation</string>
 	<string name="summary_key_orientation">Horizontal keys "point up and down"; vertical keys "point left and right."</string>
 	<string-array name="key_orientations">
@@ -155,4 +154,7 @@ Commons Attribution 3.0 license. See http://creativecommons.org/licenses/by/3.0 
 	<string name="default_sonome_key_orientation">Vertical</string>
 	<string name="default_jammer_key_orientation">Horizontal</string>
 	<string name="default_janko_key_orientation">Horizontal</string>
+	<string name="prompt_polyphony_count">Polyphony count</string>
+	<string name="summary_polyphony_count">Max number of concurrent sounds (warning: high value may induce jitter!)</string>
+	<integer name="default_polyphony_count">8</integer>
 </resources>

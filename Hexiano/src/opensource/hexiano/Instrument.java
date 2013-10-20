@@ -35,7 +35,7 @@ import android.util.Log;
 
 public abstract class Instrument {
 
-	public static final int POLYPHONY_COUNT = 8;
+	public static int POLYPHONY_COUNT = 8;
 	public SoundPool mSoundPool;
 	protected static HashMap<Integer, Integer> mSounds; 
 	protected static HashMap<Integer, Float> mRates;
@@ -51,7 +51,8 @@ public abstract class Instrument {
 	}
 
 	public void init(Context context)
-	{ 
+	{
+		POLYPHONY_COUNT = Integer.parseInt(HexKeyboard.mPrefs.getString("polyphonyCount", "8"));
 		mSoundPool = new SoundPool(POLYPHONY_COUNT, AudioManager.STREAM_MUSIC, 0); 
 		mSounds = new HashMap<Integer, Integer>(); 
 		mRates = new HashMap<Integer, Float>(); 

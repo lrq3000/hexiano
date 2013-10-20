@@ -25,23 +25,26 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int about=0x7f090008;
-        public static final int copyright=0x7f090001;
-        public static final int credit_piano=0x7f090005;
-        public static final int description=0x7f090002;
-        public static final int keyboard=0x7f090006;
-        public static final int layout_root=0x7f090000;
-        public static final int license=0x7f090004;
-        public static final int open_source=0x7f090003;
-        public static final int preferences=0x7f090007;
-        public static final int quit=0x7f090009;
+        public static final int about=0x7f0a0008;
+        public static final int copyright=0x7f0a0001;
+        public static final int credit_piano=0x7f0a0005;
+        public static final int description=0x7f0a0002;
+        public static final int keyboard=0x7f0a0006;
+        public static final int layout_root=0x7f0a0000;
+        public static final int license=0x7f0a0004;
+        public static final int open_source=0x7f0a0003;
+        public static final int preferences=0x7f0a0007;
+        public static final int quit=0x7f0a0009;
+    }
+    public static final class integer {
+        public static final int default_polyphony_count=0x7f080000;
     }
     public static final class layout {
         public static final int about=0x7f030000;
         public static final int main=0x7f030001;
     }
     public static final class menu {
-        public static final int menu=0x7f080000;
+        public static final int menu=0x7f090000;
     }
     public static final class raw {
         public static final int gpl3=0x7f050000;
@@ -74,24 +77,23 @@ public final class R {
         public static final int pno102v118leo=0x7f05001b;
     }
     public static final class string {
-        public static final int analytics_notice=0x7f060040;
         public static final int app_name=0x7f060003;
         public static final int contact=0x7f060002;
         public static final int copyright=0x7f060011;
         public static final int credit_piano=0x7f06003f;
         public static final int default_color_scheme=0x7f060005;
         public static final int default_instrument=0x7f060006;
-        public static final int default_jammer_key_orientation=0x7f060044;
+        public static final int default_jammer_key_orientation=0x7f060043;
         public static final int default_jammer_note=0x7f060017;
         public static final int default_jammer_octave=0x7f060018;
         public static final int default_jammer_orientation=0x7f06001e;
-        public static final int default_janko_key_orientation=0x7f060045;
+        public static final int default_janko_key_orientation=0x7f060044;
         public static final int default_janko_note=0x7f060019;
         public static final int default_janko_octave=0x7f06001a;
         public static final int default_janko_orientation=0x7f06001f;
         public static final int default_janko_row_count=0x7f06001b;
         public static final int default_layout=0x7f060007;
-        public static final int default_sonome_key_orientation=0x7f060043;
+        public static final int default_sonome_key_orientation=0x7f060042;
         public static final int default_sonome_note=0x7f060015;
         public static final int default_sonome_octave=0x7f060016;
         public static final int default_sonome_orientation=0x7f06001d;
@@ -113,7 +115,7 @@ public final class R {
         public static final int prompt_inneract=0x7f06000a;
         public static final int prompt_instrument=0x7f06000c;
         public static final int prompt_janko_row_count=0x7f06000f;
-        public static final int prompt_key_orientation=0x7f060041;
+        public static final int prompt_key_orientation=0x7f060040;
         public static final int prompt_label_type=0x7f06000d;
         public static final int prompt_landscape_labels=0x7f060023;
         public static final int prompt_layout=0x7f06000e;
@@ -121,6 +123,7 @@ public final class R {
         public static final int prompt_lowest_note=0x7f06002c;
         public static final int prompt_lowest_note_octave=0x7f06002d;
         public static final int prompt_orientation=0x7f06001c;
+        public static final int prompt_polyphony_count=0x7f060045;
         public static final int prompt_preferences=0x7f060009;
         public static final int prompt_quit=0x7f060039;
         public static final int prompt_scale=0x7f060020;
@@ -132,12 +135,13 @@ public final class R {
         public static final int summary_hold_sustain=0x7f060034;
         public static final int summary_instrument=0x7f060026;
         public static final int summary_janko_row_count=0x7f060010;
-        public static final int summary_key_orientation=0x7f060042;
+        public static final int summary_key_orientation=0x7f060041;
         public static final int summary_label_type=0x7f060024;
         public static final int summary_landscape=0x7f060027;
         public static final int summary_layout=0x7f060028;
         public static final int summary_lowest_note=0x7f06002a;
         public static final int summary_lowest_note_octave=0x7f06002f;
+        public static final int summary_polyphony_count=0x7f060046;
         public static final int summary_scale=0x7f060022;
         public static final int summary_single_touch_chording=0x7f060032;
         public static final int summary_sustain_always_on=0x7f060036;
