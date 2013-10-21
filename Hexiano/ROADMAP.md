@@ -21,7 +21,16 @@ Here is a list of a few features that are planned in near-term:
 - ability to add soundbanks on sdcard directly without recompiling the program
 - a new free orchestral soundbank (maybe as an external module to keep the Hexiano low in size)
 - a multi-instruments feature: ability to map multiple instruments on the keyboard (eg: the first 2 rows will be piano, then 2 rows of violin, etc...)
-- (maybe) multi-screens keyboards, so that you could quickly swap between different (multi-)instruments mapping by just swiping on the screen.
 - Connection to computer (via USB or OSC or Bluetooth)
-- (maybe) Velocity via pressure surface (but how to do that with ogg files and soundpool?)
-- (maybe) effects and effects via gyrometer.
+
+MAYBE/ONE DAY
+-------------
+- Velocity via pressure surface (but how to do that with ogg files and soundpool?)
+- effects and effects via gyrometer.
+- multi-screens keyboards, so that you could quickly swap between different (multi-)instruments mapping by just swiping on the screen.
+- Interactive tutorials (one for each keyboard) to know how to play major scales, minor, change root note, etc...
+- Midi tutorial: load a midi file and the keys to press will be highlighted on the screen.
+
+NOT TO DO
+---------
+- Hexiano used as a host for an external Midi keyboard. I see no objection if someone contributes such a code, but it's not part of the roadmap, there are plenty of others softwares that can do that, and the main purpose of Hexiano is the keyboard interface.
