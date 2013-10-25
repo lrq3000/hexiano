@@ -35,25 +35,6 @@ public class JammerKey extends HexKey
 			int midiNoteNumber, Instrument instrument)
 	{
 		super(context, radius, center, midiNoteNumber, instrument);
-
-		mPaint.setColor(getColor());
-        mPaint.setAntiAlias(true);
-        mPaint.setStyle(Paint.Style.FILL);
-        mPaint.setStrokeWidth(2);
-       
-		mOverlayPaint.setColor(mOutlineColor);
-        mOverlayPaint.setAntiAlias(true);
-        mOverlayPaint.setStyle(Paint.Style.STROKE);
-        mOverlayPaint.setStrokeWidth(2);
-        
-		mTextPaint.setColor(mTextColor);
-        mTextPaint.setAntiAlias(true);
-        mTextPaint.setStyle(Paint.Style.FILL);
-        mTextPaint.setTextSize(20);
-        mTextPaint.setTextAlign(Paint.Align.CENTER);
-        
-		mBlankPaint.setColor(mBlankColor);
-        mBlankPaint.setStyle(Paint.Style.FILL);
 	}
 
 	@Override

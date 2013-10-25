@@ -94,6 +94,25 @@ public abstract class HexKey
         mPressPaint.setAntiAlias(true);
         mPressPaint.setStyle(Paint.Style.FILL);
         mPressPaint.setStrokeWidth(2);
+        
+		mPaint.setColor(getColor());
+        mPaint.setAntiAlias(true);
+        mPaint.setStyle(Paint.Style.FILL);
+        mPaint.setStrokeWidth(2);
+       
+		mOverlayPaint.setColor(mOutlineColor);
+        mOverlayPaint.setAntiAlias(true);
+        mOverlayPaint.setStyle(Paint.Style.STROKE);
+        mOverlayPaint.setStrokeWidth(2);
+        
+		mTextPaint.setColor(mTextColor);
+        mTextPaint.setAntiAlias(true);
+        mTextPaint.setStyle(Paint.Style.FILL);
+        mTextPaint.setTextSize(20);
+        mTextPaint.setTextAlign(Paint.Align.CENTER);
+        
+		mBlankPaint.setColor(mBlankColor);
+        mBlankPaint.setStyle(Paint.Style.FILL);
 		
 		mKeyCount++;
 	}
