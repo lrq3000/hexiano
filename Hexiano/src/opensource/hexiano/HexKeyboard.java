@@ -79,6 +79,7 @@ public class HexKeyboard extends View
 
 	static ArrayList<HexKey> mKeys = new ArrayList<HexKey>();
 
+	/*
 	private Handler mAdHandler = new Handler();
 
 	private Runnable mAdUpdater = new Runnable()
@@ -111,6 +112,7 @@ public class HexKeyboard extends View
 			}
 		}
 	};
+	*/
 
 	protected void setUpJammerBoard()
 	{
@@ -145,7 +147,11 @@ public class HexKeyboard extends View
 							mInstrument,
 							++keyCount);
 
-					mKeys.add(kittyCornerKey);
+					if (kittyCornerKey.isKeyVisible()) {
+						mKeys.add(kittyCornerKey);
+					} else {
+						--keyCount;
+					}
 					pitch-=5;
 
 					JammerKey key = new JammerKey(
@@ -155,7 +161,12 @@ public class HexKeyboard extends View
 							pitch,
 							mInstrument,
 							++keyCount);
-					mKeys.add(key);
+
+					if (key.isKeyVisible()) {
+						mKeys.add(key);
+					} else {
+						--keyCount;
+					}
 					pitch-=7;
 
 					x += 3 * mTileRadius;
@@ -193,7 +204,12 @@ public class HexKeyboard extends View
 							pitch,
 							mInstrument,
 							++keyCount);
-					mKeys.add(kittyCornerKey);
+					
+					if (kittyCornerKey.isKeyVisible()) {
+						mKeys.add(kittyCornerKey);
+					} else {
+						--keyCount;
+					}
 					
 					pitch-=5;
 
@@ -204,7 +220,12 @@ public class HexKeyboard extends View
 							pitch,
 							mInstrument,
 							++keyCount);
-					mKeys.add(key);
+
+					if (key.isKeyVisible()) {
+						mKeys.add(key);
+					} else {
+						--keyCount;
+					}
 					
 					pitch+=7;
 
@@ -269,7 +290,12 @@ public class HexKeyboard extends View
 							mInstrument,
 							++keyCount,
 							octaveGroupNumber);
-					mKeys.add(kittyCornerKey);
+					
+					if (kittyCornerKey.isKeyVisible()) {
+						mKeys.add(kittyCornerKey);
+					} else {
+						--keyCount;
+					}
 			
 					jankoColumnNumber++;
 				
@@ -287,7 +313,12 @@ public class HexKeyboard extends View
 							mInstrument,
 							++keyCount,
 							octaveGroupNumber);
-					mKeys.add(key);
+					
+					if (key.isKeyVisible()) {
+						mKeys.add(key);
+					} else {
+						--keyCount;
+					}
 					pitch++;
 				
 					jankoColumnNumber++;
@@ -337,7 +368,12 @@ public class HexKeyboard extends View
 							mInstrument,
 							++keyCount,
 							octaveGroupNumber);
-					mKeys.add(kittyCornerKey);
+					
+					if (kittyCornerKey.isKeyVisible()) {
+						mKeys.add(kittyCornerKey);
+					} else {
+						--keyCount;
+					}
 					pitch+=2;
 					x += mTileWidth;
 				}
@@ -361,7 +397,12 @@ public class HexKeyboard extends View
 							mInstrument,
 							++keyCount,
 							octaveGroupNumber);
-					mKeys.add(key);
+					
+					if (key.isKeyVisible()) {
+						mKeys.add(key);
+					} else {
+						--keyCount;
+					}
 					
 					pitch+=2;
 
@@ -416,7 +457,11 @@ public class HexKeyboard extends View
 							mInstrument,
 							++keyCount);
 
-					mKeys.add(kittyCornerKey);
+					if (kittyCornerKey.isKeyVisible()) {
+						mKeys.add(kittyCornerKey);
+					} else {
+						--keyCount;
+					}
 					pitch+=4;
 
 					SonomeKey key = new SonomeKey(
@@ -426,7 +471,12 @@ public class HexKeyboard extends View
 							pitch,
 							mInstrument,
 							++keyCount);
-					mKeys.add(key);
+					
+					if (key.isKeyVisible()) {
+						mKeys.add(key);
+					} else {
+						--keyCount;
+					}
 					pitch-=3;
 
 					x += 3 * mTileRadius;
@@ -460,7 +510,12 @@ public class HexKeyboard extends View
 							pitch,
 							mInstrument,
 							++keyCount);
-					mKeys.add(kittyCornerKey);
+					
+					if (kittyCornerKey.isKeyVisible()) {
+						mKeys.add(kittyCornerKey);
+					} else {
+						--keyCount;
+					}
 					
 					pitch+=4;
 
@@ -471,7 +526,12 @@ public class HexKeyboard extends View
 							pitch,
 							mInstrument,
 							++keyCount);
-					mKeys.add(key);
+					
+					if (key.isKeyVisible()) {
+						mKeys.add(key);
+					} else {
+						--keyCount;
+					}
 					
 					pitch+=3;
 
@@ -711,8 +771,10 @@ public class HexKeyboard extends View
 		if (mStartTime == 0L)
 		{
 			mStartTime = SystemClock.uptimeMillis();
+			/*
 			mAdHandler.removeCallbacks(mAdUpdater);
 			mAdHandler.postDelayed(mAdUpdater, mAdDelayMilliseconds);
+			*/
 		}
 	}
 
@@ -915,7 +977,7 @@ public class HexKeyboard extends View
 		Iterator<Integer> it = just_pressed.iterator();
 		while (it.hasNext()) {
 			int i = it.next();
-			try // TODO: Work out why keys that don't play and aren't drawn even exist anyway.
+			try
 			{
 				mKeys.get(i).play();
 			}

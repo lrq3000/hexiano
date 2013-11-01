@@ -63,6 +63,7 @@ public abstract class HexKey
 	static String mKeyOrientation = null;
 	static boolean mKeyOverlap = false;
 	static int mKeyCount = 0;
+	protected int mKeyNumber;
 	static int mRadius;
 	int mStreamId;
     private boolean mPressed; // If key is pressed or not
@@ -85,6 +86,7 @@ public abstract class HexKey
 		mInstrument = instrument;
 		mNote = new Note(midiNoteNumber, keyNumber); // keyNumber is just for reference to show as a label on the key, useless otherwise
 		mMidiNoteNumber = mNote.getMidiNoteNumber();
+		mKeyNumber = keyNumber;
 		mStreamId = -1;
 		mPressed = false;
 		mDirty = true;
@@ -697,6 +699,72 @@ public abstract class HexKey
 		}
 		
 		return false;
+	}
+	
+	// Check if a point is visible onscreen
+	protected boolean isPointVisible(Point P) {
+		if (P.x >= 0 && P.y >= 0 && P.x < HexKeyboard.mDisplayWidth && P.y < HexKeyboard.mDisplayHeight) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	// Check if a key is visible onscreen by computing approximate boundaries
+	// TODO: try to find a more precise way to compute the boundaries? Some kittyCornerKey may be missing (but didn't witness such a case in my tests)
+	public boolean isKeyVisible() {
+		Point LeftmostTop;
+		Point LeftmostBottom;
+		Point RightmostTop;
+		Point RightmostBottom;
+		Point HighestTop;
+		Point LowestBottom;
+		
+		// Computing the lower and higher bound in x and y dimensions
+		if (mMiddleLeft != null && mMiddleLeft.x < mLowerLeft.x) {
+			LeftmostTop = mMiddleLeft;
+			LeftmostBottom = mMiddleLeft;
+		} else {
+			LeftmostTop = mUpperLeft;
+			LeftmostBottom = mLowerLeft;
+		}
+		
+		if (mMiddleRight != null && mMiddleRight.x > mLowerRight.x) {
+			RightmostTop = mMiddleRight;
+			RightmostBottom = mMiddleRight;
+		} else {
+			RightmostTop = mUpperRight;
+			RightmostBottom = mLowerRight;
+		}
+		
+		if (mBottom != null && mBottom.y < mLowerLeft.y) {
+			LowestBottom = mBottom;
+		} else {
+			LowestBottom = mLowerLeft;
+		}
+		
+		if (mTop != null && mTop.y > mUpperLeft.y) {
+			HighestTop = mTop;
+		} else {
+			HighestTop = mUpperLeft;
+		}
+		
+		// DEBUG: Print the computed boundaries
+		// Log.d("HexKey::isKeyVisible", "HexKey boundaries: "+Integer.toString(mKeyNumber)+" DW:"+Integer.toString(HexKeyboard.mDisplayWidth)+" DH:"+Integer.toString(HexKeyboard.mDisplayHeight)+" T:"+Integer.toString(HighestTop.x)+";"+Integer.toString(HighestTop.y)+" B:"+Integer.toString(LowestBottom.x)+";"+Integer.toString(LowestBottom.y)+" LT:"+Integer.toString(LeftmostTop.x)+";"+Integer.toString(LeftmostTop.y)+" LB:"+Integer.toString(LeftmostBottom.x)+";"+Integer.toString(LeftmostBottom.y)+" RT:"+Integer.toString(RightmostTop.x)+";"+Integer.toString(RightmostTop.y)+" RB:"+Integer.toString(RightmostBottom.x)+";"+Integer.toString(RightmostBottom.y));
+		
+		// Computing visibility: if the coordinates of at least one of the lowest/highest bound point is inside the screen resolution, then the key is visible
+		// Note: we need to check the coordinates of Points, not just x and y (that's why we store the point and not just the x or y coordinate), else the computation will be flawed (a point may have an x coordinate in the correct range, but not y, which would place the point off-screen, below the screen)
+		if ( this.isPointVisible(LeftmostTop)
+				|| this.isPointVisible(LeftmostBottom)
+				|| this.isPointVisible(RightmostTop)
+				|| this.isPointVisible(RightmostBottom)
+				|| this.isPointVisible(HighestTop)
+				|| this.isPointVisible(LowestBottom)
+				) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	public void play()
