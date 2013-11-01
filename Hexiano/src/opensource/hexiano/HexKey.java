@@ -68,6 +68,7 @@ public abstract class HexKey
     private boolean mPressed; // If key is pressed or not
     private boolean mDirty; // Used to check if a key state has changed, and if so to paint the new state on screen (functional code like play and stop are called on touch events in HexKeyboard)
 	private boolean sound_loaded = false;
+	protected boolean mNoSound = false;
     
     protected static Instrument mInstrument;
     protected int mMidiNoteNumber;
@@ -316,38 +317,49 @@ public abstract class HexKey
     	}
     
   		Path hexPath = getHexagonPath();
-    	
-		String labelPref  = mPrefs.getString("labelType", null);
-		String label = "";
-		if (mCC != null) {
-			label = mCC.getDisplayString(labelPref, true);
-		} else {
-			label = mNote.getDisplayString(labelPref, true);
-		}
 
+  		// If the key is void (neither a note nor a CC/Modifier) then just don't paint it (will be all-black on screen)
 		if (this.mMidiNoteNumber < 1) // (this.mMidiNoteNumber < 21 || this.mMidiNoteNumber > 108)
 		{
+			// Key shaping/painting
     		hexPath.offset(mCenter.x, mCenter.y);
-    		canvas.drawPath(hexPath, mBlankPaint);
+    		canvas.drawPath(hexPath, mBlankPaint); // all blank (black)
 		}
+		// Else if the key is pressed OR not yet initialized, show a greyed space
 		else if (mPressed || !this.checkInit())
     	{
+			// Key shaping/painting
     		hexPath.offset(mCenter.x, mCenter.y);
-    		canvas.drawPath(hexPath, mPressPaint);
-    		canvas.drawPath(hexPath, mOverlayPaint);
+    		canvas.drawPath(hexPath, mPressPaint); // Background (greyed) color
+    		canvas.drawPath(hexPath, mOverlayPaint); // Contour
     	}
+		// Else the key is released and is either a note or CC/Modifier, we paint it with a label and the corresponding color
     	else
     	{
+    		String labelPref  = mPrefs.getString("labelType", null);
+    		String label = "";
+    		if (mCC != null) {
+    			label = mCC.getDisplayString(labelPref, true);
+    		} else {
+    			label = mNote.getDisplayString(labelPref, true);
+    		}
+    		// If the note exists but there's no sound available, append an (X) to the label
+    		if (mNoSound && mNote != null) {
+    			label += " (X)";
+    		}
+
+    		// Key shaping/painting
     		hexPath.offset(mCenter.x, mCenter.y);
-    		canvas.drawPath(hexPath, mPaint);
-    		canvas.drawPath(hexPath, mOverlayPaint);
+    		canvas.drawPath(hexPath, mPaint); // Background (normal) color
+    		canvas.drawPath(hexPath, mOverlayPaint); // Contour
     		
+    		// Label printing
     		Rect bounds = new Rect();
-    		mTextPaint.getTextBounds(label, 0, label.length(), bounds);
-    		int labelHeight = bounds.bottom - bounds.top;
+    		mTextPaint.getTextBounds(label, 0, label.length(), bounds); // get label size
+    		int labelHeight = bounds.bottom - bounds.top; // place the label (depending on the size)
     		int x = mCenter.x;
     		int y = mCenter.y + Math.abs(labelHeight/2);
-    		canvas.drawText(label, x, y, mTextPaint);
+    		canvas.drawText(label, x, y, mTextPaint); // print the label on the key
     	}
     	
     	mDirty = false;
@@ -364,10 +376,14 @@ public abstract class HexKey
 
 				// Set mDirty if just loaded (to force refresh the painting of the key next time)
 				if (sound_loaded == true) {
+					mNoSound = false;
 					mDirty = true;
+				} else {
+					mNoSound = true; // If the sound cannot be loaded, maybe the sound file is not available for this note
 				}
 			// Else we just tell the sound is OK (even if there's no sound for this key, it may be a Modifier/CC key)
 			} else {
+				mNoSound = true; // In any other case, we know this key will have no sound (either because it's a Modifier/CC key or because this a note but Instrument.mRootNotes does not contain the sound for this note)
 				sound_loaded = true;
 			}
 			return !sound_loaded;
