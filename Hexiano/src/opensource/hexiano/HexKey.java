@@ -45,6 +45,7 @@ public abstract class HexKey
 	static int mTextColor;
 	static int mOutlineColor;
 	static int mPressedColor;
+	static int mSpecialColor = 0; // For special keys (eg: Sustain)
 	Point mCenter;
 	Point mTop;
 	Point mBottom;
@@ -64,15 +65,16 @@ public abstract class HexKey
 	static int mKeyCount = 0;
 	static int mRadius;
 	int mStreamId;
-    private boolean mPressed;
-    private boolean mDirty;
+    private boolean mPressed; // If key is pressed or not
+    private boolean mDirty; // Used to check if a key state has changed, and if so to paint the new state on screen (functional code like play and stop are called on touch events in HexKeyboard)
 	private boolean sound_loaded = false;
     
     protected static Instrument mInstrument;
-    protected Note mNote;
     protected int mMidiNoteNumber;
+    protected Note mNote;
+    protected CC mCC;
     
-	public HexKey(Context context, int radius, Point center, int midiNoteNumber, Instrument instrument)
+	public HexKey(Context context, int radius, Point center, int midiNoteNumber, Instrument instrument, int keyNumber)
 	{
 		mPrefs = PreferenceManager.getDefaultSharedPreferences(context);
 		getPrefs();
@@ -80,7 +82,7 @@ public abstract class HexKey
 		setColors();
 		
 		mInstrument = instrument;
-		mNote = new Note(midiNoteNumber);
+		mNote = new Note(midiNoteNumber, keyNumber); // keyNumber is just for reference to show as a label on the key, useless otherwise
 		mMidiNoteNumber = mNote.getMidiNoteNumber();
 		mStreamId = -1;
 		mPressed = false;
@@ -124,6 +126,7 @@ public abstract class HexKey
 	protected void setColors()
 	{
 		// Colours have been left from the historically used AndroidWorld library.
+		// Format: int beginning with 0xFF and then a RGB HTML/hexadecimal code (3 layers, such as FF9900 with FF for red, 99 for green and 00 for blue)
 		String colorPref = mPrefs.getString("colorScheme", null);
 		if (colorPref.equals("Khaki"))
 		{
@@ -136,6 +139,7 @@ public abstract class HexKey
 			mOutlineColor = 0xFF000000; // Black.
 			mTextColor = 0xFF000000; // Black.
 			mPressedColor = 0xFFA9A9A9; // Dark grey.
+			mSpecialColor = 0xFFFF9900; // Golden yellow.
 		}
 		else if (colorPref.equals("Azure"))
 		{
@@ -147,8 +151,9 @@ public abstract class HexKey
 			mOutlineColor = 0xFF000000; // Black.
 			mTextColor = 0xFF000000; // Black.
 			mPressedColor = 0xFFA9A9A9; // Dark grey.
+			mSpecialColor = 0xFF8B70B3; // Purple.
 		}
-		else if (colorPref.equals("White") ||/*...renamed to...*/ colorPref.equals("Slate"))
+		else if (colorPref.equals("White") || colorPref.equals("Black & White") ||/*...renamed to...*/ colorPref.equals("Slate"))
 		// TODO: Remove 'White' preference when appropriate.
 		{
 			mBlankColor = 0xFF000000; // Black.
@@ -159,6 +164,7 @@ public abstract class HexKey
 			mOutlineColor = 0xFF000000; // Black.
 			mTextColor = 0xFF000000; // Black.
 			mPressedColor = 0xFFA9A9A9; // Dark grey.
+			mSpecialColor = 0xFF336699; // Light blue.
 		}
 		else if (colorPref.equals("Silhouette"))
 		{
@@ -170,6 +176,7 @@ public abstract class HexKey
 			mOutlineColor = 0xFFFFFFFF; // White.
 			mTextColor = 0xFFFFFFFF; // White.
 			mPressedColor = 0xFFFFFFFF; // White.
+			mSpecialColor = 0xFF336699; // Light blue.
 		}
 		else if (colorPref.equals("Grey & White"))
 		{
@@ -181,6 +188,7 @@ public abstract class HexKey
 			mOutlineColor = 0xFF000000; // Black.
 			mTextColor = mOutlineColor;
 			mPressedColor = 0xFFA9A9A9; // Dark grey.
+			mSpecialColor = 0xFF336699; // Light blue.
 		}
 		else if (colorPref.equals("Ebony & Ivory"))
 		{
@@ -195,6 +203,7 @@ public abstract class HexKey
 			mOutlineColor = 0xFF000000; // Black.
 			mTextColor = 0xFF666666;
 			mPressedColor = 0xFFA9A9A9; // Dark grey.
+			mSpecialColor = 0xFFFF9900; // Golden yellow.
 		}
 		else if (colorPref.equals("Blank"))
 		{
@@ -206,6 +215,7 @@ public abstract class HexKey
 			mOutlineColor = 0xFF000000; // Black.
 			mTextColor = mOutlineColor;
 			mPressedColor = 0xFFA9A9A9; // Dark grey.
+			mSpecialColor = 0xFF336699; // Light blue.
 		}
 		else // Default: Azure.
 		// Fail to default colour scheme if saved preference doesn't have a match.
@@ -218,6 +228,7 @@ public abstract class HexKey
 			mOutlineColor = 0xFF000000; // Black.
 			mTextColor = 0xFF000000; // Black.
 			mPressedColor = 0xFFA9A9A9; // Dark grey.
+			mSpecialColor = 0xFF8B70B3; // Purple.
 		}
 	}
 	
@@ -287,11 +298,18 @@ public abstract class HexKey
         
         return hexy;
     }
+
+    // Check if the key is correctly initialized, else we will show it as unloaded (pressed) in paint()
+    public boolean checkInit() {
+    	return !this.sound_not_loaded(); // Sets mDirty if just loaded.
+    }
    
     /** Paint this Polygon into the given graphics */
     public void paint(Canvas canvas)
     {
-		this.sound_not_loaded(); // Sets mDirty if just loaded.
+    	this.checkInit(); // Sets mDirty if just loaded.
+    	
+    	// Check if something has changed for this key using mDirty: if nothing, then we don't need to repaint
     	if (! mDirty)
     	{
     		return;	
@@ -300,14 +318,19 @@ public abstract class HexKey
   		Path hexPath = getHexagonPath();
     	
 		String labelPref  = mPrefs.getString("labelType", null);
-		String label = mNote.getDisplayString(labelPref, true);
-	
-		if (this.mMidiNoteNumber < 21 || this.mMidiNoteNumber > 108)
+		String label = "";
+		if (mCC != null) {
+			label = mCC.getDisplayString(labelPref, true);
+		} else {
+			label = mNote.getDisplayString(labelPref, true);
+		}
+
+		if (this.mMidiNoteNumber < 1) // (this.mMidiNoteNumber < 21 || this.mMidiNoteNumber > 108)
 		{
     		hexPath.offset(mCenter.x, mCenter.y);
     		canvas.drawPath(hexPath, mBlankPaint);
 		}
-		else if (mPressed || this.sound_not_loaded())
+		else if (mPressed || !this.checkInit())
     	{
     		hexPath.offset(mCenter.x, mCenter.y);
     		canvas.drawPath(hexPath, mPressPaint);
@@ -334,14 +357,18 @@ public abstract class HexKey
 		if (sound_loaded == true) {
 			return false;
 		} else {
-			// Not all keys have sounds to be loaded.
-			if (Instrument.mRootNotes.containsKey(mMidiNoteNumber)) {
+			// Load sound only if it's a note (CC keys won't load any sound)
+			if (Instrument.mRootNotes.containsKey(mMidiNoteNumber) && this.mNote != null) {
 				int index = Instrument.mRootNotes.get(mMidiNoteNumber);
 				sound_loaded = Instrument.mSounds.containsKey(index);
-			}
-			if (sound_loaded == true) {
-				// Set mDirty if just loaded.
-				mDirty = true;
+
+				// Set mDirty if just loaded (to force refresh the painting of the key next time)
+				if (sound_loaded == true) {
+					mDirty = true;
+				}
+			// Else we just tell the sound is OK (even if there's no sound for this key, it may be a Modifier/CC key)
+			} else {
+				sound_loaded = true;
 			}
 			return !sound_loaded;
 		}
@@ -659,12 +686,16 @@ public abstract class HexKey
 	public void play()
 	{
 		if (mStreamId != -1) {
-			//if (HexKeyboard.mSustain == true || HexKeyboard.mSustainAlwaysOn == true) {
+			// If sustain, we want to force stop the previous sound of this key (else it will be a kind of reverb, plus we will get weird stuffs like disabling sustain won't stop all sounds since we will loose the streamId for the keys we pressed twice!)
+			if (HexKeyboard.mSustain == true || HexKeyboard.mSustainAlwaysOn == true) {
+				// TODO: since the previous sound is stopped just before playing, an new bug appeared: sometimes when a key is pressed twice quickly, a clearly audible sound clipping happens!
+				this.stop(true);
+			// Else we don't stop the sound, just drop the Id (the sound will just play until it ends then the stream will be closed) - useful for a future Reverb!
+			} else {
 				this.stop(); // better always stop if there is already a stream playing, no matter the reason
-			//} else {
-				// Should never get here.
-			//	Log.e("HexKey::play", mMidiNoteNumber + ": Already playing and no sustain! Should not happen!");
-			//}
+				//Log.e("HexKey::play", mMidiNoteNumber + ": Already playing and no sustain! Should not happen!");
+			}
+			// Else else, without Sustain, stop() will be called automatically upon release of the key
 		}
 		mStreamId = mInstrument.play(mMidiNoteNumber);
 		if (mStreamId == -1) {return;} // May not yet be loaded.

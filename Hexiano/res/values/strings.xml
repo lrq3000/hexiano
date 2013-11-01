@@ -49,6 +49,7 @@
 		<item>None</item>
 		<item>Solfege</item>
 		<item>Whole Tone Number</item>
+		<item>Key Number (DEV)</item>
 	</string-array>
 	<string-array name="base_octaves">
 		<item>0</item>

@@ -1,9 +1,9 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
  *   Hexiano, an isomorphic musical keyboard for Android                   *
- *   Copyleft 2013 Stephen Larroqu                                         *
+ *   Copyleft 2013 Stephen Larroque                                        *
  *                                                                         *
- *   FILE: ModifierKey.java                                                  *
+ *   FILE: SustainKey.java                                                 *
  *                                                                         *
  *   This file is part of Hexiano, an open-source project hosted at:       *
  *   https://gitorious.org/hexiano                                         *
@@ -28,36 +28,22 @@ import android.content.Context;
 import android.graphics.Paint;
 import android.util.Log;
 
-public class SustainKey extends HexKey
+public class SustainKey extends ModifierKey
 {
 	public SustainKey(Context context, int radius, Point center,
-			int midiNoteNumber, Instrument instrument)
+			int midiNoteNumber, Instrument instrument, int keyNumber)
 	{
-		super(context, radius, center, midiNoteNumber, instrument);
-
-		mPaint.setColor(getColor());
-        mPaint.setAntiAlias(true);
-        mPaint.setStyle(Paint.Style.FILL);
-        mPaint.setStrokeWidth(2);
-       
-		mOverlayPaint.setColor(mOutlineColor);
-        mOverlayPaint.setAntiAlias(true);
-        mOverlayPaint.setStyle(Paint.Style.STROKE);
-        mOverlayPaint.setStrokeWidth(2);
-        
-		mTextPaint.setColor(mTextColor);
-        mTextPaint.setAntiAlias(true);
-        mTextPaint.setStyle(Paint.Style.FILL);
-        mTextPaint.setTextSize(20);
-        mTextPaint.setTextAlign(Paint.Align.CENTER);
-        
-		mBlankPaint.setColor(mBlankColor);
-        mBlankPaint.setStyle(Paint.Style.FILL);
+		super(context, radius, center, 64, instrument, keyNumber);
 	}
 	
 	@Override
 	public int getColor() {
-		return mWhiteColor;
+		int color = mWhiteColor;
+		if (mSpecialColor != 0) {
+			color = mSpecialColor;
+		}
+		
+		return color;
 	}
 	
 	@Override

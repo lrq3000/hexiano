@@ -31,9 +31,9 @@ import android.graphics.Paint;
 public class SonomeKey extends HexKey
 {
 	public SonomeKey(Context context, int radius, Point center,
-			int midiNoteNumber, Instrument instrument)
+			int midiNoteNumber, Instrument instrument, int keyNumber)
 	{
-		super(context, radius, center, midiNoteNumber, instrument);
+		super(context, radius, center, midiNoteNumber, instrument, keyNumber);
 	}
 
 	@Override

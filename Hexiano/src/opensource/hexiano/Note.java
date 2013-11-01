@@ -34,6 +34,7 @@ public class Note
 	protected String mFlatName;
     protected String mSharpName;
 	protected int mMidiNoteNumber;
+	protected int mKeyNumber; // Just for reference, can be shown as a label on the key, but useless otherwise for the Note
 	
 	static final HashMap<String, String> mToGerman;
 	static
@@ -107,18 +108,13 @@ public class Note
 		mToEnglish.put("Ab", "A\u266D");
 	}
 	
-	public Note(int midiNumber)
+	public Note(int midiNumber, int keyNumber)
 	{
 	    mMidiNoteNumber = midiNumber;
-	    if (midiNumber < 0) { // Modifier keys are set to negative to avoid conflicts with other notes
-	    	mFlatName = this.getModifierNameForNoteNumber(mMidiNoteNumber);
-		    mSharpName = mFlatName;
-		    mOctave = 1;
-	    } else {
-		    mFlatName = this.getFlatNameForNoteNumber(mMidiNoteNumber);
-		    mSharpName = this.getSharpNameForNoteNumber(mMidiNoteNumber);
-		    mOctave = this.getOctaveForNoteNumber(mMidiNoteNumber); 
-	    }
+	    mKeyNumber = keyNumber;
+	    mFlatName = this.getFlatNameForNoteNumber(mMidiNoteNumber);
+	    mSharpName = this.getSharpNameForNoteNumber(mMidiNoteNumber);
+	    mOctave = this.getOctaveForNoteNumber(mMidiNoteNumber);
 	}
 	
 	public String getFlatName()
@@ -143,6 +139,10 @@ public class Note
 	    if (labelType.equals("None"))
 	    {
 	    	return "";
+	    }
+	    else if (labelType.equals("Key Number (DEV)"))
+	    {
+	    	return("" + mKeyNumber);
 	    }
 	    else if (labelType.equals("MIDI Note Number"))
 	    {
@@ -171,23 +171,12 @@ public class Note
 		    noteStr = mToSolfege.get(mSharpName);
 		}
 	  
-		if (showOctave && mMidiNoteNumber > 0) // not a modifier key
+		if (showOctave)
 		{
 			noteStr += mOctave;
 		}
 	    
 	    return(noteStr);
-	}
-
-	static final HashMap<Integer, String> mModifierForNumber;
-	static
-	{
-	    mModifierForNumber = new HashMap<Integer, String>();
-	    mModifierForNumber.put(-1, "Mod");
-	    mModifierForNumber.put(-7, "Volume");
-	    mModifierForNumber.put(-10, "Pan");
-	    mModifierForNumber.put(-11, "Expression");
-	    mModifierForNumber.put(-64, "Sustain");
 	}
 	
 	static final HashMap<Integer, String> mFlatForNumber;

@@ -119,7 +119,8 @@ public class HexKeyboard extends View
 		String firstNote = mPrefs.getString("baseJammerNote", null);
 		String firstOctaveStr = mPrefs.getString("baseJammerOctave", null);
 		int firstOctave = Integer.parseInt(firstOctaveStr);
-		int pitch = Note.getNoteNumber(firstNote, firstOctave); 
+		int pitch = Note.getNoteNumber(firstNote, firstOctave);
+		int keyCount = 0;
 		if (HexKey.getKeyOrientation(mContext).equals("Vertical"))
 		{
 			Log.d("setUpJammerBoard", "orientation: vertical");
@@ -141,7 +142,8 @@ public class HexKeyboard extends View
 							mTileRadius,
 							new Point(kittyCornerX, kittyCornerY),
 							pitch,
-							mInstrument);
+							mInstrument,
+							++keyCount);
 
 					mKeys.add(kittyCornerKey);
 					pitch-=5;
@@ -151,7 +153,8 @@ public class HexKeyboard extends View
 							mTileRadius,
 							new Point(x, y),
 							pitch,
-							mInstrument);
+							mInstrument,
+							++keyCount);
 					mKeys.add(key);
 					pitch-=7;
 
@@ -188,7 +191,8 @@ public class HexKeyboard extends View
 							mTileRadius,
 							new Point(kittyCornerX, kittyCornerY),
 							pitch,
-							mInstrument);
+							mInstrument,
+							++keyCount);
 					mKeys.add(kittyCornerKey);
 					
 					pitch-=5;
@@ -198,7 +202,8 @@ public class HexKeyboard extends View
 							mTileRadius,
 							new Point(x, y),
 							pitch,
-							mInstrument);
+							mInstrument,
+							++keyCount);
 					mKeys.add(key);
 					
 					pitch+=7;
@@ -238,6 +243,8 @@ public class HexKeyboard extends View
 	    pitch -= (mColumnCount - 1) * 2 - 1;
 		Log.d("setUpJankoBoard", "" + pitch);
 		
+		int keyCount = 0;
+		
 		if (HexKey.getKeyOrientation(mContext).equals("Vertical"))
 		{
 			pitch -= (groupCount - 1) * 12;
@@ -260,6 +267,7 @@ public class HexKeyboard extends View
 							new Point(kittyCornerX, kittyCornerY),
 							pitch + 12 * octaveGroupNumber,
 							mInstrument,
+							++keyCount,
 							octaveGroupNumber);
 					mKeys.add(kittyCornerKey);
 			
@@ -277,6 +285,7 @@ public class HexKeyboard extends View
 							new Point(x, y),
 							pitch + 12 * octaveGroupNumber,
 							mInstrument,
+							++keyCount,
 							octaveGroupNumber);
 					mKeys.add(key);
 					pitch++;
@@ -326,6 +335,7 @@ public class HexKeyboard extends View
 							new Point(kittyCornerX, kittyCornerY),
 							pitch,
 							mInstrument,
+							++keyCount,
 							octaveGroupNumber);
 					mKeys.add(kittyCornerKey);
 					pitch+=2;
@@ -349,6 +359,7 @@ public class HexKeyboard extends View
 							new Point(x, y),
 							pitch,
 							mInstrument,
+							++keyCount,
 							octaveGroupNumber);
 					mKeys.add(key);
 					
@@ -379,6 +390,7 @@ public class HexKeyboard extends View
 		String firstOctaveStr = mPrefs.getString("baseSonomeOctave", null);
 		int firstOctave = Integer.parseInt(firstOctaveStr);
 		int pitch = Note.getNoteNumber(firstNote, firstOctave);
+		int keyCount = 0;
 
 		if (HexKey.getKeyOrientation(mContext).equals("Vertical"))
 		{
@@ -401,7 +413,8 @@ public class HexKeyboard extends View
 							mTileRadius,
 							new Point(kittyCornerX, kittyCornerY),
 							pitch,
-							mInstrument);
+							mInstrument,
+							++keyCount);
 
 					mKeys.add(kittyCornerKey);
 					pitch+=4;
@@ -411,7 +424,8 @@ public class HexKeyboard extends View
 							mTileRadius,
 							new Point(x, y),
 							pitch,
-							mInstrument);
+							mInstrument,
+							++keyCount);
 					mKeys.add(key);
 					pitch-=3;
 
@@ -444,7 +458,8 @@ public class HexKeyboard extends View
 							mTileRadius,
 							new Point(kittyCornerX, kittyCornerY),
 							pitch,
-							mInstrument);
+							mInstrument,
+							++keyCount);
 					mKeys.add(kittyCornerKey);
 					
 					pitch+=4;
@@ -454,7 +469,8 @@ public class HexKeyboard extends View
 							mTileRadius,
 							new Point(x, y),
 							pitch,
-							mInstrument);
+							mInstrument,
+							++keyCount);
 					mKeys.add(key);
 					
 					pitch+=3;
@@ -664,6 +680,8 @@ public class HexKeyboard extends View
 		}
 		
 		this.setUpModifierKeys();
+		
+		Log.d("setUpBoard", "Total number of keys: " + Integer.toString(mKeys.size()));
 
 		int canvasWidth = getCanvasWidth();
 		int canvasHeight = getCanvasHeight();
@@ -680,8 +698,9 @@ public class HexKeyboard extends View
 				mContext,
 				mTileRadius,
 				mKeys.get(0).mCenter,
-				-64,
-				mInstrument)
+				64, // useless, set directly in SustainKey class
+				mInstrument,
+				1) // id of the key, used only as a label if set in config
 		);
 	}
 

@@ -33,9 +33,9 @@ public class JankoKey extends HexKey
 	private int mOctaveGroupNumber;
 	
 	public JankoKey(Context context, int radius, Point center,
-			int midiNoteNumber, Instrument instrument, int octaveGroupNumber)
+			int midiNoteNumber, Instrument instrument, int keyNumber, int octaveGroupNumber)
 	{
-		super(context, radius, center, midiNoteNumber, instrument);
+		super(context, radius, center, midiNoteNumber, instrument, keyNumber);
 
         mOctaveGroupNumber = octaveGroupNumber;
 	}
