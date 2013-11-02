@@ -76,7 +76,7 @@ public class CC
 
 	public String getDisplayString(String labelType, boolean showOctave)
 	{
-		String noteStr = "?";
+		String noteStr = "CC?";
 	
 	    if (labelType.equals("None"))
 	    {
@@ -92,7 +92,12 @@ public class CC
 	    }
 	    else
 	    {
-	    	return(noteStr);
+	    	String name = getModifierNameForNoteNumber(mMidiCCNumber);
+	    	if (name.length() > 0) {
+	    		return name;
+	    	} else {
+	    		return(noteStr);
+	    	}
 	    }
 	}
 
