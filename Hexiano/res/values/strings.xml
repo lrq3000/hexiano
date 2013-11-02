@@ -35,7 +35,7 @@
 	</string-array>
 	<string-array name="instruments">
 		<item>Piano</item>
-		<item>Organ</item>
+		<item>DUMMY (dont choose)</item>
 	</string-array>
 	<string-array name="layouts">
 		<item>Jammer</item>

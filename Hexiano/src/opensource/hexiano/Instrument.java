@@ -1,6 +1,8 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *   Hexiano, Copyright Â© 2012 James Haigh                                *
+ *   Hexiano, an isomorphic musical keyboard for Android                   *
+ *   Copyleft  @ 2013 Stephen Larroque                                     *
+ *   Copyright © 2012 James Haigh                                          *
  *   Copyright © 2011 David A. Randolph                                    *
  *                                                                         *
  *   FILE: Instrument.java                                                 *
@@ -25,6 +27,7 @@
 
 package opensource.hexiano;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -42,7 +45,8 @@ public abstract class Instrument {
 	protected static HashMap<Integer, Integer> mRootNotes;
 	private AudioManager  mAudioManager;
 	private Context mContext;
-	public Iterator<int[]> sound_load_queue;
+	public Iterator<ArrayList> sound_load_queue;
+	public boolean mExternal = false; // Loading external files (needing to pass Strings instead of int[]?)
 
 	public Instrument(Context context)
 	{
@@ -60,9 +64,16 @@ public abstract class Instrument {
 		mAudioManager = (AudioManager)mContext.getSystemService(Context.AUDIO_SERVICE); 	     
 	} 
 
-	public void addSound(int index, int soundId)
+	// Load into SoundPool a sound from the APK ressources
+	public void addSound(int index, int soundId) // soundId is the APK ressource ID (given by java); index is the midiNoteNumber
 	{
 		mSounds.put(index, mSoundPool.load(mContext, soundId, 1));
+	}
+	
+	// Load into SoundPool an external sound from a given path (eg: on SD card)
+	public void addSound(int index, String path) // path is the full path to a sound file; index is the midiNoteNumber
+	{
+		mSounds.put(index, mSoundPool.load(path, 1));
 	}
 
 	public int play(int midiNoteNumber)

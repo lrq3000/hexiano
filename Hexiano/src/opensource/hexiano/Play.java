@@ -1,6 +1,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *   Hexiano, an isomorphic musical keyboard for Android                  *
+ *   Hexiano, an isomorphic musical keyboard for Android                   *
+ *   Copyleft  @ 2013 Stephen Larroque                                     *
  *   Copyright © 2012 James Haigh                                          *
  *   Copyright © 2011, 2012 David A. Randolph                              *
  *                                                                         *
@@ -24,6 +25,8 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 package opensource.hexiano;
+
+import java.util.ArrayList;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -55,6 +58,7 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 	static SharedPreferences mPrefs;
 	static FrameLayout mFrame;
 	static HexKeyboard mBoard;
+	static String mInstrument;
 
 	private String getVersionName()
 	{
@@ -142,17 +146,34 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 		mBoard = new HexKeyboard(con);
 		// This really speeds up orientation switches!
 		HexKeyboard.mInstrument = (Instrument) getLastNonConfigurationInstance();
-		if (HexKeyboard.mInstrument == null) {
-			// If no retained audio, load it all up (slow).
-			HexKeyboard.mInstrument = new Piano(HexKeyboard.mContext);
+		String instrument = mPrefs.getString("instrument", "Piano");
+		// If no retained audio (or changed), load it all up (slow).
+		if (HexKeyboard.mInstrument == null || mInstrument != instrument) {
+			mInstrument = instrument;
+			if (mInstrument.equals("Piano") || mInstrument.equals("DUMMY (dont choose)")) // Place an if conditional for each staticInstrument (included in APK resources)
+			{
+				HexKeyboard.mInstrument = new Piano(HexKeyboard.mContext);
+			} else {
+				try {
+					HexKeyboard.mInstrument = new GenericInstrument(HexKeyboard.mContext, mInstrument);
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 			// Redraw whenever a new note is ready.
 			HexKeyboard.mInstrument.mSoundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
 					@Override
 					public void onLoadComplete(SoundPool mSoundPool, int sampleId, int status) {
 						mBoard.invalidate();
 						if (HexKeyboard.mInstrument.sound_load_queue.hasNext()) {
-							int[] tuple = HexKeyboard.mInstrument.sound_load_queue.next();
-							HexKeyboard.mInstrument.addSound(tuple[0], tuple[1]);
+							if (!HexKeyboard.mInstrument.mExternal) {
+								ArrayList tuple = HexKeyboard.mInstrument.sound_load_queue.next();
+								HexKeyboard.mInstrument.addSound((Integer)tuple.get(0), (Integer)tuple.get(1));
+							} else {
+								ArrayList tuple = HexKeyboard.mInstrument.sound_load_queue.next();
+								HexKeyboard.mInstrument.addSound((Integer)tuple.get(0), (String)tuple.get(1));
+							}
 						}
 					}
 			});

@@ -1,6 +1,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *   Hexiano, an isomorphic musical keyboard for Android                  *
+ *   Hexiano, an isomorphic musical keyboard for Android                   *
+ *   Copyleft  @ 2013 Stephen Larroque                                     *
  *   Copyright © 2012 James Haigh                                          *
  *   Copyright © 2011, 2012 David A. Randolph                              *
  *                                                                         *
@@ -25,6 +26,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 package opensource.hexiano;
 
+import java.util.ArrayList;
+
 import android.os.Bundle;
 import android.preference.*;
 import android.util.Log;
@@ -40,10 +43,35 @@ public class Prefer extends PreferenceActivity
 	{
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.preferences);
+		
+		// Update instruments list dynamically
+		ArrayList<String> externalInstruments = GenericInstrument.listExternalInstruments(); // Get the list of external instruments (eg: sd card)
+		String[] staticInstruments = getApplicationContext().getResources().getStringArray(R.array.instruments); // Get the list of static instruments in APK (defined in preferences.xml and strings.xml)
+		int pos = 0; // used to prepend in the right order (from first static instrument to the last set in config)
+		for (String instr : staticInstruments) { // prepend static instruments before external instruments
+			externalInstruments.add(pos++, instr);
+		}
+		final CharSequence[] entries = externalInstruments.toArray(new CharSequence[externalInstruments.size()]); // convert to a CharSequence (necessary for setEntries() and setEntryValues())
+		ListPreference lp = (ListPreference)findPreference("instrument"); // get the ListPreference instrument item
+		lp.setEntries(entries); // set the human readable (labels) entries
+		lp.setEntryValues(entries); // set the values for these entries (the same in fact as the labels)
+		
+		// On instrument menu click (UNUSED for now)
+		Preference instrument = findPreference("instrument");
+		instrument.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+			@Override
+			public boolean onPreferenceClick(Preference instrument)
+			{
+				Log.d("Instrument", "onPreferenceClick, instrument");
+				return true;
+			}
+			
+		});
 
 		// Links.
 		// FIXME: These links should be in the XML if only I new how.
 		// <ugly>
+		/*
 		Preference donate = findPreference("donate");
 		donate.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 				@Override
@@ -57,6 +85,7 @@ public class Prefer extends PreferenceActivity
 				}
 			}
 		);
+		*/
 		Preference issue_45 = findPreference("issue-45");
 		issue_45.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 				@Override

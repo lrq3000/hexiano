@@ -2,10 +2,8 @@
  *                                                                         *
  *   Hexiano, an isomorphic musical keyboard for Android                   *
  *   Copyleft  @ 2013 Stephen Larroque                                     *
- *   Copyright © 2012 James Haigh                                          *
- *   Copyright © 2011 David A. Randolph                                    *
  *                                                                         *
- *   FILE: Piano.java                                                      *
+ *   FILE: GenericInstrument.java                                          *
  *                                                                         *
  *   This file is part of Hexiano, an open-source project hosted at:       *
  *   https://gitorious.org/hexiano                                         *
@@ -79,6 +77,7 @@ http://creativecommons.org/licenses/by/3.0/
 
 package opensource.hexiano;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -87,56 +86,58 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import android.content.Context;
+import android.os.Environment;
 import android.util.Log;
 
-public class Piano extends Instrument
+public class GenericInstrument extends Instrument
 {
-	public Piano(Context context)
+
+	public GenericInstrument(Context context, String instrument) throws IllegalAccessException
 	{
 		super(context);
+		
+		this.mExternal = true;
 
-		Pattern pat = Pattern.compile("^pno0*([0-9]+)v");
-		Class raw = R.raw.class;
-		Field[] fields = raw.getFields();
-		List<ArrayList> sounds = new ArrayList<ArrayList>(); // Are there really no tuples in Java?!
-		for (Field field : fields)
+		Pattern pat = Pattern.compile("([0-9]+)\\.[^\\.]*$"); // Pattern: detect the midi note in the last number just before the extension
+		File[] files = listExternalFiles(instrument+"/"); // Get the list of all files for this instrument
+		List<ArrayList> sounds = new ArrayList<ArrayList>();
+		// For each file
+		for (File file : files)
 		{
-		    try
-		    {
-		    	String fieldName = field.getName();
-		        if (fieldName.startsWith("pno", 0))
-		        {
-		        	int midiNoteNumber;
-		        	Matcher mat = pat.matcher(fieldName);
-		        	if (mat.find())
-		        	{
-		        		String midiNoteNumberStr = mat.group(1);
-		        		midiNoteNumber = Integer.parseInt(midiNoteNumberStr);
-		        		int fieldValue = field.getInt(null);	
-		        		Log.d("Piano", "Found midi note: "+midiNoteNumberStr + ": " + fieldValue);
-						ArrayList<Integer> tuple = new ArrayList<Integer>();
-						tuple.add(midiNoteNumber);
-						tuple.add(fieldValue);
-						sounds.add(0, tuple);
-		        		mRootNotes.put(midiNoteNumber, midiNoteNumber);
-		        		mRates.put(midiNoteNumber, 1.0f);
-		        	}
-		        }
-		    }
-		    catch(IllegalAccessException e) {
-		        Log.e("REFLECTION", String.format("%s threw IllegalAccessException.",
-		            field.getName()));
-		    }
+		    String fileName = file.getName();
+		    Log.d("GenericInstrument", "Found file: "+fileName);
+		    // If we find a midi note (matching the regexp)
+			int midiNoteNumber;
+			Matcher mat = pat.matcher(fileName);
+			if (mat.find())
+			{
+				// Parse the filename string to get the midi note
+				String midiNoteNumberStr = mat.group(1);
+				midiNoteNumber = Integer.parseInt(midiNoteNumberStr);
+				String filePath = file.getAbsolutePath();
+				Log.d("GenericInstrument", "Found midi note: "+midiNoteNumberStr + ": " + filePath);
+				// And store it inside the array sounds with the midiNoteNumber being the id and filePath the resource to load
+				ArrayList tuple = new ArrayList();
+				tuple.add(midiNoteNumber);
+				tuple.add(filePath);
+				sounds.add(0, tuple);
+				// Also set this note as a root note (Root Notes are notes we have files for, from which we will extrapolate other notes that are missing if any)
+				mRootNotes.put(midiNoteNumber, midiNoteNumber);
+				// Rate to play the file with, default is always used for now
+				mRates.put(midiNoteNumber, 1.0f);
+			}
 		}
 
+		// Create an iterator to generate all sounds of all notes
 		sound_load_queue = sounds.iterator();
-		// Start loading the first sound, the rest are started from the OnLoadCompleteListener.
+		// Start loading the first sound, the rest are started from the Play::OnLoadCompleteListener()
 		ArrayList tuple = sound_load_queue.next();
-		addSound((Integer)tuple.get(0), (Integer)tuple.get(1));
+		addSound((Integer)tuple.get(0), (String)tuple.get(1));
 
+		// Extrapolate missing notes from Root Notes (notes for which we have a sound file)
 		float previousRate = 1.0f;
-		int previousRootNote = 21;
-		for (int noteId = 21; noteId < 110; noteId++)
+		int previousRootNote = 0;
+		for (int noteId = 0; noteId < 128; noteId++)
 		{
 			if (mRootNotes.containsKey(noteId))
 			{
@@ -153,4 +154,45 @@ public class Piano extends Instrument
 			}
 		}
 	}
+
+	// List all external (eg: sd card) instruments (just the name of the subfolders)
+	public static ArrayList<String> listExternalInstruments() {
+		return GenericInstrument.listExternalInstruments("/hexiano/");
+	}
+
+	// List all external instruments (just the name of the subfolders)
+	public static ArrayList<String> listExternalInstruments(String path) {
+		ArrayList<String> Directories = new ArrayList<String>();
+		if (path.length() != 0) {
+			if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+				path = Environment.getExternalStorageDirectory().toString()+path;
+				Log.d("GenericInstrument::listExternalInstruments", "GenericInstrument: list external instruments (directories) from path: "+path);
+
+			    File f = new File(path);
+			    File[] files = f.listFiles();
+			    for (File file : files) {
+			        if (file.isDirectory()) { // is directory
+			        	Directories.add(file.getName());
+			        }
+			    }
+			}
+		}
+	    return Directories;
+	}
+
+	// List all files in the external instrument's folder
+	public static File[] listExternalFiles(String path) {
+		File[] Files = null;
+		if (path.length() != 0) {
+			if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+				path = Environment.getExternalStorageDirectory().toString()+"/hexiano/"+path;
+				Log.d("GenericInstrument::listExternalFiles", "GenericInstrument: list external files from path: "+path);
+
+			    File f = new File(path);
+			    Files = f.listFiles();
+			}
+		}
+		return Files;
+	}
+
 }

@@ -1,6 +1,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *   Hexiano, an isomorphic musical keyboard for Android                  *
+ *   Hexiano, an isomorphic musical keyboard for Android                   *
+ *   Copyleft  @ 2013 Stephen Larroque                                     *
  *   Copyright © 2012 James Haigh                                          *
  *   Copyright © 2011, 2012 David A. Randolph                              *
  *                                                                         *

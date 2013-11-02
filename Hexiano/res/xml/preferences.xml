@@ -8,7 +8,7 @@
 		<ListPreference android:selectable="true" android:defaultValue="English" android:enabled="true" android:entryValues="@array/key_labels" android:key="labelType" android:title="@string/prompt_label_type" android:entries="@array/key_labels" android:summary="@string/summary_label_type"/>
 		<EditTextPreference android:title="@string/prompt_scale" android:key="scale" android:enabled="true" android:selectable="true" android:summary="@string/summary_scale"/>
 		<EditTextPreference android:title="@string/prompt_touch_scale" android:key="touchScale" android:enabled="true" android:selectable="true" android:summary="@string/summary_touch_scale"/>
-		<ListPreference android:key="instrument" android:title="@string/prompt_instrument" android:defaultValue="@string/default_instrument" android:entryValues="@array/instruments" android:entries="@array/instruments" android:enabled="false" android:selectable="false" android:summary="@string/summary_instrument"/>
+		<ListPreference android:key="instrument" android:title="@string/prompt_instrument" android:defaultValue="@string/default_instrument" android:entryValues="@array/instruments" android:entries="@array/instruments" android:enabled="true" android:selectable="true" android:summary="@string/summary_instrument"/>
 		<PreferenceScreen android:title="Modifier Keys">
 		    <CheckBoxPreference android:key="hideModifierKeys" android:defaultValue="false" android:title="@string/prompt_hide_modifiers" android:summary="@string/summary_hide_modifiers"/>
 		    <CheckBoxPreference android:key="sustainHold" android:defaultValue="true" android:title="@string/prompt_hold_sustain" android:summary="@string/summary_hold_sustain"/>
@@ -37,7 +37,7 @@
 				<Preference android:key="issue-8201" android:title="Android 8201" android:summary="https://code.google.com/p/android/issues/detail?id=8201" />
 			</PreferenceCategory>
 		</PreferenceScreen>
-		<Preference android:title="Donate" android:summary="(via PayPal)" android:key="donate" />
+		<!--  <Preference android:title="Donate" android:summary="(via PayPal)" android:key="donate" /> -->
 	</PreferenceCategory>
 
 	<PreferenceCategory android:key="jammer" android:title="@string/heading_jammer">
