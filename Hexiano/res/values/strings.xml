@@ -93,12 +93,14 @@
 		<item>Landscape</item>
 		<item>Portrait</item>
 	</string-array>
+	<string name="heading_general">General</string>
 	<string name="default_sonome_orientation">Portrait</string>
 	<string name="default_jammer_orientation">Landscape</string>
 	<string name="default_janko_orientation">Landscape</string>
 	<string name="prompt_scale">Key Size</string>
-	<string name="heading_general">General</string>
 	<string name="summary_scale">Enter percentage to scale keys. Default = 100. Smaller numbers shrink keys. Larger numbers expand them.</string>
+	<string name="prompt_touch_scale">Key Touch Surface</string>
+	<string name="summary_touch_scale">Enter percentage to scale touch surface. Default (and max) = 100. Smaller numbers shrink the touch surface to trigger keys, creating a gap between keys.</string>
 	<string name="prompt_landscape_labels">Landscape</string>
 	<string name="summary_label_type">What labels do you want to see on the keys?</string>
 	<string name="summary_color_scheme">What colours do you want to see?</string>
@@ -115,6 +117,8 @@
 	<string name="prompt_highest_note_octave">Highest Note Octave</string>
 	<string name="prompt_single_touch_chording">Single-touch Chording</string>
 	<string name="summary_single_touch_chording">Play adjacent notes with one finger (4ths and 5ths).</string>
+	<string name="prompt_hide_modifiers">Hide Modifiers</string>
+	<string name="summary_hide_modifiers">Hide all modifier keys (replaced by notes, useful for small screens)</string>
 	<string name="prompt_hold_sustain">Hold Sustain</string>
 	<string name="summary_hold_sustain">Hold sustain modifier when pressed until pressed again.</string>
 	<string name="prompt_sustain_always_on">Sustain always on</string>

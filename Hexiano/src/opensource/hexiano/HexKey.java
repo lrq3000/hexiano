@@ -413,12 +413,98 @@ public abstract class HexKey
 		str += "Center: (" + mCenter.x + ", " + mCenter.y + ")";
 		return str;
 	}
+
+	// Set the touch area for the keys
+	private void setCriticalPoints()
+	{
+		if (mKeyOrientation.equals("Horizontal") || mKeyOverlap)
+		{
+			setHorizontalCriticalPoints();
+		}
+		else
+		{
+			setVerticalCriticalPoints();
+		}
+	}
+
+	// Set the touch area for the key when disposition is horizontal (hexagon is vertical)
+	// This is a regular hexagon, composed of 6 points: the vertex of the center rectangle + two tips
+	private void setHorizontalCriticalPoints()
+	{
+		// Compute a scaled-down touch area if mTouchScale is set (to create gaps between keys to avoid false triggers)
+		int radius = mRadius * HexKeyboard.mTouchScale / 100;
+
+		// Compute the tips of the hexagon (since it's vertical, the tips are at the top and bottom)
+		mTop = new Point(mCenter.x, mCenter.y - radius);
+		mBottom = new Point(mCenter.x, mCenter.y + radius);
+
+		// Compute the center rectangle's vertexes 
+		double angle = Math.PI / 6;
+		mUpperRight = new Point((int)(mCenter.x + radius * Math.cos(angle)),
+				(int)(mCenter.y - radius * Math.sin(angle)));
+		mLowerRight = new Point((int)(mCenter.x + radius * Math.cos(angle)),
+				(int)(mCenter.y + radius * Math.sin(angle)));
+		mLowerLeft = new Point((int)(mCenter.x - radius * Math.cos(angle)),
+				(int)(mCenter.y + radius * Math.sin(angle)));
+		mUpperLeft = new Point((int)(mCenter.x - radius * Math.cos(angle)),
+				(int)(mCenter.y - radius * Math.sin(angle)));
+
+		// Debug message
+		Log.d("setHorizontalCriticalPoints", 
+				"Center: " + mCenter.toString() +
+				" Radius: " + mRadius +
+				"Critical points: " +
+				mUpperRight.toString() +
+				mLowerRight.toString() +
+				mBottom.toString() + 
+				mLowerLeft.toString() +
+				mUpperLeft.toString() +
+				mTop.toString()
+				); // Coordinates will be given clockwise
+	}
 	
+	// Set the touch area for the key when disposition is vertical (hexagon is horizontal)
+	// This is a regular hexagon, composed of 6 points: the vertex of the center rectangle + two tips
+	private void setVerticalCriticalPoints()
+	{
+		// Compute a scaled-down touch area if mTouchScale is set (to create gaps between keys to avoid false triggers)
+		int radius = mRadius * HexKeyboard.mTouchScale / 100;
+
+		// Compute the tips of the hexagon (since it's horizontal, the tips are at the middle left and middle right)
+		mMiddleLeft = new Point(mCenter.x - radius, mCenter.y);
+		mMiddleRight = new Point(mCenter.x + radius, mCenter.y);
+
+		// Compute the center rectangle's vertexes
+		mLowerLeft = new Point(mCenter.x - radius/2, 
+				mCenter.y + (int)(Math.round(Math.sqrt(3.0) * radius)/2));
+		mLowerRight = new Point(mCenter.x + radius/2, 
+				mCenter.y + (int)(Math.round(Math.sqrt(3.0) * radius)/2));
+		mUpperLeft = new Point(mCenter.x - radius/2, 
+				mCenter.y - (int)(Math.round(Math.sqrt(3.0) * radius)/2));
+		mUpperRight = new Point(mCenter.x + radius/2, 
+				mCenter.y - (int)(Math.round(Math.sqrt(3.0) * radius)/2));
+
+		// Debug message
+		Log.d("setVerticalCriticalPoints", 
+				"Center: " + mCenter.toString() +
+				" Radius: " + mRadius +
+				"Critical points: " +
+				mUpperRight.toString() +
+				mMiddleRight.toString() +
+				mLowerRight.toString() +
+				mLowerLeft.toString() +
+				mMiddleLeft.toString() +
+				mUpperLeft.toString()
+				); // Coordinates will be given clockwise
+	}
+	
+	// Check if a (touch) point should trigger this key (contained inside the critical points)
 	public boolean contains(Point pos)
 	{
 		return this.contains(pos.x, pos.y);
 	}
-	
+
+	// Check if a (touch) point should trigger this key (contained inside the critical points)
 	public boolean contains(int x, int y)
 	{
 		if (mKeyOverlap)
@@ -435,65 +521,14 @@ public abstract class HexKey
 		}
 	}
 
-	private void setCriticalPoints()
-	{
-		if (mKeyOrientation.equals("Horizontal") || mKeyOverlap)
-		{
-			setHorizontalCriticalPoints();
-		}
-		else
-		{
-			setVerticalCriticalPoints();
-		}
-	}
-	
-	private void setHorizontalCriticalPoints()
-	{
-		mTop = new Point(mCenter.x, mCenter.y - mRadius);
-		mBottom = new Point(mCenter.x, mCenter.y + mRadius);
-
-		double angle = Math.PI / 6;
-		mUpperRight = new Point((int)(mCenter.x + mRadius * Math.cos(angle)),
-				(int)(mCenter.y - mRadius * Math.sin(angle)));
-		mLowerRight = new Point((int)(mCenter.x + mRadius * Math.cos(angle)),
-				(int)(mCenter.y + mRadius * Math.sin(angle)));
-		mLowerLeft = new Point((int)(mCenter.x - mRadius * Math.cos(angle)),
-				(int)(mCenter.y + mRadius * Math.sin(angle)));
-		mUpperLeft = new Point((int)(mCenter.x - mRadius * Math.cos(angle)),
-				(int)(mCenter.y - mRadius * Math.sin(angle)));
-		
-		Log.d("setHorizontalCriticalPoints", 
-				"Center: " + mCenter.toString() +
-				" Radius: " + mRadius +
-				"Critical points: " +
-				mUpperRight.toString() +
-				mLowerRight.toString() +
-				mBottom.toString() + 
-				mLowerLeft.toString() +
-				mUpperLeft.toString() +
-				mTop.toString());
-	}
-	
-	private void setVerticalCriticalPoints()
-	{
-		mMiddleLeft = new Point(mCenter.x - mRadius, mCenter.y);
-		mMiddleRight = new Point(mCenter.x + mRadius, mCenter.y);
-		mLowerLeft = new Point(mCenter.x - mRadius/2, 
-				mCenter.y + (int)(Math.round(Math.sqrt(3.0) * mRadius)/2));
-		mLowerRight = new Point(mCenter.x + mRadius/2, 
-				mCenter.y + (int)(Math.round(Math.sqrt(3.0) * mRadius)/2));
-		mUpperLeft = new Point(mCenter.x - mRadius/2, 
-				mCenter.y - (int)(Math.round(Math.sqrt(3.0) * mRadius)/2));
-		mUpperRight = new Point(mCenter.x + mRadius/2, 
-				mCenter.y - (int)(Math.round(Math.sqrt(3.0) * mRadius)/2));
-	}
-
+	// Special functionality to trigger two nearby keys with one touch point
 	public boolean overlapContains(int x, int y)
 	{
 		Log.e("HexKey::overlapContains", "Not supported by layout!");
 		return false;
 	}
 
+	// Check if a (touch) point should trigger this key (contained inside the critical points)
 	public boolean horizontalContains(int x, int y)
 	{
 		/*
@@ -604,7 +639,8 @@ public abstract class HexKey
 		
 		return false;
 	}
-	
+
+	// Check if a (touch) point should trigger this key (contained inside the critical points)
 	public boolean verticalContains(int x, int y)
 	{
 		/*

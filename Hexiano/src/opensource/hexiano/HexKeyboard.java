@@ -65,14 +65,17 @@ public class HexKeyboard extends View
 	static int mColumnCount = 0;
 	static int mTileRadius = 64; 
 	static int mTileWidth = 0;
+	static int mScale = 100; // Unused
+	static int mTouchScale = 100;
 	private static long mLastRedrawTime = 0L;
-	private static final long mAdDelayMilliseconds = 12000L;
+	//private static final long mAdDelayMilliseconds = 12000L;
 	private static long mStartTime = 0L;
 	// Modifier keys options
-	static boolean mSustainHold = true;
-	static boolean mSustainAlwaysOn = false;
+	static boolean mHideModifierKeys = false; // hide all modifier keys
+	static boolean mSustainHold = true; // hold sustain (when you release the key, you will have to press it twice to disable sustain)
+	static boolean mSustainAlwaysOn = false; // sustain is always enabled (sustain key will then be used to stop the previously sustained notes)
 	// Modifier keys state
-	static boolean mSustain = false;
+	static boolean mSustain = false; // current state of sustain key (pressed or not) - this state is separate from SustainAlwaysOn
 
 	static Set<Integer> old_pressed = new HashSet<Integer>();
 	static Instrument mInstrument;
@@ -679,12 +682,14 @@ public class HexKeyboard extends View
 	{
 		mKeys.clear();
 		
+		mHideModifierKeys = mPrefs.getBoolean("hideModifierKeys", false);
 		mSustainHold = mPrefs.getBoolean("sustainHold", true);
 		mSustainAlwaysOn = mPrefs.getBoolean("sustainAlwaysOn", false);
 
 		mScreenOrientationId = screenOrientationId;
 		Log.d("setUpBoard", "screenOrientationId: " + mScreenOrientationId);
 
+		// Set scale (size) of keys
 		String scaleStr = mPrefs.getString("scale", ""); // for backward compatibility, we still have to set it as a string and then do a regexp, even if we could just set android:numeric="integer" in the preferences, but that would break compatibility...
 		scaleStr = scaleStr.replaceAll("[^0-9]", "");
 		int scalePct = 100;
@@ -717,7 +722,23 @@ public class HexKeyboard extends View
 			mPrefsEditor.putString("scale", Integer.toString(scalePct));
 			mPrefsEditor.commit();
 		}
+		mScale = scalePct;
+		
+		// Set touch scale/surface of keys. This means that a key will appear bigger than the real surface where a user may trigger the key. This leaves a gap between keys to avoid false triggers with nearby keys.
+		String touchScaleStr = mPrefs.getString("touchScale", ""); // for backward compatibility, we still have to set it as a string and then do a regexp, even if we could just set android:numeric="integer" in the preferences, but that would break compatibility...
+		touchScaleStr = touchScaleStr.replaceAll("[^0-9]", "");
+		int touchScalePct = 100;
+		if (touchScaleStr.length() != 0) {
+			touchScalePct = Integer.parseInt(touchScaleStr);
+			if (touchScalePct < 1 || touchScalePct > 100) {
+				touchScalePct = 100;
+			}
+		} else {
+			touchScalePct = 100;
+		}
+		mTouchScale = touchScalePct;
 
+		// Computing tile of keys relatively to scale and Dpi
 		mTileRadius = (3 * mDpi) / 8;
 		mTileRadius = (mTileRadius * scalePct) / 100;
 		mTileWidth = (int)(Math.round(Math.sqrt(3.0) * mTileRadius));
@@ -725,6 +746,7 @@ public class HexKeyboard extends View
 		mRowCount = getRowCount();
 		mColumnCount = getColumnCount();
 
+		// Setup the layout (map the keys onscreen and create the array of functional HexKeys)
 		String layoutPref = mPrefs.getString("layout", null);
 		if (layoutPref.equals("Sonome"))
 		{
@@ -739,10 +761,13 @@ public class HexKeyboard extends View
 			this.setUpJankoBoard();
 		}
 		
-		this.setUpModifierKeys();
+		if (!mHideModifierKeys) {
+			this.setUpModifierKeys();
+		}
 		
 		Log.d("setUpBoard", "Total number of keys: " + Integer.toString(mKeys.size()));
 
+		// Paint the board
 		int canvasWidth = getCanvasWidth();
 		int canvasHeight = getCanvasHeight();
 		mBitmap = Bitmap.createBitmap(canvasWidth, canvasHeight, Bitmap.Config.ARGB_8888);
