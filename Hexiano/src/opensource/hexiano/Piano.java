@@ -94,6 +94,8 @@ public class Piano extends Instrument
 	public Piano(Context context)
 	{
 		super(context);
+		
+		this.mInstrumentName = "Piano";
 
 		Pattern pat = Pattern.compile("^pno0*([0-9]+)v");
 		Class raw = R.raw.class;

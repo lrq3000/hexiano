@@ -47,6 +47,7 @@ public abstract class Instrument {
 	private Context mContext;
 	public Iterator<ArrayList> sound_load_queue;
 	public boolean mExternal = false; // Loading external files (needing to pass Strings instead of int[]?)
+	public String mInstrumentName;
 
 	public Instrument(Context context)
 	{

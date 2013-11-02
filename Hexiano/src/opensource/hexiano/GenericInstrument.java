@@ -97,6 +97,7 @@ public class GenericInstrument extends Instrument
 		super(context);
 		
 		this.mExternal = true;
+		this.mInstrumentName = instrument;
 
 		Pattern pat = Pattern.compile("([0-9]+)\\.[^\\.]*$"); // Pattern: detect the midi note in the last number just before the extension
 		File[] files = listExternalFiles(instrument+"/"); // Get the list of all files for this instrument
