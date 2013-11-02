@@ -18,7 +18,6 @@ TODO
 Here is a list of a few features that are planned in near-term:
 
 - better quality piano sound (3 sounds every 4 are interpolated by the program currently!)
-- ability to add soundbanks on sdcard directly without recompiling the program
 - a new free orchestral soundbank (maybe as an external module to keep the Hexiano low in size)
 - a multi-instruments feature: ability to map multiple instruments on the keyboard (eg: the first 2 rows will be piano, then 2 rows of violin, etc...)
 - Connection to computer (via USB or OSC or Bluetooth)
@@ -26,10 +25,17 @@ Here is a list of a few features that are planned in near-term:
 MAYBE/ONE DAY
 -------------
 - Velocity via pressure surface (but how to do that with ogg files and soundpool?)
-- effects and effects via gyrometer.
+- effects and effects via gyrometer (or mapping variable CC messages like Expression, and maybe could map independently 2 different CC functions for the two dimensions x and y).
 - multi-screens keyboards, so that you could quickly swap between different (multi-)instruments mapping by just swiping on the screen.
 - Interactive tutorials (one for each keyboard) to know how to play major scales, minor, change root note, etc...
 - Midi tutorial: load a midi file and the keys to press will be highlighted on the screen.
+
+DONE
+---------
+
+- Modifier / CC keys, first implemented being Sustain.
+- ability to add soundbanks on sdcard directly without recompiling the program
+- enhancing precision using gaps between keys (called Key Touch Surface)
 
 NOT TO DO
 ---------

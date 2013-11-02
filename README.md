@@ -12,7 +12,9 @@ Hexiano is an Open-source isomorphic musical keyboard.
 
 Isomorphic means that all intervals, chords, and scales have identical patterns, regardless of the key in which one plays.
 
-Hexiano aims to deliver the isomorphic keyboard concept to the Android platform.
+Isomorphic keyboards are an old concept, and some layouts are more than a century old (Janko, Wicki-Hayden).
+
+Hexiano not only aims to deliver the isomorphic keyboard concept to the Android platform, but it is also committed to give you ergonomic tools to get the most out of these amazing keyboards.
 
 See http://www.altkeyboards.com/ for more information about these instruments.
 
@@ -56,33 +58,40 @@ To quick-start your contributions, here is a short description of how the projec
     * _SonomeKey.java_ defines one sonome key. It is the first key implemented in the system, thus you can clearly see that it inspired the others types of keys.
     * _JankoKey.java_ defines the janko keys.
     * _JammerKey.java_ defines the jammer keys.
+    * _ModifierKey.java_ is an abstract class which defines modifier keys (modifying the functionnalities or sending CC messages instead of producing a Note sound).
     * _SustainKey.java_ defines the sustain modifier key. It can be used as an example for other modifier keys, which are keys that does not produce sound but modify the behaviour of other keys.
 
-- __Note.java__ manages the name of the keys (with octave).
+- __Note.java__ manages the name of the keys (with octave) and correspondance between MIDI number and the note in different paradigms (eg: English, DoReMi, Deutsch, etc.).
+
+- __CC.java__ manages the CC messages number correspondance with their name and print the label on ModifierKeys.
 
 - __Instrument.java__ manages the sound, it plays the notes you hear when you press a key. It is an abstract class that must be implemented by other instruments.
     * _Piano.java_ is the standard (and only for now) piano instrument. It simply plays the ogg files in res/raw/
+    * _GenericInstrument.java_ is a generic instrument which provides a neat facility to automatically discover and load external instruments by using soundbanks from your SD Card.
 
 - __Point.java__ simply defines a geometric point. It is primarily used to define the center of each HexKey.
 
-- AboutDialog.java and Prefer.java are just small UI parts that couldn't fit in XML.
+- __Prefer.java__ extends the Menu by adding dynamically generated submenus (eg: loading external instruments via GenericInstrument, generate multi-instruments and multi-panels configs, etc.).
+
+- _AboutDialog.java_ manage the AboutDialog with UI parts that couldn't fit in XML.
 
 
 License
 -----------
 Licensed under the terms of the General Public License v3 (GPLv3).
 
-Copyleft 2013 by Stephen Larroque
+Copyleft @ 2013 by Stephen Larroque
 Copyright © 2012 by James Haigh,
 Copyright © 2011, 2012 by David Randolph.
 Hexiano™ and the Hexiano logo are trademarks of James Haigh.
 
-Forked project at:
+Latest project at:
 https://github.com/lrq3000/hexiano
 
 Original project by James Haigh at:
 https://gitorious.org/hexiano
 
-From the sourcecode of the opensourced version of Isokeys by David Randolph.
+From the sourcecode of the opensourced version (under GPLv3) of Isokeys by David Randolph:
+http://isokeys.sourceforge.net/
 
 Piano instrument uses sounds from http://zenvoid.org/audio.html under CC BY.
