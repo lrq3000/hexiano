@@ -136,21 +136,26 @@ public class GenericInstrument extends Instrument
 
 		// Extrapolate missing notes from Root Notes (notes for which we have a sound file)
 		float previousRate = 1.0f;
-		int previousRootNote = 0;
+		int previousRootNote = -1;
 		for (int noteId = 0; noteId < 128; noteId++)
 		{
+			// Found a new root note, we will extrapolate the next missing notes using this one
 			if (mRootNotes.containsKey(noteId))
 			{
 				previousRootNote = noteId;
 				previousRate = 1.0f;
 			}
+			// Else we have a missing note here
 			else
 			{
-				mRootNotes.put(noteId, previousRootNote);
-				double oneTwelfth = 1.0/12.0;
-			    double newRate = previousRate * Math.pow(2, oneTwelfth);	
-			    previousRate = (float)newRate;
-				mRates.put(noteId, previousRate);
+				// Extrapolate only after we have found the first root note
+				if (previousRootNote >= 0) {
+					mRootNotes.put(noteId, previousRootNote);
+					double oneTwelfth = 1.0/12.0;
+				    double newRate = previousRate * Math.pow(2, oneTwelfth);	
+				    previousRate = (float)newRate;
+					mRates.put(noteId, previousRate);
+				}
 			}
 		}
 	}
