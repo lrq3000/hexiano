@@ -100,7 +100,7 @@
 	<string name="prompt_scale">Key Size</string>
 	<string name="summary_scale">Enter percentage to scale keys. Default = 100. Smaller numbers shrink keys. Larger numbers expand them.</string>
 	<string name="prompt_touch_scale">Key Touch Surface</string>
-	<string name="summary_touch_scale">Enter percentage to scale touch surface. Default (and max) = 100. Smaller numbers shrink the touch surface to trigger keys, creating a gap between keys.</string>
+	<string name="summary_touch_scale">Enter percentage to scale touch surface. Default = 100. Below creates gap between keys (enhance precision), above creates note overlap (trigger chords with 1 touch).</string>
 	<string name="prompt_landscape_labels">Landscape</string>
 	<string name="summary_label_type">What labels do you want to see on the keys?</string>
 	<string name="summary_color_scheme">What colours do you want to see?</string>
