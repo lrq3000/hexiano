@@ -731,7 +731,7 @@ public class HexKeyboard extends View
 		int touchScalePct = 100;
 		if (touchScaleStr.length() != 0) {
 			touchScalePct = Integer.parseInt(touchScaleStr);
-			if (touchScalePct < 1 || touchScalePct > 100) {
+			if (touchScalePct < 1 || touchScalePct > 200) { // Below 100 will create a gap between keys (excellent to enhance precision); above 100 will create an overlap zone to trigger multiple notes at once
 				touchScalePct = 100;
 			}
 		} else {
