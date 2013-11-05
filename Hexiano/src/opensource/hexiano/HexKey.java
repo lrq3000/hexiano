@@ -807,6 +807,11 @@ public abstract class HexKey
 	
 	public void play()
 	{
+		// Play the new stream sound first before stopping the old one, avoids clipping (noticeable gap in sound between two consecutive press on the same note)
+		int newStreamId = mInstrument.play(mMidiNoteNumber);
+		if (newStreamId == -1) {return;} // May not yet be loaded.
+
+		// Stop the previous stream sound
 		if (mStreamId != -1) {
 			// If sustain, we want to force stop the previous sound of this key (else it will be a kind of reverb, plus we will get weird stuffs like disabling sustain won't stop all sounds since we will loose the streamId for the keys we pressed twice!)
 			if (HexKeyboard.mSustain == true || HexKeyboard.mSustainAlwaysOn == true) {
@@ -819,8 +824,10 @@ public abstract class HexKey
 			}
 			// Else else, without Sustain, stop() will be called automatically upon release of the key
 		}
-		mStreamId = mInstrument.play(mMidiNoteNumber);
-		if (mStreamId == -1) {return;} // May not yet be loaded.
+
+		// Update old stream with the new one
+		mStreamId = newStreamId;
+		// Change the state and drawing of the key
 		String pitchStr = String.valueOf(mMidiNoteNumber);
 		Log.d("HexKey::play", pitchStr);
 		this.setPressed(true);
@@ -830,14 +837,17 @@ public abstract class HexKey
 	public void stop() {
 		this.stop(false);
 	}
-	
+
+	// Function called everytime a key press is released (and also called by play() to stop previous streams, particularly if sustain is enabled)
 	public void stop(boolean force)
 	{
 		if (mStreamId == -1) {return;} // May not have been loaded when played.
+		// Force stop the sound (don't just show the unpressed state drawing) if either we provide the force argument, or if sustained is disabled
 		if (force == true | (HexKeyboard.mSustain == false && HexKeyboard.mSustainAlwaysOn == false)) {
 			mInstrument.stop(mStreamId);
 			mStreamId = -1;
-		}
+		} // Else, we will just change the drawing of the key (useful for ModifierKeys since they don't have any sound stream to stop, just the visual state of their key)
+		// Change the state and drawing of the key
 		String pitchStr = String.valueOf(mMidiNoteNumber);
 		Log.d("HexKey::stop", pitchStr);
 		this.setPressed(false);
