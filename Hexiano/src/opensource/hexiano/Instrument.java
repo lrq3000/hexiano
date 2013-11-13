@@ -101,23 +101,23 @@ public abstract class Instrument {
 		}
 	}
 	
-	public int play(int midiNoteNumber, float pressure)
+	public int[] play(int midiNoteNumber, float pressure)
 	{
 		return this.play(midiNoteNumber, pressure, 0);
 	}
 
-	public int play(int midiNoteNumber, float pressure, int loop)
+	public int[] play(int midiNoteNumber, float pressure, int loop)
 	{ 
 		Log.d("Instrument", "play(" + midiNoteNumber + ")");
-		if (mRootNotes.size() == 0) return 0; // no sound note available 
+		if (mRootNotes.size() == 0) return new int[] {0}; // no sound note available 
 		int index = mRootNotes.get(midiNoteNumber);
-		if (!mSounds.containsKey(index)) {return -1;}
+		if (!mSounds.containsKey(index)) return new int[] {-1};
 		Log.d("Instrument", "rootNote is " + index + ")");
 	    float rate = mRates.get(midiNoteNumber);
 	
 		//float streamVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC) / mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
 	    float streamVolume = 1.0f;
-		
+
 		// Play with the correct velocity
 		TreeMap<Integer, Integer> velocity_soundid = mSounds.get(index);
 		
@@ -168,21 +168,22 @@ public abstract class Instrument {
 		Log.d("Instrument::play", "midinote: " + midiNoteNumber + " soundid: " + Integer.toString(soundid) + " soundid2: "+ Integer.toString(soundid2) + " velocity " + velocity + " current_vel " + current_vel + "previous_vel" + previous_vel + " pressure " + Float.toString(pressure) + " max/min " + Float.toString(HexKeyboard.mMaxPressure) + "/" + Float.toString(HexKeyboard.mMinPressure) + " s/s1/s2 vol " + Float.toString(streamVolume) + "/" + Float.toString(stream1Volume) + "/" + Float.toString(stream2Volume));
 		
 		if (soundid2 != 0) {
-			// TODO need to return the integer sound id of both sounds to be able to stop them!
-			mSoundPool.play(soundid2, stream2Volume, stream2Volume, 1, 0, rate);
-			return mSoundPool.play(soundid, stream1Volume, stream1Volume, 1, 0, rate);
+			return new int[] {mSoundPool.play(soundid, stream1Volume, stream1Volume, 1, 0, rate),
+			        mSoundPool.play(soundid2, stream2Volume, stream2Volume, 1, 0, rate)};
 		} else {
-			return mSoundPool.play(soundid, streamVolume, streamVolume, 1, 0, rate);
+			return new int[] {mSoundPool.play(soundid, streamVolume, streamVolume, 1, 0, rate)};
 		}
 	}
 
-	public void stop(int streamId)
+	public void stop(int[] mStreamId)
 	{ 
-		mSoundPool.stop(streamId);
+		for(int streamId : mStreamId) {
+			mSoundPool.stop(streamId);
+		}
 	}
 
 	// Play and loop indefinitely a sound
-	public int loop(int midiNoteNumber, float pressure)
+	public int[] loop(int midiNoteNumber, float pressure)
 	{
 		return this.play(midiNoteNumber, pressure, -1);
 		/*

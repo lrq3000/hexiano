@@ -67,7 +67,7 @@ public abstract class HexKey
 	static int mKeyCount = 0;
 	protected int mKeyNumber;
 	static int mRadius;
-	int mStreamId;
+	int[] mStreamId;
     private boolean mPressed; // If key is pressed or not
     private boolean mDirty; // Used to check if a key state has changed, and if so to paint the new state on screen (functional code like play and stop are called on touch events in HexKeyboard)
 	private boolean sound_loaded = false;
@@ -89,7 +89,7 @@ public abstract class HexKey
 		mNote = new Note(midiNoteNumber, keyNumber); // keyNumber is just for reference to show as a label on the key, useless otherwise
 		mMidiNoteNumber = mNote.getMidiNoteNumber();
 		mKeyNumber = keyNumber;
-		mStreamId = -1;
+		mStreamId = new int[] {-1};
 		mPressed = false;
 		mDirty = true;
 		mRadius = radius;
@@ -814,11 +814,11 @@ public abstract class HexKey
 	{
 		// Play the new stream sound first before stopping the old one, avoids clipping (noticeable gap in sound between two consecutive press on the same note)
 		// Note about sound clipping when first stopping previous stream then playing new stream: it probably happens because there's some delay with SoundPool commands of about 100ms, which means that the sound player has a small gap of time where there is absolutely no sound (if only one same key is pressed several times), thus the sound manager stops the sound driver, and then quickly reopens it to play the new sound, which produces the sound clipping/popping/clicking. The solution: start the new sound first and then stop the old one. Only one drawback: it consumes a thread for nothing (may stop another note when we reach the maximum number in the pool).
-		int newStreamId = mInstrument.play(mMidiNoteNumber, pressure);
-		if (newStreamId == -1) {return;} // May not yet be loaded.
+		int[] newStreamId = mInstrument.play(mMidiNoteNumber, pressure);
+		if (newStreamId[0] == -1) {return;} // May not yet be loaded.
 
 		// Stop the previous stream sound
-		if (mStreamId != -1) {
+		if (mStreamId[0] != -1) {
 			// If sustain, we want to force stop the previous sound of this key (else it will be a kind of reverb, plus we will get weird stuffs like disabling sustain won't stop all sounds since we will loose the streamId for the keys we pressed twice!)
 			if (HexKeyboard.mSustain == true || HexKeyboard.mSustainAlwaysOn == true) {
 				// TODO: since the previous sound is stopped just before playing, an new bug appeared: sometimes when a key is pressed twice quickly, a clearly audible sound clipping happens!
@@ -847,11 +847,11 @@ public abstract class HexKey
 	// Function called everytime a key press is released (and also called by play() to stop previous streams, particularly if sustain is enabled)
 	public void stop(boolean force)
 	{
-		if (mStreamId == -1) {return;} // May not have been loaded when played.
+		if (mStreamId[0] == -1) {return;} // May not have been loaded when played.
 		// Force stop the sound (don't just show the unpressed state drawing) if either we provide the force argument, or if sustained is disabled
 		if (force == true | (HexKeyboard.mSustain == false && HexKeyboard.mSustainAlwaysOn == false)) {
 			mInstrument.stop(mStreamId);
-			mStreamId = -1;
+			mStreamId = new int[] {-1};
 		} // Else, we will just change the drawing of the key (useful for ModifierKeys since they don't have any sound stream to stop, just the visual state of their key)
 		// Change the state and drawing of the key
 		String pitchStr = String.valueOf(mMidiNoteNumber);
