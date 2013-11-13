@@ -88,6 +88,7 @@ import java.util.Iterator;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 public class Piano extends Instrument
 {
@@ -97,27 +98,35 @@ public class Piano extends Instrument
 		
 		this.mInstrumentName = "Piano";
 
-		Pattern pat = Pattern.compile("^pno0*([0-9]+)v");
+		Pattern pat = Pattern.compile("^pno_m([0-9]+)(v([0-9]+))?"); // Pattern: anythingyouwant_mxxvyy.ext where xx is the midi note, and yy the velocity (velocity is optional)
 		Class raw = R.raw.class;
-		Field[] fields = raw.getFields();
+		Field[] fields = raw.getFields(); // Fetch all the files (fields) in Raw directory
 		List<ArrayList> sounds = new ArrayList<ArrayList>(); // Are there really no tuples in Java?!
+		// For each file (field) in the Raw directory
 		for (Field field : fields)
 		{
 		    try
 		    {
+		    	// Filter out any other file except the ones that are sounds for this instrument (starts with "pno" for piano)
 		    	String fieldName = field.getName();
 		        if (fieldName.startsWith("pno", 0))
 		        {
+				    // If we find a midi note (matching the regexp)
 		        	int midiNoteNumber;
 		        	Matcher mat = pat.matcher(fieldName);
 		        	if (mat.find())
 		        	{
 		        		String midiNoteNumberStr = mat.group(1);
 		        		midiNoteNumber = Integer.parseInt(midiNoteNumberStr);
-		        		int fieldValue = field.getInt(null);	
-		        		Log.d("Piano", "Found midi note: "+midiNoteNumberStr + ": " + fieldValue);
-						ArrayList<Integer> tuple = new ArrayList<Integer>();
+		        		int fieldValue = field.getInt(null);
+		        		int velocity = 127;
+		        		if (mat.groupCount() > 2 && mat.group(2) != null) {
+		        			velocity = Integer.parseInt(mat.group(3));
+		        		}
+		        		Log.d("Piano", "Found midi note: "+midiNoteNumberStr + " velocity " + Integer.toString(velocity) + " fileid " + fieldValue);
+						ArrayList<Integer> tuple = new ArrayList<Integer>(); // Use a tuple arraylist of integers, which will be the int identifier of the raw resource, which in java are defined by an integer. SoundPool can directly load from resource identifiers.
 						tuple.add(midiNoteNumber);
+						tuple.add(velocity);
 						tuple.add(fieldValue);
 						sounds.add(0, tuple);
 		        		mRootNotes.put(midiNoteNumber, midiNoteNumber);
@@ -130,28 +139,42 @@ public class Piano extends Instrument
 		            field.getName()));
 		    }
 		}
+		
+		// No sounds found? Show an error message then quit
+		if (sounds.size() == 0) {
+			// TODO: a better error dialog with nice OK button
+			Toast.makeText(context, R.string.error_no_soundfiles, Toast.LENGTH_LONG).show();
+			return;
+		}
 
+		// Create an iterator to generate all sounds of all notes
 		sound_load_queue = sounds.iterator();
-		// Start loading the first sound, the rest are started from the OnLoadCompleteListener.
+		// Start loading the first sound, the rest are started from the Play::loadKeyboard()::OnLoadCompleteListener()
 		ArrayList tuple = sound_load_queue.next();
-		addSound((Integer)tuple.get(0), (Integer)tuple.get(1));
+		addSound((Integer)tuple.get(0), (Integer)tuple.get(1), (Integer)tuple.get(2));
 
+		// Extrapolate missing notes from Root Notes (notes for which we have a sound file)
 		float previousRate = 1.0f;
 		int previousRootNote = 21;
-		for (int noteId = 21; noteId < 110; noteId++)
+		for (int noteId = 21; noteId <= 102; noteId++) // Limit the range of notes because we know there aren't any other notes above or below in our soundbank
 		{
+			// Found a new root note, we will extrapolate the next missing notes using this one
 			if (mRootNotes.containsKey(noteId))
 			{
 				previousRootNote = noteId;
 				previousRate = 1.0f;
 			}
+			// Else we have a missing note here
 			else
 			{
-				mRootNotes.put(noteId, previousRootNote);
-				double oneTwelfth = 1.0/12.0;
-			    double newRate = previousRate * Math.pow(2, oneTwelfth);	
-			    previousRate = (float)newRate;
-				mRates.put(noteId, previousRate);
+				// Extrapolate only after we have found the first root note
+				if (previousRootNote >= 0) {
+					mRootNotes.put(noteId, previousRootNote);
+					double oneTwelfth = 1.0/12.0;
+				    double newRate = previousRate * Math.pow(2, oneTwelfth);	
+				    previousRate = (float)newRate;
+					mRates.put(noteId, previousRate);
+				}
 			}
 		}
 	}

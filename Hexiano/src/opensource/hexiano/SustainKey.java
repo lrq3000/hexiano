@@ -61,6 +61,12 @@ public class SustainKey extends ModifierKey
 	}
 	
 	@Override
+	public void play(float pressure)
+	{
+		this.play();
+	}
+	
+	@Override
 	public void stop(boolean force)
 	{
 		if (this.getPressed() == true && (force == true | HexKeyboard.mSustainHold == false)) { // TODO: find why not all notes stops sometimes when sustain is released (whether mSustainHold is on or off doesn't matter for this bug)

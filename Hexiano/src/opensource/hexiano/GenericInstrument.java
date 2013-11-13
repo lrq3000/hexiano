@@ -85,9 +85,12 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.Toast;
 
 public class GenericInstrument extends Instrument
 {
@@ -99,10 +102,10 @@ public class GenericInstrument extends Instrument
 		this.mExternal = true;
 		this.mInstrumentName = instrument;
 
-		Pattern pat = Pattern.compile("([0-9]+)\\.[^\\.]*$"); // Pattern: detect the midi note in the last number just before the extension
-		File[] files = listExternalFiles(instrument+"/"); // Get the list of all files for this instrument
+		Pattern pat = Pattern.compile("m([0-9]+)(v([0-9]+))?.*\\.[^\\.]*$"); // Pattern: anythingyouwant_mxxvyy.ext where xx is the midi note, and yy the velocity (velocity is optional)
+		File[] files = listExternalFiles(instrument+"/"); // Get the list of all files for this instrument (folder)
 		List<ArrayList> sounds = new ArrayList<ArrayList>();
-		// For each file
+		// For each file in this folder/instrument
 		for (File file : files)
 		{
 		    String fileName = file.getName();
@@ -116,24 +119,36 @@ public class GenericInstrument extends Instrument
 				String midiNoteNumberStr = mat.group(1);
 				midiNoteNumber = Integer.parseInt(midiNoteNumberStr);
 				String filePath = file.getAbsolutePath();
-				Log.d("GenericInstrument", "Found midi note: "+midiNoteNumberStr + ": " + filePath);
+        		int velocity = 127;
+        		if (mat.groupCount() > 2 && mat.group(2) != null) {
+        			velocity = Integer.parseInt(mat.group(3));
+        		}
+				Log.d("GenericInstrument", "Found midi note: "+midiNoteNumberStr + " velocity " + Integer.toString(velocity) + " filepath " + filePath);
 				// And store it inside the array sounds with the midiNoteNumber being the id and filePath the resource to load
-				ArrayList tuple = new ArrayList();
+				ArrayList tuple = new ArrayList(); // Use a generic tuple arraylist because here we will store the filepath string to the sound to be loaded for this note (SoundPool accepts filepath as an argument)
 				tuple.add(midiNoteNumber);
+				tuple.add(velocity);
 				tuple.add(filePath);
 				sounds.add(0, tuple);
 				// Also set this note as a root note (Root Notes are notes we have files for, from which we will extrapolate other notes that are missing if any)
 				mRootNotes.put(midiNoteNumber, midiNoteNumber);
-				// Rate to play the file with, default is always used for now
+				// Rate to play the file with, default is always used for root notes, we only change the rate on other notes (where we don't have a file available) to interpolate the frequency and thus the note
 				mRates.put(midiNoteNumber, 1.0f);
 			}
+		}
+		
+		// No sounds found? Show an error message then quit
+		if (sounds.size() == 0) {
+			// TODO: a better error dialog with nice OK button
+			Toast.makeText(context, R.string.error_no_soundfiles, Toast.LENGTH_LONG).show();
+			return;
 		}
 
 		// Create an iterator to generate all sounds of all notes
 		sound_load_queue = sounds.iterator();
-		// Start loading the first sound, the rest are started from the Play::OnLoadCompleteListener()
+		// Start loading the first sound, the rest are started from the Play::loadKeyboard()::OnLoadCompleteListener()
 		ArrayList tuple = sound_load_queue.next();
-		addSound((Integer)tuple.get(0), (String)tuple.get(1));
+		addSound((Integer)tuple.get(0), (Integer)tuple.get(1), (String)tuple.get(2));
 
 		// Extrapolate missing notes from Root Notes (notes for which we have a sound file)
 		float previousRate = 1.0f;

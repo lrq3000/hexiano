@@ -123,6 +123,10 @@
 	<string name="summary_hold_sustain">Hold sustain modifier when pressed until pressed again.</string>
 	<string name="prompt_sustain_always_on">Sustain always on</string>
 	<string name="summary_sustain_always_on">Always enable sustain.</string>
+	<string name="prompt_velocity_enabled">Enable velocity sensitivity</string>
+	<string name="summary_velocity_enabled">Play notes louder when you press harder on the screen. Also works while swiping. Note: may not work on all phones.</string>
+	<string name="prompt_velocity_relative_range">Velocity relative range</string>
+	<string name="summary_velocity_relative_range">Absolute range = 0&#8211;127, relative range = min midi note velocity &#8211; max midi note velocity (change for each note!)</string>
 	<string name="prompt_about">About Hexiano</string>
 	<string name="prompt_license">License</string>
 	<string name="prompt_quit">Exit</string>
@@ -162,4 +166,8 @@ Commons Attribution 3.0 license. See http://creativecommons.org/licenses/by/3.0 
 	<string name="prompt_polyphony_count">Polyphony count</string>
 	<string name="summary_polyphony_count">Max number of concurrent sounds (warning: high value may induce jitter!)</string>
 	<integer name="default_polyphony_count">8</integer>
+	
+	<string name="error_no_soundfiles">Error: no sound files could be found for this instrument. Check that they have the correct format (anything_mxxvyy.ext where xx is midi note number and yy velocity)</string>
+	<string name="ok">OK</string>
+	<string name="finished_loading">Finished loading instrument(s)!</string>
 </resources>

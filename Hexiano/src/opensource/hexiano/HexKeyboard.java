@@ -82,6 +82,13 @@ public class HexKeyboard extends View
 	static Instrument mInstrument;
 
 	static ArrayList<HexKey> mKeys = new ArrayList<HexKey>();
+	
+	// Velocity/Pressure sensitivity
+	static boolean mVelocityEnabled = false;
+	static boolean mVelocityRelativeRange = true; // Absolute range = 0-127, relative range = min midi note velocity - max midi note velocity (change for each note!)
+	static float mMaxPressure = 0.0f; // Init max pressure to 0, will be raised automatically upon first (and subsequent) touch event in onTouchEvent()
+	static float mMinPressure = 1.0f; // Init min pressure to 1, will be lowered automatically upon first (and subsequent) touch event onTouchEvent()
+	static float mPressure;
 
 	/*
 	private Handler mAdHandler = new Handler();
@@ -686,6 +693,14 @@ public class HexKeyboard extends View
 		mHideModifierKeys = mPrefs.getBoolean("hideModifierKeys", false);
 		mSustainHold = mPrefs.getBoolean("sustainHold", true);
 		mSustainAlwaysOn = mPrefs.getBoolean("sustainAlwaysOn", false);
+		mVelocityEnabled = mPrefs.getBoolean("velocityEnabled", false);
+		// Setup (or reset) mMaxPressure and mMinPressure
+		if (!mVelocityEnabled) { // if no velocity is set, we want to make sure that there's a range between min and max pressure, and max pressure will then always be used (TODO: add a slider-like modifier button to set velocity without pressure).
+			mMaxPressure = 1.0f; mMinPressure = 0.0f;
+		} else { // else we set obvious absurd values so that they get autocalibrated next time the user touch the screen
+			mMaxPressure = 0.0f; mMinPressure = 1.0f;
+		}
+		mVelocityRelativeRange = mPrefs.getBoolean("velocityRelativeRange", true);
 
 		mScreenOrientationId = screenOrientationId;
 		Log.d("setUpBoard", "screenOrientationId: " + mScreenOrientationId);
@@ -968,8 +983,10 @@ public class HexKeyboard extends View
 			return false;
 		}
 
+		// TODO: Enhance that double loop, which for each touch event check that the touch coordinate are within the are of any key, thus it double loops: over each touch event (ok), and over all keys (not ok!). A drastic performance enhancement can be gained here. Be careful so that key touch surface overlapping still works (cannot constraint on an area for the check).
 		Set<Integer> new_pressed = new HashSet<Integer>();
 		HashMap<Integer, Float> pressed_map = new HashMap<Integer, Float>();
+		float pressure;
 		for (int i = 0; i < mKeys.size(); i++)
 		{
 			HexKey key = mKeys.get(i);
@@ -979,12 +996,27 @@ public class HexKeyboard extends View
 				int y = (int)event.getY(pointerIndex);
 				if (key.contains(x, y))
 				{
+					/*
 					if (pressed_map.containsKey(i))
 					{
 						pressed_map.put(i, Math.max(event.getPressure(pointerIndex), pressed_map.get(i)));
 					} else {
 						pressed_map.put(i, event.getPressure(pointerIndex));
 					}
+					*/
+					// MotionEvent.getPressure() returns the pressure on resistive screens, or fake pressure based on area covered by finger on capacitive screens (but pretty much the same thing since fingers are very squishy).
+					// For a list of compatible devices see: https://code.google.com/p/markers-for-android/wiki/DeviceSupport
+					// Or use the following command in ADB to check if this method is supported by your touch controller: getevent -pl
+					pressure = event.getPressure(pointerIndex);
+					pressed_map.put(i, pressure);
+					// Auto-Calibration of pressure range (normally a float between 0 and 1 but may be > 1 on some devices, and some others may be totally off like returning always 1 or only a binary 0/1).
+					if (pressure > mMaxPressure) {
+						mMaxPressure = pressure;
+					}
+					if (pressure < mMinPressure) {
+						mMinPressure = pressure;
+					}
+					// If this key is newly pressed (was released before), we will play it
 					if (!(pointerIndex == event.getActionIndex() && (
 						actionCode == MotionEvent.ACTION_UP ||
 						actionCode == MotionEvent.ACTION_POINTER_UP )))
@@ -1005,11 +1037,17 @@ public class HexKeyboard extends View
 			int i = it.next();
 			try
 			{
-				mKeys.get(i).play();
+				// Play with real pressure if velocity sensitivity is enabled
+				if (mVelocityEnabled) {
+					mKeys.get(i).play(pressed_map.get(i));
+				// Else we just always play the maximum value
+				} else {
+					mKeys.get(i).play(mMaxPressure);
+				}
 			}
 			catch (Exception e)
 			{
-				Log.e("HexKeyboard::onMouse", "HexKey " + i + " not playable!");
+				Log.e("HexKeyboard::onMouse", "HexKey " + i + " not playable!"); // (or an exception occurred, remove this catch to show it)
 			}
 			//this.invalidate();
 		}

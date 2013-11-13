@@ -805,11 +805,16 @@ public abstract class HexKey
 		}
 	}
 	
-	public void play()
+	public void play() {
+		// By default without argument, play a key with the maximum pressure
+		this.play(HexKeyboard.mMaxPressure);
+	}
+	
+	public void play(float pressure)
 	{
 		// Play the new stream sound first before stopping the old one, avoids clipping (noticeable gap in sound between two consecutive press on the same note)
 		// Note about sound clipping when first stopping previous stream then playing new stream: it probably happens because there's some delay with SoundPool commands of about 100ms, which means that the sound player has a small gap of time where there is absolutely no sound (if only one same key is pressed several times), thus the sound manager stops the sound driver, and then quickly reopens it to play the new sound, which produces the sound clipping/popping/clicking. The solution: start the new sound first and then stop the old one. Only one drawback: it consumes a thread for nothing (may stop another note when we reach the maximum number in the pool).
-		int newStreamId = mInstrument.play(mMidiNoteNumber);
+		int newStreamId = mInstrument.play(mMidiNoteNumber, pressure);
 		if (newStreamId == -1) {return;} // May not yet be loaded.
 
 		// Stop the previous stream sound

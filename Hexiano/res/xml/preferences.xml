@@ -14,6 +14,8 @@
 		    <CheckBoxPreference android:key="sustainHold" android:defaultValue="true" android:title="@string/prompt_hold_sustain" android:summary="@string/summary_hold_sustain"/>
 		    <CheckBoxPreference android:key="sustainAlwaysOn" android:defaultValue="false" android:title="@string/prompt_sustain_always_on" android:summary="@string/summary_sustain_always_on"/>
 		</PreferenceScreen>
+		<CheckBoxPreference android:key="velocityEnabled" android:defaultValue="false" android:title="@string/prompt_velocity_enabled" android:summary="@string/summary_velocity_enabled"/>
+		<CheckBoxPreference android:key="velocityRelativeRange" android:defaultValue="true" android:title="@string/prompt_velocity_relative_range" android:summary="@string/summary_velocity_relative_range"/>
 		<PreferenceScreen android:title="MIDI Support">
 			<PreferenceCategory android:key="midi-out" android:title="MIDI OUT">
 				<Preference android:key="midi-out-usb-midi-host" android:enabled="false" android:title="USB-MIDI host-mode" android:summary="Possible - Free/Open-source MIDI library now available (18812)." />

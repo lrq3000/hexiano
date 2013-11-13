@@ -46,6 +46,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.media.SoundPool;
 import android.media.AudioManager;
@@ -166,14 +167,18 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 					@Override
 					public void onLoadComplete(SoundPool mSoundPool, int sampleId, int status) {
 						mBoard.invalidate();
+						// If there are yet others sounds to load
 						if (HexKeyboard.mInstrument.sound_load_queue.hasNext()) {
 							if (!HexKeyboard.mInstrument.mExternal) {
 								ArrayList tuple = HexKeyboard.mInstrument.sound_load_queue.next();
-								HexKeyboard.mInstrument.addSound((Integer)tuple.get(0), (Integer)tuple.get(1));
+								HexKeyboard.mInstrument.addSound((Integer)tuple.get(0), (Integer)tuple.get(1), (Integer)tuple.get(2));
 							} else {
 								ArrayList tuple = HexKeyboard.mInstrument.sound_load_queue.next();
-								HexKeyboard.mInstrument.addSound((Integer)tuple.get(0), (String)tuple.get(1));
+								HexKeyboard.mInstrument.addSound((Integer)tuple.get(0), (Integer)tuple.get(1), (String)tuple.get(2));
 							}
+						// Else all sounds loaded! Show a short notification so that the user knows that (s)he can start playing without lags
+						} else {
+							Toast.makeText(HexKeyboard.mContext, R.string.finished_loading, Toast.LENGTH_LONG).show();
 						}
 					}
 			});
