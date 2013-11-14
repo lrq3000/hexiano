@@ -129,13 +129,17 @@ public abstract class Instrument {
 		int max_vel = velocity_soundid.lastKey(); // max velocity available for this note
 		int min_vel = velocity_soundid.firstKey(); // min velocity available for this note
 		int velocity = 0; // user's velocity from touch pressure/surface (will be computed from var pressure)
-		if (HexKeyboard.mVelocityRelativeRange) {
+		float pdiff = (HexKeyboard.mMaxPressure-HexKeyboard.mMinPressure);
+		if (pdiff == 0) pdiff = 1.0f; // avoid division by 0
+		int veldiff = (max_vel-min_vel); // no relative range if only one velocity is available! Need to use an absolute range and fake velocity
+		if (HexKeyboard.mVelocityRelativeRange && veldiff > 0) {
 			// Relative range = min midi note velocity - max midi note velocity (change for each note!)
-			velocity = Math.round( (pressure-HexKeyboard.mMinPressure)/(HexKeyboard.mMaxPressure-HexKeyboard.mMinPressure) * (max_vel-min_vel) + min_vel );
+			velocity = Math.round( (float)((pressure-HexKeyboard.mMinPressure)/pdiff) * veldiff + min_vel );
 		} else {
 			// Absolute range = 0-127 (like real midi velocity)
-			velocity = Math.round( (pressure-HexKeyboard.mMinPressure)/(HexKeyboard.mMaxPressure-HexKeyboard.mMinPressure) * 127 );
+			velocity = Math.round( (float)(pressure-HexKeyboard.mMinPressure)/pdiff * 127 );
 		}
+		if (velocity > 127) velocity = 127; // make sure velocity is never above 127
 		
 		// -- Get the corresponding sound(s) for the user's velocity and from the available velocities
 		int previous_vel = 0; // lower velocity bound if user's velocity is in-between
@@ -145,40 +149,49 @@ public abstract class Instrument {
 		float stream1Volume = 0; // volume for lower velocity sound if user's velocity is in-between, to allow for blending of two velocity sounds
 		float stream2Volume = 0; // volume for higher velocity sound if user's velocity is in-between, to allow for blending of two velocity sounds
 
-		// TreeMap ensures that entries are always ordered by velocity (from lowest to highest), thus a subsequent velocity may only be higher than the previous one
-		// For each velocity available for this note (iterate in ascending order from lowest velocity to highest)
-		for (TreeMap.Entry<Integer, Integer> vel : velocity_soundid.entrySet()) {
-			current_vel = vel.getKey(); // get the current velocity in TreeMap
-
-			// Case 1: higher bound: one sound when user's velocity is equal or lower than any available velocity sound
-			if (current_vel == velocity || // if current available velocity is exactly equal to user's velocity
-					(current_vel > velocity && previous_vel == 0)) { // or if it's above usen's velocity but there's no lower velocity available
-				// Just use the current velocity sound
-				soundid = vel.getValue();
-				break; // Found our sound, exit the loop
-			// Case 2: middle bound: two sounds when user's velocity is in-between two available velocity sounds
-			} else if (current_vel > velocity && previous_vel != 0) {
-				soundid = velocity_soundid.get(previous_vel); // get lower bound velocity sound
-				soundid2 = vel.getValue(); // == velocity_soundid.get(current_vel); // higher bound velocity sound
-				// Compute the streams volumes for sounds blending
-				int vdiff = current_vel - previous_vel; // compute ratio between max and min available velocity, which will represent the max volume ratio
-				stream2Volume = (float)(velocity - previous_vel) / vdiff * streamVolume; // compute lower velocity sound volume (note: inversed s1 and s2 on purpose, to avoid computing stream1Volume = 1.0f - stream1Volume and stream1Volume = 1.0f - stream2Volume)
-				stream1Volume = (float)(current_vel - velocity) / vdiff * streamVolume; // compute higher velocity sound volume
-				break; // Found our sounds, exit the loop
+		// Fake velocity (modulate only the sound volume)
+		if (velocity_soundid.size() == 1) {
+			current_vel = (Integer) velocity_soundid.keySet().toArray()[0];
+			soundid = velocity_soundid.get(current_vel);
+			streamVolume = (float)velocity/current_vel * streamVolume;
+			Log.d("GBO", "Coucou");
+		// Real velocity with interpolation (either get a sample sound for this velocity and note, or interpolate from two close velocities)
+		} else {
+			// TreeMap ensures that entries are always ordered by velocity (from lowest to highest), thus a subsequent velocity may only be higher than the previous one
+			// For each velocity available for this note (iterate in ascending order from lowest velocity to highest)
+			for (TreeMap.Entry<Integer, Integer> vel : velocity_soundid.entrySet()) {
+				current_vel = vel.getKey(); // get the current velocity in TreeMap
+	
+				// Case 1: higher bound: one sound when user's velocity is equal or lower than any available velocity sound
+				if (current_vel == velocity || // if current available velocity is exactly equal to user's velocity
+						(current_vel > velocity && previous_vel == 0)) { // or if it's above usen's velocity but there's no lower velocity available
+					// Just use the current velocity sound
+					soundid = vel.getValue();
+					break; // Found our sound, exit the loop
+				// Case 2: middle bound: two sounds when user's velocity is in-between two available velocity sounds
+				} else if (current_vel > velocity && previous_vel != 0) {
+					soundid = velocity_soundid.get(previous_vel); // get lower bound velocity sound
+					soundid2 = vel.getValue(); // == velocity_soundid.get(current_vel); // higher bound velocity sound
+					// Compute the streams volumes for sounds blending
+					int vdiff = current_vel - previous_vel; // compute ratio between max and min available velocity, which will represent the max volume ratio
+					stream2Volume = (float)(velocity - previous_vel) / vdiff * streamVolume; // compute lower velocity sound volume (note: inversed s1 and s2 on purpose, to avoid computing stream1Volume = 1.0f - stream1Volume and stream1Volume = 1.0f - stream2Volume)
+					stream1Volume = (float)(current_vel - velocity) / vdiff * streamVolume; // compute higher velocity sound volume
+					break; // Found our sounds, exit the loop
+				}
+				previous_vel = current_vel; // keep previous velocity (= lower bound velocity)
 			}
-			previous_vel = current_vel; // keep previous velocity (= lower bound velocity)
-		}
-		// Case 3: lower bound: one sound when user's velocity is higher than any available velocity (we iterated all available velocities and could not find any higher)
-		if (soundid == 0) {
-			if (previous_vel != 0) {
-				soundid = velocity_soundid.get(previous_vel);
-			} else {
-				soundid = velocity_soundid.get(current_vel);
+			// Case 3: lower bound: one sound when user's velocity is higher than any available velocity (we iterated all available velocities and could not find any higher)
+			if (soundid == 0) {
+				if (previous_vel != 0) {
+					soundid = velocity_soundid.get(previous_vel);
+				} else {
+					soundid = velocity_soundid.get(current_vel);
+				}
 			}
 		}
 
 		Log.d("Instrument::play", "VelocityCheck: midinote: " + midiNoteNumber + " soundid: " + Integer.toString(soundid) + " soundid2: "+ Integer.toString(soundid2) + " velocity " + velocity + " previous_vel " + previous_vel + "current_vel" + current_vel + " pressure " + Float.toString(pressure) + " max/min " + Float.toString(HexKeyboard.mMaxPressure) + "/" + Float.toString(HexKeyboard.mMinPressure) + " s/s1/s2 vol " + Float.toString(streamVolume) + "/" + Float.toString(stream1Volume) + "/" + Float.toString(stream2Volume));
-		
+
 		// Velocity interpolation via Blending: we blend two velocity sounds (lower and higher bound) with volumes proportional to the user's velocity to interpolate the missing velocity sound
 		if (soundid2 != 0) {
 			return new int[] {mSoundPool.play(soundid, stream1Volume, stream1Volume, 1, 0, rate),
