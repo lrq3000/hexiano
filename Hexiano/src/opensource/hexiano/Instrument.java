@@ -139,7 +139,10 @@ public abstract class Instrument {
 			// Absolute range = 0-127 (like real midi velocity)
 			velocity = Math.round( (float)(pressure-HexKeyboard.mMinPressure)/pdiff * 127 );
 		}
-		if (velocity > 127) velocity = 127; // make sure velocity is never above 127
+		// Velocity Boost
+		if (HexKeyboard.mVelocityBoost > 0) velocity = Math.round( velocity * (1.0f + (float)HexKeyboard.mVelocityBoost/100 ) );
+		// Final check: make sure velocity is never above 127
+		if (velocity > 127) velocity = 127;
 		
 		// -- Get the corresponding sound(s) for the user's velocity and from the available velocities
 		int previous_vel = 0; // lower velocity bound if user's velocity is in-between
@@ -190,7 +193,7 @@ public abstract class Instrument {
 			}
 		}
 
-		Log.d("Instrument::play", "VelocityCheck: midinote: " + midiNoteNumber + " soundid: " + Integer.toString(soundid) + " soundid2: "+ Integer.toString(soundid2) + " velocity " + velocity + " previous_vel " + previous_vel + "current_vel" + current_vel + " pressure " + Float.toString(pressure) + " max/min " + Float.toString(HexKeyboard.mMaxPressure) + "/" + Float.toString(HexKeyboard.mMinPressure) + " s/s1/s2 vol " + Float.toString(streamVolume) + "/" + Float.toString(stream1Volume) + "/" + Float.toString(stream2Volume));
+		Log.d("Instrument::play", "VelocityCheck: midinote: " + midiNoteNumber + " soundid: " + Integer.toString(soundid) + " soundid2: "+ Integer.toString(soundid2) + " velocity/previous_vel/current_vel " + velocity + "/" + previous_vel + "/" + current_vel + " pressure " + Float.toString(pressure) + " max/min " + Float.toString(HexKeyboard.mMaxPressure) + "/" + Float.toString(HexKeyboard.mMinPressure) + " s/s1/s2 vol " + Float.toString(streamVolume) + "/" + Float.toString(stream1Volume) + "/" + Float.toString(stream2Volume));
 
 		// Velocity interpolation via Blending: we blend two velocity sounds (lower and higher bound) with volumes proportional to the user's velocity to interpolate the missing velocity sound
 		if (soundid2 != 0) {

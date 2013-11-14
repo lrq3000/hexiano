@@ -86,6 +86,7 @@ public class HexKeyboard extends View
 	// Velocity/Pressure sensitivity
 	static boolean mVelocityEnabled = false;
 	static boolean mVelocityRelativeRange = true; // Absolute range = 0-127, relative range = min midi note velocity - max midi note velocity (change for each note!)
+	static int mVelocityBoost = 0; // Boost velocity volume by this percentage
 	static float mMaxPressure = 0.0f; // Init max pressure to 0, will be raised automatically upon first (and subsequent) touch event in onTouchEvent()
 	static float mMinPressure = 1.0f; // Init min pressure to 1, will be lowered automatically upon first (and subsequent) touch event onTouchEvent()
 	static float mPressure;
@@ -753,6 +754,18 @@ public class HexKeyboard extends View
 			touchScalePct = 100;
 		}
 		mTouchScale = touchScalePct;
+		
+		// Velocity boost by this percentage
+		String velocityBoostStr = mPrefs.getString("velocityBoost", ""); // for backward compatibility, we still have to set it as a string and then do a regexp, even if we could just set android:numeric="integer" in the preferences, but that would break compatibility...
+		velocityBoostStr = velocityBoostStr.replaceAll("[^0-9]", "");
+		int velocityBoostPct = 100;
+		if (velocityBoostStr.length() != 0) {
+			velocityBoostPct = Integer.parseInt(velocityBoostStr);
+			if (velocityBoostPct < 0 || velocityBoostPct > 1000) {
+				velocityBoostPct = 0;
+			}
+		}
+		mVelocityBoost = velocityBoostPct;
 
 		// Computing tile of keys relatively to scale and Dpi
 		mTileRadius = (3 * mDpi) / 8;
