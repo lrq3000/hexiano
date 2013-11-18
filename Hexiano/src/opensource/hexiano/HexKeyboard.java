@@ -79,7 +79,7 @@ public class HexKeyboard extends View
 	static boolean mSustain = false; // current state of sustain key (pressed or not) - this state is separate from SustainAlwaysOn
 
 	static Set<Integer> old_pressed = new HashSet<Integer>();
-	static Instrument mInstrument;
+	static Instrument mInstrument; // static HashMap<String, Instrument> mInstrument;
 
 	static ArrayList<HexKey> mKeys = new ArrayList<HexKey>();
 	
@@ -125,7 +125,208 @@ public class HexKeyboard extends View
 		}
 	};
 	*/
+	
+	protected void setUpBoard(String board)
+	{
+		String firstNote = mPrefs.getString("base"+board+"Note", null);
+		String firstOctaveStr = mPrefs.getString("base"+board+"Octave", null);
 
+		int firstOctave = Integer.parseInt(firstOctaveStr);
+		int pitch = Note.getNoteNumber(firstNote, firstOctave);
+		int keyCount = 0;
+		
+		int pitchvpre = 0;
+		int pitchv1 = 0;
+		int pitchv2 = 0;
+		int pitchvpost = 0;
+		int pitchhpre = 0;
+		int pitchh1 = 0;
+		int pitchh2 = 0;
+		int pitchhpost = 0;
+		if (board.equals("Jammer")) {
+			pitchv1 = -5;
+			pitchv2 = -7;
+			pitchvpost = -2; // Down a full tone.
+			pitchhpre = -(mRowCount - 1) * 2;
+			pitchh1 = -5;
+			pitchh2 = 7;
+			pitchhpost = -12; // Down a full tone.
+		} else if (board.equals("Sonome")) {
+			pitchvpre = (mRowCount - 1) * 7;
+			pitchv1 = 4;
+			pitchv2 = -3;
+			pitchvpost = -7; // Down a fifth.
+			pitchh1 = 4;
+			pitchh2 = 3;
+			pitchhpost = 1; // Up a semitone.
+		}
+
+		if (HexKey.getKeyOrientation(mContext).equals("Vertical"))
+		{
+			Log.d("setUp"+board+"Board", "orientation: vertical");
+			Log.d("setUp"+board+"Board", "pitch: " + pitch);
+			Log.d("setUp"+board+"Board", "rowCount: " + mRowCount);
+			Log.d("setUp"+board+"Board", "columnCount: " + mColumnCount);
+	
+			int y = 0;
+			pitch += pitchvpre;
+			int rowFirstPitch = pitch;
+
+			for (int j = 0; j < mRowCount; j++)
+			{	
+				int x = mTileRadius;
+
+				for (int i = 0; i < mColumnCount; i++)
+				{
+					int kittyCornerX = (int)Math.round(x - mTileRadius * 1.5);
+					int kittyCornerY = y + mTileWidth/2;
+					
+					HexKey kittyCornerKey = null;
+					if (board.equals("Jammer")) {
+						kittyCornerKey = new JammerKey(
+								mContext,
+								mTileRadius,
+								new Point(kittyCornerX, kittyCornerY),
+								pitch,
+								mInstrument,
+								++keyCount);
+					} else if (board.equals("Sonome")) {
+						kittyCornerKey = new SonomeKey(
+								mContext,
+								mTileRadius,
+								new Point(kittyCornerX, kittyCornerY),
+								pitch,
+								mInstrument,
+								++keyCount);
+					}
+
+					if (kittyCornerKey.isKeyVisible()) {
+						mKeys.add(kittyCornerKey);
+					} else {
+						--keyCount;
+					}
+					pitch += pitchv1;
+
+					HexKey key = null;
+					if (board.equals("Jammer")) {
+						key = new JammerKey(
+								mContext,
+								mTileRadius,
+								new Point(x, y),
+								pitch,
+								mInstrument,
+								++keyCount);
+					} else if (board.equals("Sonome")) {
+						key = new SonomeKey(
+								mContext,
+								mTileRadius,
+								new Point(x, y),
+								pitch,
+								mInstrument,
+								++keyCount);
+					}
+
+					if (key.isKeyVisible()) {
+						mKeys.add(key);
+					} else {
+						--keyCount;
+					}
+					pitch += pitchv2;
+
+					x += 3 * mTileRadius;
+				}
+
+				pitch = rowFirstPitch + pitchvpost;
+				rowFirstPitch = pitch;
+				y += mTileWidth;
+			}
+		}
+		else
+		{
+			Log.d("setUp"+board+"Board", "orientation: horizontal");
+			Log.d("setUp"+board+"Board", "pitch: " + pitch);
+			Log.d("setUp"+board+"Board", "rowCount: " + mRowCount);
+			Log.d("setUp"+board+"Board", "columnCount: " + mColumnCount);
+			
+			int y = mTileRadius;
+			
+			pitch += pitchhpre;
+			int rowFirstPitch = pitch;
+			
+			for (int j = 0; j < mRowCount; j++)
+			{	
+				int x = mTileWidth / 2;
+
+				for (int i = 0; i < mColumnCount; i++)
+				{
+					int kittyCornerX = Math.round(x - mTileWidth / 2);
+					int kittyCornerY = (int)Math.round(y - mTileRadius * 1.5);
+					
+					HexKey kittyCornerKey = null;
+					if (board.equals("Jammer")) {
+						kittyCornerKey = new JammerKey(
+								mContext,
+								mTileRadius,
+								new Point(kittyCornerX, kittyCornerY),
+								pitch,
+								mInstrument,
+								++keyCount);
+					} else if (board.equals("Sonome")) {
+						kittyCornerKey = new SonomeKey(
+								mContext,
+								mTileRadius,
+								new Point(kittyCornerX, kittyCornerY),
+								pitch,
+								mInstrument,
+								++keyCount);
+					}
+					
+					if (kittyCornerKey.isKeyVisible()) {
+						mKeys.add(kittyCornerKey);
+					} else {
+						--keyCount;
+					}
+					
+					pitch += pitchh1;
+
+					HexKey key = null;
+					if (board.equals("Jammer")) {
+						key = new JammerKey(
+								mContext,
+								mTileRadius,
+								new Point(x, y),
+								pitch,
+								mInstrument,
+								++keyCount);
+					} else if (board.equals("Sonome")) {
+						key = new SonomeKey(
+								mContext,
+								mTileRadius,
+								new Point(x, y),
+								pitch,
+								mInstrument,
+								++keyCount);
+					}
+
+					if (key.isKeyVisible()) {
+						mKeys.add(key);
+					} else {
+						--keyCount;
+					}
+					
+					pitch += pitchh2;
+
+					x += mTileWidth;
+				}
+
+				pitch = rowFirstPitch + pitchhpost;
+				rowFirstPitch = pitch;
+				y += 3 * mTileRadius;
+			}
+		}
+	}
+
+	/*
 	protected void setUpJammerBoard()
 	{
 		int y = 0;
@@ -250,6 +451,7 @@ public class HexKeyboard extends View
 			}
 		}
 	}
+	*/
 
 	protected void setUpJankoBoard()
 	{
@@ -436,6 +638,7 @@ public class HexKeyboard extends View
 		}
 	}
 	
+	/*
 	protected void setUpSonomeBoard()
 	{
 		int y = 0;
@@ -556,6 +759,7 @@ public class HexKeyboard extends View
 			}
 		}
 	}
+	*/
 
 	boolean screenIsNaturallyLandscape()
 	{
@@ -779,11 +983,11 @@ public class HexKeyboard extends View
 		String layoutPref = mPrefs.getString("layout", null);
 		if (layoutPref.equals("Sonome"))
 		{
-			this.setUpSonomeBoard();
+			this.setUpBoard("Sonome");
 		}
 		else if (layoutPref.equals("Jammer"))
 		{
-			this.setUpJammerBoard();
+			this.setUpBoard("Jammer");
 		}
 		else if (layoutPref.equals("Janko"))
 		{
