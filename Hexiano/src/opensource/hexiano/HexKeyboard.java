@@ -128,13 +128,29 @@ public class HexKeyboard extends View
 	
 	protected void setUpBoard(String board)
 	{
+		// Get options for all boards
 		String firstNote = mPrefs.getString("base"+board+"Note", null);
 		String firstOctaveStr = mPrefs.getString("base"+board+"Octave", null);
-
 		int firstOctave = Integer.parseInt(firstOctaveStr);
 		int pitch = Note.getNoteNumber(firstNote, firstOctave);
 		int keyCount = 0;
 		
+		// For Janko only
+		String groupSizeStr = mPrefs.getString("jankoRowCount", null);
+		groupSizeStr.replaceAll("[^0-9]", "");
+		if (groupSizeStr.length() == 0)
+		{
+			groupSizeStr = "4";
+		}
+	    int groupSize = Integer.parseInt(groupSizeStr);
+	  
+	    int groupCount = mColumnCount / groupSize;
+	    if (mColumnCount % groupSize > 0)
+	    {
+	    	groupCount++;
+	    }
+
+		// Setup notes progression for boards
 		int pitchvpre = 0;
 		int pitchv1 = 0;
 		int pitchv2 = 0;
@@ -159,6 +175,14 @@ public class HexKeyboard extends View
 			pitchh1 = 4;
 			pitchh2 = 3;
 			pitchhpost = 1; // Up a semitone.
+		} else if (board.equals("Janko")) {
+			pitch -= (mColumnCount - 1) * 2 - 1;
+			pitchvpre = -(groupCount - 1) * 12;
+			pitchv1 = -1;
+			pitchv2 = 1;
+			pitchvpost = 2;
+			pitchh1 = 1;
+			pitchh2 = 1;
 		}
 
 		if (HexKey.getKeyOrientation(mContext).equals("Vertical"))
@@ -175,6 +199,9 @@ public class HexKeyboard extends View
 			for (int j = 0; j < mRowCount; j++)
 			{	
 				int x = mTileRadius;
+				
+				int octaveGroupNumber = 0; // for Janko only
+			    int jankoColumnNumber = 0; // for Janko only
 
 				for (int i = 0; i < mColumnCount; i++)
 				{
@@ -198,14 +225,27 @@ public class HexKeyboard extends View
 								pitch,
 								mInstrument,
 								++keyCount);
+					} else if (board.equals("Janko")) {
+						kittyCornerKey = new JankoKey(
+								mContext,
+								mTileRadius,
+								new Point(kittyCornerX, kittyCornerY),
+								pitch + 12 * octaveGroupNumber,
+								mInstrument,
+								++keyCount,
+								octaveGroupNumber);
 					}
 
 					if (kittyCornerKey.isKeyVisible()) {
 						mKeys.add(kittyCornerKey);
+						Log.d("HexKeyboard::setUpBoard", "setUpBoard Key: " + Integer.toString(keyCount-1) + " kittyCornerKey i/j " + Integer.toString(i) + "/" + Integer.toString(j));
 					} else {
 						--keyCount;
 					}
 					pitch += pitchv1;
+					
+					jankoColumnNumber++; // for Janko only
+					if (jankoColumnNumber % groupSize == 0) octaveGroupNumber++; // for Janko only
 
 					HexKey key = null;
 					if (board.equals("Jammer")) {
@@ -224,14 +264,27 @@ public class HexKeyboard extends View
 								pitch,
 								mInstrument,
 								++keyCount);
+					} else if (board.equals("Janko")) {
+						key = new JankoKey(
+								mContext,
+								mTileRadius,
+								new Point(x, y),
+								pitch + 12 * octaveGroupNumber,
+								mInstrument,
+								++keyCount,
+								octaveGroupNumber);
 					}
 
 					if (key.isKeyVisible()) {
 						mKeys.add(key);
+						Log.d("HexKeyboard::setUpBoard", "setUpBoard Key: " + Integer.toString(keyCount-1) + " key i/j " + Integer.toString(i) + "/" + Integer.toString(j));
 					} else {
 						--keyCount;
 					}
 					pitch += pitchv2;
+					
+					jankoColumnNumber++; // for Janko only
+					if (jankoColumnNumber % groupSize == 0) octaveGroupNumber++; // for Janko only
 
 					x += 3 * mTileRadius;
 				}
@@ -239,6 +292,13 @@ public class HexKeyboard extends View
 				pitch = rowFirstPitch + pitchvpost;
 				rowFirstPitch = pitch;
 				y += mTileWidth;
+				
+				/* if (board.equals("Janko") && jankoRowNumber % groupSize == 0)
+				{
+				    pitch -= 12;
+				    rowFirstPitch = pitch;
+			    	octaveGroupNumber++;
+				} */
 			}
 		}
 		else
@@ -252,6 +312,9 @@ public class HexKeyboard extends View
 			
 			pitch += pitchhpre;
 			int rowFirstPitch = pitch;
+			
+			int octaveGroupNumber = 0; // for Janko only
+		    int jankoRowNumber = 0; // for Janko only
 			
 			for (int j = 0; j < mRowCount; j++)
 			{	
@@ -279,10 +342,20 @@ public class HexKeyboard extends View
 								pitch,
 								mInstrument,
 								++keyCount);
+					} else if (board.equals("Janko")) {
+						kittyCornerKey = new JankoKey(
+								mContext,
+								mTileRadius,
+								new Point(kittyCornerX, kittyCornerY),
+								pitch,
+								mInstrument,
+								++keyCount,
+								octaveGroupNumber);
 					}
 					
 					if (kittyCornerKey.isKeyVisible()) {
 						mKeys.add(kittyCornerKey);
+						Log.d("HexKeyboard::setUpBoard", "setUpBoard Key: " + Integer.toString(keyCount-1) + " kittyCornerKey i/j " + Integer.toString(i) + "/" + Integer.toString(j));
 					} else {
 						--keyCount;
 					}
@@ -306,10 +379,27 @@ public class HexKeyboard extends View
 								pitch,
 								mInstrument,
 								++keyCount);
+					} else if (board.equals("Janko")) {
+						int jpitch = pitch;
+						int ogn = octaveGroupNumber;
+						if ((jankoRowNumber+1) % groupSize == 0) // check if the next line should be the same octave or another one (because Janko keyboard is made of 3 rows chunks, not 2 like Jammer or Sonome)
+					    {
+					    	ogn++;
+					    	jpitch -= 12;
+					    }
+						key = new JankoKey(
+								mContext,
+								mTileRadius,
+								new Point(x, y),
+								jpitch,
+								mInstrument,
+								++keyCount,
+								ogn);
 					}
 
 					if (key.isKeyVisible()) {
 						mKeys.add(key);
+						Log.d("HexKeyboard::setUpBoard", "setUpBoard Key: " + Integer.toString(keyCount-1) + " key i/j " + Integer.toString(i) + "/" + Integer.toString(j));
 					} else {
 						--keyCount;
 					}
@@ -322,444 +412,19 @@ public class HexKeyboard extends View
 				pitch = rowFirstPitch + pitchhpost;
 				rowFirstPitch = pitch;
 				y += 3 * mTileRadius;
-			}
-		}
-	}
-
-	/*
-	protected void setUpJammerBoard()
-	{
-		int y = 0;
-
-		String firstNote = mPrefs.getString("baseJammerNote", null);
-		String firstOctaveStr = mPrefs.getString("baseJammerOctave", null);
-		int firstOctave = Integer.parseInt(firstOctaveStr);
-		int pitch = Note.getNoteNumber(firstNote, firstOctave);
-		int keyCount = 0;
-		if (HexKey.getKeyOrientation(mContext).equals("Vertical"))
-		{
-			Log.d("setUpJammerBoard", "orientation: vertical");
-			Log.d("setUpJammerBoard", "pitch: " + pitch);
-			Log.d("setUpJammerBoard", "rowCount: " + mRowCount);
-			Log.d("setUpJammerBoard", "columnCount: " + mColumnCount);
-			int rowFirstPitch = pitch;
-
-			for (int j = 0; j < mRowCount; j++)
-			{	
-				int x = mTileRadius;
-
-				for (int i = 0; i < mColumnCount; i++)
+				
+				// for Janko only
+				jankoRowNumber += 2;
+				if (board.equals("Janko") && jankoRowNumber % groupSize == 0)
 				{
-					int kittyCornerX = (int)Math.round(x - mTileRadius * 1.5);
-					int kittyCornerY = y + mTileWidth/2;
-					JammerKey kittyCornerKey = new JammerKey(
-							mContext,
-							mTileRadius,
-							new Point(kittyCornerX, kittyCornerY),
-							pitch,
-							mInstrument,
-							++keyCount);
-
-					if (kittyCornerKey.isKeyVisible()) {
-						mKeys.add(kittyCornerKey);
-					} else {
-						--keyCount;
-					}
-					pitch-=5;
-
-					JammerKey key = new JammerKey(
-							mContext,
-							mTileRadius,
-							new Point(x, y),
-							pitch,
-							mInstrument,
-							++keyCount);
-
-					if (key.isKeyVisible()) {
-						mKeys.add(key);
-					} else {
-						--keyCount;
-					}
-					pitch-=7;
-
-					x += 3 * mTileRadius;
-				}
-
-				pitch = rowFirstPitch - 2; // Down a full tone.
-				rowFirstPitch = pitch;
-				y += mTileWidth;
-			}
-		}
-		else
-		{
-			Log.d("setUpJammerBoard", "orientation: horizontal");
-			Log.d("setUpJammerBoard", "pitch: " + pitch);
-			Log.d("setUpJammerBoard", "rowCount: " + mRowCount);
-			Log.d("setUpJammerBoard", "columnCount: " + mColumnCount);
-			pitch -= (mRowCount - 1) * 2;
-		
-			y = mTileRadius;
-			
-			int rowFirstPitch = pitch;
-			
-			for (int j = 0; j < mRowCount; j++)
-			{	
-				int x = mTileWidth / 2;
-
-				for (int i = 0; i < mColumnCount; i++)
-				{
-					int kittyCornerX = Math.round(x - mTileWidth / 2);
-					int kittyCornerY = (int)Math.round(y - mTileRadius * 1.5);
-					JammerKey kittyCornerKey = new JammerKey(
-							mContext,
-							mTileRadius,
-							new Point(kittyCornerX, kittyCornerY),
-							pitch,
-							mInstrument,
-							++keyCount);
-					
-					if (kittyCornerKey.isKeyVisible()) {
-						mKeys.add(kittyCornerKey);
-					} else {
-						--keyCount;
-					}
-					
-					pitch-=5;
-
-					JammerKey key = new JammerKey(
-							mContext,
-							mTileRadius,
-							new Point(x, y),
-							pitch,
-							mInstrument,
-							++keyCount);
-
-					if (key.isKeyVisible()) {
-						mKeys.add(key);
-					} else {
-						--keyCount;
-					}
-					
-					pitch+=7;
-
-					x += mTileWidth;
-				}
-
-				pitch = rowFirstPitch - 12; // Down a full tone.
-				rowFirstPitch = pitch;
-				y += 3 * mTileRadius;
-			}
-		}
-	}
-	*/
-
-	protected void setUpJankoBoard()
-	{
-		int y = 0;
-
-		String highestNote = mPrefs.getString("baseJankoNote", null);
-		String highestOctaveStr = mPrefs.getString("baseJankoOctave", null);
-		int highestOctave = Integer.parseInt(highestOctaveStr);
-		int pitch = Note.getNoteNumber(highestNote, highestOctave); 
-		String groupSizeStr = mPrefs.getString("jankoRowCount", null);
-		groupSizeStr.replaceAll("[^0-9]", "");
-		if (groupSizeStr.length() == 0)
-		{
-			groupSizeStr = "4";
-		}
-	    int groupSize = Integer.parseInt(groupSizeStr);
-	  
-	    int groupCount = mColumnCount / groupSize;
-	    if (mColumnCount % groupSize > 0)
-	    {
-	    	groupCount++;
-	    }
-	    
-	    pitch -= (mColumnCount - 1) * 2 - 1;
-		Log.d("setUpJankoBoard", "" + pitch);
-		
-		int keyCount = 0;
-		
-		if (HexKey.getKeyOrientation(mContext).equals("Vertical"))
-		{
-			pitch -= (groupCount - 1) * 12;
-			int rowFirstPitch = pitch;
-
-			for (int j = 0; j < mRowCount; j++)
-			{	
-				int x = mTileRadius;
-
-				int octaveGroupNumber = 0;
-			    int jankoColumnNumber = 0;
-			    
-				for (int i = 0; i < mColumnCount; i++)
-				{
-					int kittyCornerX = (int)Math.round(x - mTileRadius * 1.5);
-					int kittyCornerY = y + mTileWidth/2;
-					JankoKey kittyCornerKey = new JankoKey(
-							mContext,
-							mTileRadius,
-							new Point(kittyCornerX, kittyCornerY),
-							pitch + 12 * octaveGroupNumber,
-							mInstrument,
-							++keyCount,
-							octaveGroupNumber);
-					
-					if (kittyCornerKey.isKeyVisible()) {
-						mKeys.add(kittyCornerKey);
-					} else {
-						--keyCount;
-					}
-			
-					jankoColumnNumber++;
-				
-					if (jankoColumnNumber % groupSize == 0)
-					{
-						octaveGroupNumber++;
-					}
-					pitch--;
-
-					JankoKey key = new JankoKey(
-							mContext,
-							mTileRadius,
-							new Point(x, y),
-							pitch + 12 * octaveGroupNumber,
-							mInstrument,
-							++keyCount,
-							octaveGroupNumber);
-					
-					if (key.isKeyVisible()) {
-						mKeys.add(key);
-					} else {
-						--keyCount;
-					}
-					pitch++;
-				
-					jankoColumnNumber++;
-					if (jankoColumnNumber % groupSize == 0)
-					{
-						octaveGroupNumber++;
-					}
-
-					x += 3 * mTileRadius;
-				}
-
-				
-//				if (jankoRowNumber % groupSize == 0)
-//				{
-//				    pitch = rowFirstPitch - 12;
-//				    rowFirstPitch = pitch;
-//			    	octaveGroupNumber++;
-//				}
-				pitch = rowFirstPitch;
-				
-				pitch = rowFirstPitch + 2; 
-				rowFirstPitch = pitch;
-				y += mTileWidth;
-			}
-		}
-		else
-		{
-			y = mTileRadius;
-			int rowFirstPitch = pitch;
-	
-			int octaveGroupNumber = 0;
-			int jankoRowNumber = 0;
-			
-			for (int j = 0; j <= mRowCount; j++)
-			{	
-				int x = mTileWidth / 2;
-
-				for (int i = 0; i < mColumnCount; i++)
-				{
-					int kittyCornerX = Math.round(x - mTileWidth / 2);
-					int kittyCornerY = (int)Math.round(y - mTileRadius * 1.5);
-					JankoKey kittyCornerKey = new JankoKey(
-							mContext,
-							mTileRadius,
-							new Point(kittyCornerX, kittyCornerY),
-							pitch,
-							mInstrument,
-							++keyCount,
-							octaveGroupNumber);
-					
-					if (kittyCornerKey.isKeyVisible()) {
-						mKeys.add(kittyCornerKey);
-					} else {
-						--keyCount;
-					}
-					pitch+=2;
-					x += mTileWidth;
-				}
-			
-				jankoRowNumber++;
-			    if (jankoRowNumber % groupSize == 0)
-			    {
-			    	octaveGroupNumber++;
-			    	rowFirstPitch-=12;
-			    }
-				pitch = rowFirstPitch + 1;
-				
-				x = mTileWidth / 2;
-				for (int i = 0; i < mColumnCount; i++)
-				{
-					JankoKey key = new JankoKey(
-							mContext,
-							mTileRadius,
-							new Point(x, y),
-							pitch,
-							mInstrument,
-							++keyCount,
-							octaveGroupNumber);
-					
-					if (key.isKeyVisible()) {
-						mKeys.add(key);
-					} else {
-						--keyCount;
-					}
-					
-					pitch+=2;
-
-					x+=mTileWidth;
-				}
-				
-				jankoRowNumber++;
-				
-				if (jankoRowNumber % groupSize == 0)
-				{
-				    pitch = rowFirstPitch - 12;
+				    pitch -= 12;
 				    rowFirstPitch = pitch;
 			    	octaveGroupNumber++;
 				}
-				pitch = rowFirstPitch;
-				
-				y += 3 * mTileRadius;
+
 			}
 		}
 	}
-	
-	/*
-	protected void setUpSonomeBoard()
-	{
-		int y = 0;
-		String firstNote = mPrefs.getString("baseSonomeNote", null);
-		String firstOctaveStr = mPrefs.getString("baseSonomeOctave", null);
-		int firstOctave = Integer.parseInt(firstOctaveStr);
-		int pitch = Note.getNoteNumber(firstNote, firstOctave);
-		int keyCount = 0;
-
-		if (HexKey.getKeyOrientation(mContext).equals("Vertical"))
-		{
-			pitch += (mRowCount - 1) * 7;
-			Log.d("setUpSonomeBoard", "orientation: vertical");
-			Log.d("setUpSonomeBoard", "pitch: " + pitch);
-			Log.d("setUpSonomeBoard", "rowCount: " + mRowCount);
-			int rowFirstPitch = pitch;
-
-			for (int j = 0; j < mRowCount; j++)
-			{	
-				int x = mTileRadius;
-
-				for (int i = 0; i < mColumnCount; i++)
-				{
-					int kittyCornerX = (int)Math.round(x - mTileRadius * 1.5);
-					int kittyCornerY = y + mTileWidth/2;
-					SonomeKey kittyCornerKey = new SonomeKey(
-							mContext,
-							mTileRadius,
-							new Point(kittyCornerX, kittyCornerY),
-							pitch,
-							mInstrument,
-							++keyCount);
-
-					if (kittyCornerKey.isKeyVisible()) {
-						mKeys.add(kittyCornerKey);
-					} else {
-						--keyCount;
-					}
-					pitch+=4;
-
-					SonomeKey key = new SonomeKey(
-							mContext,
-							mTileRadius,
-							new Point(x, y),
-							pitch,
-							mInstrument,
-							++keyCount);
-					
-					if (key.isKeyVisible()) {
-						mKeys.add(key);
-					} else {
-						--keyCount;
-					}
-					pitch-=3;
-
-					x += 3 * mTileRadius;
-				}
-
-				pitch = rowFirstPitch - 7; // Down a fifth.
-				rowFirstPitch = pitch;
-				y += mTileWidth;
-			}
-		}
-		else
-		{
-			y = mTileRadius;
-			Log.d("setUpSonomeBoard", "orientation: horizontal");
-			Log.d("setUpSonomeBoard", "pitch: " + pitch);
-			Log.d("setUpSonomeBoard", "rowCount: " + mRowCount);
-			int rowFirstPitch = pitch;
-			
-			for (int j = 0; j < mRowCount; j++)
-			{	
-				int x = mTileWidth / 2;
-
-				for (int i = 0; i < mColumnCount; i++)
-				{
-					int kittyCornerX = Math.round(x - mTileWidth / 2);
-					int kittyCornerY = (int)Math.round(y - mTileRadius * 1.5);
-					SonomeKey kittyCornerKey = new SonomeKey(
-							mContext,
-							mTileRadius,
-							new Point(kittyCornerX, kittyCornerY),
-							pitch,
-							mInstrument,
-							++keyCount);
-					
-					if (kittyCornerKey.isKeyVisible()) {
-						mKeys.add(kittyCornerKey);
-					} else {
-						--keyCount;
-					}
-					
-					pitch+=4;
-
-					SonomeKey key = new SonomeKey(
-							mContext,
-							mTileRadius,
-							new Point(x, y),
-							pitch,
-							mInstrument,
-							++keyCount);
-					
-					if (key.isKeyVisible()) {
-						mKeys.add(key);
-					} else {
-						--keyCount;
-					}
-					
-					pitch+=3;
-
-					x += mTileWidth;
-				}
-
-				pitch = rowFirstPitch + 1; // Up a semitone.
-				rowFirstPitch = pitch;
-				y += 3 * mTileRadius;
-			}
-		}
-	}
-	*/
 
 	boolean screenIsNaturallyLandscape()
 	{
@@ -991,7 +656,7 @@ public class HexKeyboard extends View
 		}
 		else if (layoutPref.equals("Janko"))
 		{
-			this.setUpJankoBoard();
+			this.setUpBoard("Janko");
 		}
 		
 		if (!mHideModifierKeys) {
