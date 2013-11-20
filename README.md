@@ -8,13 +8,13 @@ Hexiano
 
 Description
 ----------------
-Hexiano is an Open-source isomorphic musical keyboard.
+Hexiano is an Open-source isomorphic musical keyboard, and technically a sample-based synthesizer.
 
 Isomorphic means that all intervals, chords, and scales have identical patterns, regardless of the key in which one plays.
 
 Isomorphic keyboards are an old concept, and some layouts are more than a century old (Janko, Wicki-Hayden).
 
-Hexiano not only aims to deliver the isomorphic keyboard concept to the Android platform, but it is also committed to give you ergonomic tools to get the most out of these amazing keyboards.
+Hexiano not only aims to deliver the isomorphic keyboard concept to the Android platform, but it is also committed to give you ergonomic tools to get the most out of these amazing keyboards, with all the options you need to customize your own Hexiano experience.
 
 See http://www.altkeyboards.com/ for more information about these instruments.
 
@@ -74,6 +74,14 @@ To quick-start your contributions, here is a short description of how the projec
 - __Prefer.java__ extends the Menu by adding dynamically generated submenus (eg: loading external instruments via GenericInstrument, generate multi-instruments and multi-panels configs, etc.).
 
 - _AboutDialog.java_ manage the AboutDialog with UI parts that couldn't fit in XML.
+
+
+Feedback
+--------------
+
+If you found any bug or have a suggestion for an amazing new feature you would like to see in Hexiano, feel free to post a request in the github issue tracker:
+
+https://github.com/lrq3000/hexiano/issues
 
 
 License

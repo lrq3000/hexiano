@@ -31,6 +31,9 @@ MAYBE/ONE DAY
 - Interactive tutorials (one for each keyboard) to know how to play major scales, minor, change root note, etc...
 - Midi tutorial: load a midi file and the keys to press will be highlighted on the screen.
 - internal audio effects by using an (external?) realtime audio effects processing library (eg: Flanger, Filter Enveloppe which could be used to simulate Expression, etc.).
+- external audio constant latency (store timestamp and delta from previous) to avoid jitter.
+- refactor setUpBoard() to use as arguments only two vectors (length being the pitch change)  and directions of those vectors to construct generically an hexagon board.
+- full board option: draw not only the keys visible on-screen, but any possible key, and let the user move the screen wherever he wants to. This is possible and should not use much more resources since instruments load all notes sounds anyway, whether the note is visible or not.
 
 DONE
 ---------
