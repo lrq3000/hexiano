@@ -71,7 +71,7 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 	static Iterator<Instrument> instrument_load_queue;
 	static Instrument currLoadingInstrument;
 	static boolean mInstrumentChanged = false;
-	public static int POLYPHONY_COUNT = 16;
+	static int POLYPHONY_COUNT = 16;
 	public static SoundPool mSoundPool;
 	boolean configChanged = false;
 
@@ -158,28 +158,38 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
         if (mSoundPool != null) mSoundPool.release();
         mSoundPool = null; System.gc();
 		mSoundPool = new SoundPool(POLYPHONY_COUNT, AudioManager.STREAM_MUSIC, 0);
-		// Redraw whenever a new note is ready.
+
+		// Load another sound whenever the previous one has finished loading
+		// NOTE: ensure that this function ALWAYS load only one sound, and that only ONE SOUND is loaded prior (so that this function is only called once. If you load two sounds, this function will be called twice, and so on). This is critical to ensure that the UI remains responsive during sound loading.
+		// NOTE2: SoundPool already works in its own thread when loading sounds, so there's no need to use an AsyncTask. There's no way to enhance the UI responsiveness while loading, it's because of SoundPool using lots of resources when loading (hence why you should always ensure to load only one sound to kickstart the SoundPool listener).
         mSoundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
 			@Override
 			public void onLoadComplete(SoundPool mSoundPool, int sampleId, int status) {
-				mBoard.invalidate();
-				// If there are yet others sounds to load
+				mBoard.invalidate(); // Redraw board to refresh keys that now have their sound loaded
+
+				// If there are yet others sounds to load in this batch of sounds (tuples)
 				if (currLoadingInstrument.sound_load_queue.hasNext()) {
-					List<ArrayList> listOfTuples = currLoadingInstrument.sound_load_queue.next();
-					for (ArrayList tuple : listOfTuples) {
-						if (!currLoadingInstrument.mExternal) {
-							currLoadingInstrument.addSound((Integer)tuple.get(0), (Integer)tuple.get(1), (Integer)tuple.get(2)); // Instrument class (not external): we use a ressource ID int
-						} else {
-							currLoadingInstrument.addSound((Integer)tuple.get(0), (Integer)tuple.get(1), (String)tuple.get(2)); // Instrument external: we use a string path
-						}
+					ArrayList tuple = currLoadingInstrument.sound_load_queue.next();
+					if (!currLoadingInstrument.mExternal) {
+						currLoadingInstrument.addSound((Integer)tuple.get(0), (Integer)tuple.get(1), (Integer)tuple.get(2)); // Instrument class (not external): we use a ressource ID int
+					} else {
+						currLoadingInstrument.addSound((Integer)tuple.get(0), (Integer)tuple.get(1), (String)tuple.get(2)); // Instrument external: we use a string path
 					}
+
+				// Else if batch of sounds (tuples) empty but we have other notes sounds to load
+				} else if (currLoadingInstrument.notes_load_queue.hasNext()) {
+					currLoadingInstrument.currListOfTuples = currLoadingInstrument.notes_load_queue.next();
+					currLoadingInstrument.sound_load_queue =  currLoadingInstrument.currListOfTuples.iterator();
+					onLoadComplete(mSoundPool, sampleId, status); // try to load sounds for this next list of tuples (batch of sounds)
+
 				// Else if no more sound for this instrument but we have another instrument for which sounds are to be loaded, we switch to the next instrument
 				} else if (instrument_load_queue.hasNext()) {
 					// Switch to the next instrument
 					currLoadingInstrument = instrument_load_queue.next();
 					// Setup the sound load queue for this instrument
-					currLoadingInstrument.sound_load_queue = currLoadingInstrument.sounds.values().iterator();
+					currLoadingInstrument.notes_load_queue = currLoadingInstrument.sounds_to_load.values().iterator();
 					onLoadComplete(mSoundPool, sampleId, status); // try to load sounds for this next instrument
+
 				// Else all sounds loaded! Show a short notification so that the user knows that (s)he can start playing without lags
 				} else {
 					Toast.makeText(HexKeyboard.mContext, R.string.finished_loading, Toast.LENGTH_SHORT).show();
@@ -242,15 +252,15 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 		// Initiate the loading process, by loading the first instrument and the first sound for this instrument
 		currLoadingInstrument = instrument_load_queue.next();
 		// Setup the sound load queue for this instrument
-		currLoadingInstrument.sound_load_queue = currLoadingInstrument.sounds.values().iterator();
-		// Start loading the first instrument and the sounds for the first note, the rest are started from the Play::loadKeyboard()::OnLoadCompleteListener()
-		List<ArrayList> listOfTuples = currLoadingInstrument.sound_load_queue.next();
-		for (ArrayList tuple : listOfTuples) {
-			if (!currLoadingInstrument.mExternal) {
-				currLoadingInstrument.addSound((Integer)tuple.get(0), (Integer)tuple.get(1), (Integer)tuple.get(2)); // Instrument class (not external): we use a ressource ID int
-			} else {
-				currLoadingInstrument.addSound((Integer)tuple.get(0), (Integer)tuple.get(1), (String)tuple.get(2)); // Instrument external: we use a string path
-			}
+		currLoadingInstrument.notes_load_queue = currLoadingInstrument.sounds_to_load.values().iterator();
+		// Start loading the first instrument and the first sound for the first note, the rest of the sounds are loaded from the Play::loadKeyboard()::OnLoadCompleteListener()
+		currLoadingInstrument.currListOfTuples = currLoadingInstrument.notes_load_queue.next();
+		currLoadingInstrument.sound_load_queue = currLoadingInstrument.currListOfTuples.iterator();
+		ArrayList tuple = currLoadingInstrument.sound_load_queue.next();
+		if (!currLoadingInstrument.mExternal) {
+			currLoadingInstrument.addSound((Integer)tuple.get(0), (Integer)tuple.get(1), (Integer)tuple.get(2)); // Instrument class (not external): we use a ressource ID int
+		} else {
+			currLoadingInstrument.addSound((Integer)tuple.get(0), (Integer)tuple.get(1), (String)tuple.get(2)); // Instrument external: we use a string path
 		}
 	}
 	

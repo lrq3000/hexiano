@@ -41,15 +41,20 @@ import android.util.Log;
 
 public abstract class Instrument {
 
-	protected HashMap<Integer, TreeMap<Integer, Integer>> mSounds; // [midiNoteNumber, [velocity, SoundPool sound id]] 
-	protected HashMap<Integer, Float> mRates;
-	protected HashMap<Integer, Integer> mRootNotes;
-	private AudioManager  mAudioManager;
 	private Context mContext;
-	public Iterator<List<ArrayList>> sound_load_queue;
-	public boolean mExternal = false; // Loading external files (needing to pass Strings instead of int[]?)
-	public String mInstrumentName;
-	public TreeMap<Integer, List<ArrayList>> sounds; // list of sounds to load, each entry being a tuple of [midiNoteNumber, velocity, file resource id int or string file path]
+	//private AudioManager mAudioManager;
+	// Instrument type definition
+	public boolean mExternal = false; // Loading external files (needing to pass Strings instead of int[]?). Defines if the third argument in sounds tuples is a resource id (int) or a file path (string)
+	public String mInstrumentName; // Important for reference
+	// Sounds loading variables
+	public TreeMap<Integer, List<ArrayList>> sounds_to_load; // raw list of sounds to load in SoundPool, each entry being a midiNoteNumber associated to a tuple of [midiNoteNumber, velocity, file resource id int or string file path]
+	public Iterator<List<ArrayList>> notes_load_queue; // = sounds.iterator(); when iterating through sounds_to_load in SoundPool.onLoadComplete(), contains a list of sound files (of different velocities) for one note
+	public List<ArrayList> currListOfTuples; // = notes_load_queue.next(); temporary holder that contains all sounds file (of different velocities) for one midi note
+	public Iterator<ArrayList> sound_load_queue; // = currListOfTuples.iterator(); contains one sound file at a time
+	// Sounds holder variables (when loading is completed)
+	protected HashMap<Integer, TreeMap<Integer, Integer>> mSounds; // List of all already loaded sound files, with their id (relative to velocity) for each midi note, to easily play the sounds. Format: [midiNoteNumber, [velocity, SoundPool sound id]]
+	protected HashMap<Integer, Float> mRates; // Extrapolation rates: All rates for each midi note. Used to extrapolate missing note sounds from existing notes sounds (rootNotes). The frequency is extrapolated from the nearest rootNote available (see mRootNotes for the association). Format: [midiNote, rate]
+	protected HashMap<Integer, Integer> mRootNotes; // Extrapolation association vector: for each midi note, define the nearest rootNote from which it should be extrapolated (if it's not already a rootNote). Format: [midiNote, rootNote]
 
 	public Instrument(Context context)
 	{
@@ -62,7 +67,7 @@ public abstract class Instrument {
 		mSounds = new HashMap<Integer, TreeMap<Integer, Integer>>(); 
 		mRates = new HashMap<Integer, Float>(); 
 		mRootNotes = new HashMap<Integer, Integer>(); 
-		mAudioManager = (AudioManager)mContext.getSystemService(Context.AUDIO_SERVICE); 	     
+		//mAudioManager = (AudioManager)mContext.getSystemService(Context.AUDIO_SERVICE); 	     
 	} 
 
 	// Load into SoundPool a sound from the APK ressources
@@ -103,7 +108,7 @@ public abstract class Instrument {
 	public void limitRange(ArrayList<Integer> ListOfMidiNotesNumbers) {
 		// Loop through all found notes (from sounds files)
 		ArrayList<Integer> notesToDelete = new ArrayList<Integer>();
-		for (int midiNoteNumber : sounds.keySet()) {
+		for (int midiNoteNumber : sounds_to_load.keySet()) {
 			/*
 			TreeMap<Integer, Integer> velocity_soundid = mSounds.get(midiNoteNumber);
 			for (int soundid : velocity_soundid.values()) {
@@ -120,13 +125,13 @@ public abstract class Instrument {
 		// Delete notes
 		if (notesToDelete.size() > 0) {
 			for (int midiNoteNumber : notesToDelete) {
-				if (sounds.containsKey(midiNoteNumber)) sounds.remove( new Integer(midiNoteNumber) );
+				if (sounds_to_load.containsKey(midiNoteNumber)) sounds_to_load.remove( new Integer(midiNoteNumber) );
 				if (mRootNotes.containsKey(midiNoteNumber)) mRootNotes.remove( new Integer(midiNoteNumber) );
 				if (mRates.containsKey(midiNoteNumber)) mRates.remove( new Integer(midiNoteNumber) );
 			}
 		}
 		// Recreate the iterator to generate all sounds of all notes
-		sound_load_queue = sounds.values().iterator();
+		notes_load_queue = sounds_to_load.values().iterator();
 	}
 	
 	public void extrapolateSoundNotes() {

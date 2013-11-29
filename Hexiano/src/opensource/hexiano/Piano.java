@@ -102,7 +102,7 @@ public class Piano extends Instrument
 		Pattern pat = Pattern.compile("^pno_m([0-9]+)(v([0-9]+))?"); // Pattern: anythingyouwant_mxxvyy.ext where xx is the midi note, and yy the velocity (velocity is optional)
 		Class raw = R.raw.class;
 		Field[] fields = raw.getFields(); // Fetch all the files (fields) in Raw directory
-		sounds = new TreeMap<Integer, List<ArrayList>>(); // Are there really no tuples in Java?!
+		sounds_to_load = new TreeMap<Integer, List<ArrayList>>(); // Are there really no tuples in Java?!
 		// For each file (field) in the Raw directory
 		for (Field field : fields)
 		{
@@ -129,14 +129,14 @@ public class Piano extends Instrument
 						tuple.add(midiNoteNumber);
 						tuple.add(velocity);
 						tuple.add(fieldValue);
-						if (sounds.containsKey(midiNoteNumber)) {
-							List<ArrayList> temp = sounds.get(midiNoteNumber);
+						if (sounds_to_load.containsKey(midiNoteNumber)) {
+							List<ArrayList> temp = sounds_to_load.get(midiNoteNumber);
 							temp.add(tuple);
-							sounds.put(midiNoteNumber, temp);
+							sounds_to_load.put(midiNoteNumber, temp);
 						} else {
 							List<ArrayList> temp = new ArrayList<ArrayList>();
 							temp.add(tuple);
-							sounds.put(midiNoteNumber, temp);
+							sounds_to_load.put(midiNoteNumber, temp);
 						}
 		        		mRootNotes.put(midiNoteNumber, midiNoteNumber);
 		        		mRates.put(midiNoteNumber, 1.0f);
@@ -150,18 +150,13 @@ public class Piano extends Instrument
 		}
 		
 		// No sounds found? Show an error message then quit
-		if (sounds.size() == 0) {
+		if (sounds_to_load.size() == 0) {
 			// TODO: a better error dialog with nice OK button
-			Toast.makeText(context, R.string.error_no_soundfiles, Toast.LENGTH_LONG).show();
+			Toast.makeText(context, mInstrumentName + ": " + R.string.error_no_soundfiles, Toast.LENGTH_LONG).show();
 			return;
 		}
 
-		// Create an iterator to generate all sounds of all notes
-		//sound_load_queue = sounds.iterator();
-		// Start loading the first sound, the rest are started from the Play::loadKeyboard()::OnLoadCompleteListener()
-		//ArrayList tuple = sound_load_queue.next();
-		//addSound((Integer)tuple.get(0), (Integer)tuple.get(1), (Integer)tuple.get(2));
-
+		// Extrapolate missing notes (for which we have no sound file) from available sound files
 		extrapolateSoundNotes();
 	}
 }
