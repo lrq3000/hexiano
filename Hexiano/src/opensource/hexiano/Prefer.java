@@ -109,10 +109,8 @@ public class Prefer extends PreferenceActivity
 		            Preference instrument = findPreference("instrument");
 					Preference multiInstrumentsScreen = findPreference("multiInstrumentsScreen");
 		            if (boolVal) {
-						instrument.setEnabled(false);
 						multiInstrumentsScreen.setEnabled(true);
 					} else {
-						instrument.setEnabled(true);
 						multiInstrumentsScreen.setEnabled(false);
 					}
 		        }
