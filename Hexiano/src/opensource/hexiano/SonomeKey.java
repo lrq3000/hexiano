@@ -26,7 +26,6 @@
 package opensource.hexiano;
 
 import android.content.Context;
-import android.graphics.Paint;
 
 public class SonomeKey extends HexKey
 {

@@ -78,17 +78,13 @@ http://creativecommons.org/licenses/by/3.0/
 package opensource.hexiano;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.TreeMap;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;

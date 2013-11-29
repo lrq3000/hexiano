@@ -27,7 +27,6 @@
 
 package opensource.hexiano;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -35,8 +34,6 @@ import java.util.List;
 import java.util.TreeMap;
 
 import android.content.Context;
-import android.media.AudioManager;
-import android.media.SoundPool;
 import android.util.Log;
 
 public abstract class Instrument {

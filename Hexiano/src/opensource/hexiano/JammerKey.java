@@ -26,7 +26,6 @@
 package opensource.hexiano;
 
 import android.content.Context;
-import android.graphics.Paint;
 import android.util.Log;
 
 public class JammerKey extends HexKey

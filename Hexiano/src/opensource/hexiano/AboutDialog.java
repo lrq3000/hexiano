@@ -4,9 +4,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.text.Html;
-import android.text.method.LinkMovementMethod;
-import android.widget.TextView;
 
 public class AboutDialog extends Dialog
 {
