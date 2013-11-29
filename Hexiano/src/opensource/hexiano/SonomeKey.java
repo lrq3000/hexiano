@@ -7,7 +7,7 @@
  *   FILE: SonomeKey.java                                                  *
  *                                                                         *
  *   This file is part of Hexiano, an open-source project hosted at:       *
- *   https://gitorious.org/hexiano                                         *
+ *   https://github.com/lrq3000/hexiano                                         *
  *                                                                         *
  *   Hexiano is free software: you can redistribute it and/or              *
  *   modify it under the terms of the GNU General Public License           *
