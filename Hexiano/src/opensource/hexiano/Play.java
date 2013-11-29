@@ -165,7 +165,7 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 				mBoard.invalidate(); // Redraw board to refresh keys that now have their sound loaded
 
 				// If there are yet others sounds to load in this batch of sounds (tuples)
-				if (currLoadingInstrument.sound_load_queue.hasNext()) {
+				if (currLoadingInstrument.sound_load_queue != null && currLoadingInstrument.sound_load_queue.hasNext()) {
 					ArrayList tuple = currLoadingInstrument.sound_load_queue.next();
 					if (!currLoadingInstrument.mExternal) {
 						currLoadingInstrument.addSound((Integer)tuple.get(0), (Integer)tuple.get(1), (Integer)tuple.get(2)); // Instrument class (not external): we use a ressource ID int
@@ -174,7 +174,7 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 					}
 
 				// Else if batch of sounds (tuples) empty but we have other notes sounds to load
-				} else if (currLoadingInstrument.notes_load_queue.hasNext()) {
+				} else if (currLoadingInstrument.notes_load_queue != null && currLoadingInstrument.notes_load_queue.hasNext()) {
 					currLoadingInstrument.currListOfTuples = currLoadingInstrument.notes_load_queue.next();
 					currLoadingInstrument.sound_load_queue =  currLoadingInstrument.currListOfTuples.iterator();
 					onLoadComplete(mSoundPool, sampleId, status); // try to load sounds for this next list of tuples (batch of sounds)
