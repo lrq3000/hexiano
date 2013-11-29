@@ -34,6 +34,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -45,9 +46,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.TreeMap;
 
 import android.view.WindowManager;
 
@@ -79,7 +82,6 @@ public class HexKeyboard extends View
 	static boolean mSustain = false; // current state of sustain key (pressed or not) - this state is separate from SustainAlwaysOn
 
 	static Set<Integer> old_pressed = new HashSet<Integer>();
-	static Instrument mInstrument; // static HashMap<String, Instrument> mInstrument;
 
 	static ArrayList<HexKey> mKeys = new ArrayList<HexKey>();
 	
@@ -125,10 +127,47 @@ public class HexKeyboard extends View
 		}
 	};
 	*/
+
+	// Given the position and parameters of an HexKey, return the id of the multiInstrument to use for this key
+	// Note: in case of conflicts (multiple mappings covering the same note), return the last mapping covering this key
+	protected Integer getMultiInstrument(TreeMap<Integer, HashMap<String, String>> multiInstruments, int keyCount, int column, int row) {
+		Integer finalInstruId = null;
+		String finalInstruName = null;
+		// Loop through all mappings, in ascending order of id
+		for (HashMap<String, String> mapping : multiInstruments.values()) {
+			boolean foundMatch = false;
+			Integer instruId = Integer.parseInt(mapping.get("id"));
+			String instruName = mapping.get("instrument");
+			String rangeType = mapping.get("rangeType");
+			int rangeStart = Integer.parseInt(mapping.get("rangeStart"));
+			int rangeEnd = Integer.parseInt(mapping.get("rangeEnd"));
+			// Mapping range by key
+			if (rangeType.equals("Key") && rangeStart <= (keyCount+1) && (keyCount+1) <= rangeEnd ) {
+				foundMatch = true;
+			// Mapping range by column
+			} else if (rangeType.equals("Column") && rangeStart <= column && column <= rangeEnd) {
+				foundMatch = true;
+			// Mapping range by row
+			} else if (rangeType.equals("Row") && rangeStart <= row && row <= rangeEnd) {
+				foundMatch = true;
+			}
+			// If found a mapping
+			if (foundMatch) {
+				finalInstruId = instruId;
+				finalInstruName = instruName;
+			}
+		}
+		if (finalInstruId != null) {
+			Log.d("HexKeyboard::getMultiInstrument", "Key " + Integer.toString(keyCount+1) + " Instrument:" + finalInstruName + " Id:" + Integer.toString(finalInstruId));
+		} else {
+			Log.d("HexKeyboard::getMultiInstrument", "Key " + Integer.toString(keyCount+1) + " Instrument: none found! Backing to single instrument.");
+		}
+		return finalInstruId;
+	}
 	
-	protected void setUpBoard(String board)
+	protected void setUpKeyBoard(String board)
 	{
-		// Get options for all boards
+		// Get general layout options (options common to all boards)
 		String firstNote = mPrefs.getString("base"+board+"Note", null);
 		String firstOctaveStr = mPrefs.getString("base"+board+"Octave", null);
 		int firstOctave = Integer.parseInt(firstOctaveStr);
@@ -184,6 +223,46 @@ public class HexKeyboard extends View
 			pitchh1 = 1;
 			pitchh2 = 1;
 		}
+		
+		// Setup single instrument and multi-instruments
+		boolean soundsLimitRange = mPrefs.getBoolean("soundsLimitRange", true);
+		// Range limits for multi-instruments
+		HashMap<String, ArrayList<Integer>> miRangeLimits = new HashMap<String, ArrayList<Integer>>(); // instrument's name ; list of notes
+		for (String instruName : Play.mInstrument.keySet()) {
+			miRangeLimits.put(instruName, new ArrayList<Integer>());
+		}
+		// Loading mapping of instruments
+		boolean multiInstrumentsEnabled = mPrefs.getBoolean("multiInstrumentsEnable", false);
+		TreeMap<Integer, HashMap<String, String>> multiInstruments = null;
+		String singleInstrument = mPrefs.getString("instrument", "Piano"); // Single instrument: always load it as it will also be the base default instrument when multi-instruments is enabled but some keys are not mapped
+		if (multiInstrumentsEnabled) { // Multi instruments with mapping
+			multiInstruments = Prefer.getMultiInstrumentsMappingHashMap(mPrefs);
+			// If mapping is empty, we switch to single instrument mode
+			if (multiInstruments == null || multiInstruments.size() == 0) {
+				multiInstrumentsEnabled = false;
+				singleInstrument = mPrefs.getString("instrument", "Piano");
+			}
+		}
+		// Get the differential pitch mapping for multi-instruments (how much we must shift the layout's pitch to find one instrument pitch)
+		// Note: how it works: we map the whole keyboard using a single pitch var, just as if the whole keyboard was using one single instrument. This way, we get a reference for the layout and evolution of pitch. Then for each multi-instrument mapping, we compute the differential pitch (dpitch) which allow then to compute any multi-instrument's pitch (ipitch) relatively to the general layout pitch - dpitch. This effectively keep the same layout for any multi-instrument mapping at all time, even if the baseNote and baseOctave are different, the pitch will just be different for those notes.
+		HashMap<Integer, Integer> miPitchDiff = new HashMap<Integer, Integer>();
+		if (multiInstrumentsEnabled) {
+			for (HashMap<String, String> mapping : multiInstruments.values()) {
+				// Get instrument's id in the mapping
+				int id = Integer.parseInt(mapping.get("id"));
+				// Get the baseNote and baseOctave
+				String baseNote = mapping.get("baseNote");
+				String baseOctaveStr = mapping.get("baseOctave");
+				int baseOctave = Integer.parseInt(baseOctaveStr);
+				// Compute the differential pitch (difference between layout's pitch and instrument's pitch)
+				int dpitch = Note.getNoteNumber(baseNote, baseOctave);
+				int diffpitch = pitch - dpitch;
+				// Memorize in the list for future reference (optimization, avoiding recomputing)
+				miPitchDiff.put(id, diffpitch);
+			}
+				
+		}
+		
 
 		if (HexKey.getKeyOrientation(mContext).equals("Vertical"))
 		{
@@ -205,6 +284,30 @@ public class HexKeyboard extends View
 
 				for (int i = 0; i < mColumnCount; i++)
 				{
+					// Setup instrument to load for the next key
+					Instrument instru = null;
+					String instruName = null;
+					Integer instruId = null;
+					if (!multiInstrumentsEnabled) { // Single instrument
+						instruName = singleInstrument;
+					} else { // Multi instruments
+						instruId = getMultiInstrument(multiInstruments, keyCount, i, j); // get the instrument id corresponding to the next key position and parameters
+						if (instruId != null) {
+							// Get multi-instrument mapping if one is found for the next key
+							instruName = multiInstruments.get(instruId).get("instrument");
+						} else {
+							// If no instrument mapping covers this key, by default play the single instrument on all undefined keys in the mapping
+							instruName = singleInstrument;
+						}
+					}
+					instru = Play.mInstrument.get(instruName);
+					// Multi-instruments: change pitch only if this multi-instrument uses its own baseNote and baseOctave (does not use the layout's baseNote and baseOctave)
+					int ipitch = pitch; // pitch for current instrument
+					if (multiInstrumentsEnabled && instruId != null && multiInstruments.get(instruId).get("keepBaseNoteOctave").equals("false")) {
+						ipitch = pitch - miPitchDiff.get(instruId);
+					}
+					
+					// Setup kitty corner key
 					int kittyCornerX = (int)Math.round(x - mTileRadius * 1.5);
 					int kittyCornerY = y + mTileWidth/2;
 					
@@ -214,31 +317,37 @@ public class HexKeyboard extends View
 								mContext,
 								mTileRadius,
 								new Point(kittyCornerX, kittyCornerY),
-								pitch,
-								mInstrument,
+								ipitch,
+								instru,
 								++keyCount);
 					} else if (board.equals("Sonome")) {
 						kittyCornerKey = new SonomeKey(
 								mContext,
 								mTileRadius,
 								new Point(kittyCornerX, kittyCornerY),
-								pitch,
-								mInstrument,
+								ipitch,
+								instru,
 								++keyCount);
 					} else if (board.equals("Janko")) {
 						kittyCornerKey = new JankoKey(
 								mContext,
 								mTileRadius,
 								new Point(kittyCornerX, kittyCornerY),
-								pitch + 12 * octaveGroupNumber,
-								mInstrument,
+								ipitch + 12 * octaveGroupNumber,
+								instru,
 								++keyCount,
 								octaveGroupNumber);
 					}
 
 					if (kittyCornerKey.isKeyVisible()) {
 						mKeys.add(kittyCornerKey);
-						Log.d("HexKeyboard::setUpBoard", "setUpBoard Key: " + Integer.toString(keyCount-1) + " kittyCornerKey i/j " + Integer.toString(i) + "/" + Integer.toString(j));
+						Log.d("HexKeyboard::setUpKeyBoard", "setUpKeyBoard Key: " + Integer.toString(keyCount-1) + " kittyCornerKey i/j " + Integer.toString(i) + "/" + Integer.toString(j));
+						// Limit sounds range: add this pitch (midiNoteNumber) to the list of notes to keep (notes that are visible on screen)
+						if (board.equals("Janko")) {
+							miRangeLimits.get(instruName).add(ipitch + 12 * octaveGroupNumber);
+						} else {
+							miRangeLimits.get(instruName).add(ipitch);
+						}
 					} else {
 						--keyCount;
 					}
@@ -246,38 +355,68 @@ public class HexKeyboard extends View
 					
 					jankoColumnNumber++; // for Janko only
 					if (jankoColumnNumber % groupSize == 0) octaveGroupNumber++; // for Janko only
+					
+					// Setup instrument to load for the next key
+					instru = null;
+					instruName = null;
+					instruId = null;
+					if (!multiInstrumentsEnabled) { // Single instrument
+						instruName = singleInstrument;
+					} else { // Multi instruments
+						instruId = getMultiInstrument(multiInstruments, keyCount, i, j); // get the instrument id corresponding to the next key position and parameters
+						if (instruId != null) {
+							// Get multi-instrument mapping if one is found for the next key
+							instruName = multiInstruments.get(instruId).get("instrument");
+						} else {
+							// If no instrument mapping covers this key, by default play the single instrument on all undefined keys in the mapping
+							instruName = singleInstrument;
+						}
+					}
+					instru = Play.mInstrument.get(instruName);
+					// Multi-instruments: change pitch only if this multi-instrument uses its own baseNote and baseOctave (does not use the layout's baseNote and baseOctave)
+					ipitch = pitch; // pitch for current instrument
+					if (multiInstrumentsEnabled && instruId != null && multiInstruments.get(instruId).get("keepBaseNoteOctave").equals("false")) {
+						ipitch = pitch - miPitchDiff.get(instruId);
+					}
 
+					// Setup key
 					HexKey key = null;
 					if (board.equals("Jammer")) {
 						key = new JammerKey(
 								mContext,
 								mTileRadius,
 								new Point(x, y),
-								pitch,
-								mInstrument,
+								ipitch,
+								instru,
 								++keyCount);
 					} else if (board.equals("Sonome")) {
 						key = new SonomeKey(
 								mContext,
 								mTileRadius,
 								new Point(x, y),
-								pitch,
-								mInstrument,
+								ipitch,
+								instru,
 								++keyCount);
 					} else if (board.equals("Janko")) {
 						key = new JankoKey(
 								mContext,
 								mTileRadius,
 								new Point(x, y),
-								pitch + 12 * octaveGroupNumber,
-								mInstrument,
+								ipitch + 12 * octaveGroupNumber,
+								instru,
 								++keyCount,
 								octaveGroupNumber);
 					}
 
 					if (key.isKeyVisible()) {
 						mKeys.add(key);
-						Log.d("HexKeyboard::setUpBoard", "setUpBoard Key: " + Integer.toString(keyCount-1) + " key i/j " + Integer.toString(i) + "/" + Integer.toString(j));
+						Log.d("HexKeyboard::setUpKeyBoard", "setUpKeyBoard Key: " + Integer.toString(keyCount-1) + " key i/j " + Integer.toString(i) + "/" + Integer.toString(j));
+						// Limit sounds range: add this pitch (midiNoteNumber) to the list of notes to keep (notes that are visible on screen)
+						if (board.equals("Janko")) {
+							miRangeLimits.get(instruName).add(ipitch + 12 * octaveGroupNumber);
+						} else {
+							miRangeLimits.get(instruName).add(ipitch);
+						}
 					} else {
 						--keyCount;
 					}
@@ -322,6 +461,30 @@ public class HexKeyboard extends View
 
 				for (int i = 0; i < mColumnCount; i++)
 				{
+					// Setup instrument to load for the next key
+					Instrument instru = null;
+					String instruName = null;
+					Integer instruId = null;
+					if (!multiInstrumentsEnabled) { // Single instrument
+						instruName = singleInstrument;
+					} else { // Multi instruments
+						instruId = getMultiInstrument(multiInstruments, keyCount, i, j); // get the instrument id corresponding to the next key position and parameters
+						if (instruId != null) {
+							// Get multi-instrument mapping if one is found for the next key
+							instruName = multiInstruments.get(instruId).get("instrument");
+						} else {
+							// If no instrument mapping covers this key, by default play the single instrument on all undefined keys in the mapping
+							instruName = singleInstrument;
+						}
+					}
+					instru = Play.mInstrument.get(instruName);
+					// Multi-instruments: change pitch only if this multi-instrument uses its own baseNote and baseOctave (does not use the layout's baseNote and baseOctave)
+					int ipitch = pitch; // pitch for current instrument
+					if (multiInstrumentsEnabled && instruId != null && multiInstruments.get(instruId).get("keepBaseNoteOctave").equals("false")) {
+						ipitch = pitch - miPitchDiff.get(instruId);
+					}
+					
+					// Setup kitty corner key
 					int kittyCornerX = Math.round(x - mTileWidth / 2);
 					int kittyCornerY = (int)Math.round(y - mTileRadius * 1.5);
 					
@@ -331,56 +494,82 @@ public class HexKeyboard extends View
 								mContext,
 								mTileRadius,
 								new Point(kittyCornerX, kittyCornerY),
-								pitch,
-								mInstrument,
+								ipitch,
+								instru,
 								++keyCount);
 					} else if (board.equals("Sonome")) {
 						kittyCornerKey = new SonomeKey(
 								mContext,
 								mTileRadius,
 								new Point(kittyCornerX, kittyCornerY),
-								pitch,
-								mInstrument,
+								ipitch,
+								instru,
 								++keyCount);
 					} else if (board.equals("Janko")) {
 						kittyCornerKey = new JankoKey(
 								mContext,
 								mTileRadius,
 								new Point(kittyCornerX, kittyCornerY),
-								pitch,
-								mInstrument,
+								ipitch,
+								instru,
 								++keyCount,
 								octaveGroupNumber);
 					}
 					
 					if (kittyCornerKey.isKeyVisible()) {
 						mKeys.add(kittyCornerKey);
-						Log.d("HexKeyboard::setUpBoard", "setUpBoard Key: " + Integer.toString(keyCount-1) + " kittyCornerKey i/j " + Integer.toString(i) + "/" + Integer.toString(j));
+						Log.d("HexKeyboard::setUpKeyBoard", "setUpKeyBoard Key: " + Integer.toString(keyCount-1) + " kittyCornerKey i/j " + Integer.toString(i) + "/" + Integer.toString(j));
+						// Limit sounds range: add this pitch (midiNoteNumber) to the list of notes to keep (notes that are visible on screen)
+						miRangeLimits.get(instruName).add(ipitch);
 					} else {
 						--keyCount;
 					}
 					
 					pitch += pitchh1;
+					
+					// Setup instrument to load for the next key
+					instru = null;
+					instruName = null;
+					instruId = null;
+					if (!multiInstrumentsEnabled) { // Single instrument
+						instruName = singleInstrument;
+					} else { // Multi instruments
+						instruId = getMultiInstrument(multiInstruments, keyCount, i, j); // get the instrument id corresponding to the next key position and parameters
+						if (instruId != null) {
+							// Get multi-instrument mapping if one is found for the next key
+							instruName = multiInstruments.get(instruId).get("instrument");
+						} else {
+							// If no instrument mapping covers this key, by default play the single instrument on all undefined keys in the mapping
+							instruName = singleInstrument;
+						}
+					}
+					instru = Play.mInstrument.get(instruName);
+					// Multi-instruments: change pitch only if this multi-instrument uses its own baseNote and baseOctave (does not use the layout's baseNote and baseOctave)
+					ipitch = pitch; // pitch for current instrument
+					if (multiInstrumentsEnabled && instruId != null && multiInstruments.get(instruId).get("keepBaseNoteOctave").equals("false")) {
+						ipitch = pitch - miPitchDiff.get(instruId);
+					}
 
+					// Setup key
 					HexKey key = null;
+					int jpitch = ipitch;
 					if (board.equals("Jammer")) {
 						key = new JammerKey(
 								mContext,
 								mTileRadius,
 								new Point(x, y),
-								pitch,
-								mInstrument,
+								ipitch,
+								instru,
 								++keyCount);
 					} else if (board.equals("Sonome")) {
 						key = new SonomeKey(
 								mContext,
 								mTileRadius,
 								new Point(x, y),
-								pitch,
-								mInstrument,
+								ipitch,
+								instru,
 								++keyCount);
 					} else if (board.equals("Janko")) {
-						int jpitch = pitch;
 						int ogn = octaveGroupNumber;
 						if ((jankoRowNumber+1) % groupSize == 0) // check if the next line should be the same octave or another one (because Janko keyboard is made of 3 rows chunks, not 2 like Jammer or Sonome)
 					    {
@@ -392,14 +581,20 @@ public class HexKeyboard extends View
 								mTileRadius,
 								new Point(x, y),
 								jpitch,
-								mInstrument,
+								instru,
 								++keyCount,
 								ogn);
 					}
 
 					if (key.isKeyVisible()) {
 						mKeys.add(key);
-						Log.d("HexKeyboard::setUpBoard", "setUpBoard Key: " + Integer.toString(keyCount-1) + " key i/j " + Integer.toString(i) + "/" + Integer.toString(j));
+						Log.d("HexKeyboard::setUpKeyBoard", "setUpKeyBoard Key: " + Integer.toString(keyCount-1) + " key i/j " + Integer.toString(i) + "/" + Integer.toString(j));
+						// Limit sounds range: add this pitch (midiNoteNumber) to the list of notes to keep (notes that are visible on screen)
+						if (board.equals("Janko")) {
+							miRangeLimits.get(instruName).add(jpitch);
+						} else {
+							miRangeLimits.get(instruName).add(ipitch);
+						}
 					} else {
 						--keyCount;
 					}
@@ -422,6 +617,15 @@ public class HexKeyboard extends View
 			    	octaveGroupNumber++;
 				}
 
+			}
+		}
+		
+		// Trim uselessly loaded sounds
+		if (soundsLimitRange) { // if enabled in config
+			for (Entry<String, Instrument> instrument : Play.mInstrument.entrySet()) {
+				String instruName = instrument.getKey();
+				Instrument instru = instrument.getValue();
+				instru.limitRange(miRangeLimits.get(instruName));
 			}
 		}
 	}
@@ -648,15 +852,15 @@ public class HexKeyboard extends View
 		String layoutPref = mPrefs.getString("layout", null);
 		if (layoutPref.equals("Sonome"))
 		{
-			this.setUpBoard("Sonome");
+			this.setUpKeyBoard("Sonome");
 		}
 		else if (layoutPref.equals("Jammer"))
 		{
-			this.setUpBoard("Jammer");
+			this.setUpKeyBoard("Jammer");
 		}
 		else if (layoutPref.equals("Janko"))
 		{
-			this.setUpBoard("Janko");
+			this.setUpKeyBoard("Janko");
 		}
 		
 		if (!mHideModifierKeys) {
@@ -668,7 +872,15 @@ public class HexKeyboard extends View
 		// Paint the board
 		int canvasWidth = getCanvasWidth();
 		int canvasHeight = getCanvasHeight();
-		mBitmap = Bitmap.createBitmap(canvasWidth, canvasHeight, Bitmap.Config.ARGB_8888);
+		// Old inefficient way of creating a bitmap
+		//mBitmap = Bitmap.createBitmap(canvasWidth, canvasHeight, Bitmap.Config.ARGB_8888);
+		// New efficient way of creating a bitmap: load it from a dummy resource image (see http://stackoverflow.com/a/8527745/1121352 )
+		BitmapFactory.Options options=new BitmapFactory.Options();
+		options.inSampleSize = 8;
+		options.inPurgeable = true;
+		Bitmap resImage = BitmapFactory.decodeResource(getResources(), R.drawable.dummy, options);
+		mBitmap = Bitmap.createScaledBitmap(resImage, canvasWidth, canvasHeight, false);
+		// Setup the bitmap
 		mBitmap.eraseColor(mKeys.get(0).mBlankColor);
 		Canvas tempCanvas = new Canvas(mBitmap);
 		this.draw(tempCanvas);
@@ -682,7 +894,7 @@ public class HexKeyboard extends View
 				mTileRadius,
 				mKeys.get(0).mCenter,
 				64, // useless, set directly in SustainKey class
-				mInstrument,
+				null, // null?
 				1) // id of the key, used only as a label if set in config
 		);
 	}
@@ -930,6 +1142,7 @@ public class HexKeyboard extends View
 			catch (Exception e)
 			{
 				Log.e("HexKeyboard::onMouse", "HexKey " + i + " not playable!"); // (or an exception occurred, remove this catch to show it)
+				e.printStackTrace();
 			}
 			//this.invalidate();
 		}

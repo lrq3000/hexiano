@@ -85,6 +85,7 @@ import java.util.regex.Pattern;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.TreeMap;
 
 import android.content.Context;
 import android.util.Log;
@@ -101,7 +102,7 @@ public class Piano extends Instrument
 		Pattern pat = Pattern.compile("^pno_m([0-9]+)(v([0-9]+))?"); // Pattern: anythingyouwant_mxxvyy.ext where xx is the midi note, and yy the velocity (velocity is optional)
 		Class raw = R.raw.class;
 		Field[] fields = raw.getFields(); // Fetch all the files (fields) in Raw directory
-		List<ArrayList> sounds = new ArrayList<ArrayList>(); // Are there really no tuples in Java?!
+		sounds = new TreeMap<Integer, List<ArrayList>>(); // Are there really no tuples in Java?!
 		// For each file (field) in the Raw directory
 		for (Field field : fields)
 		{
@@ -128,7 +129,15 @@ public class Piano extends Instrument
 						tuple.add(midiNoteNumber);
 						tuple.add(velocity);
 						tuple.add(fieldValue);
-						sounds.add(0, tuple);
+						if (sounds.containsKey(midiNoteNumber)) {
+							List<ArrayList> temp = sounds.get(midiNoteNumber);
+							temp.add(tuple);
+							sounds.put(midiNoteNumber, temp);
+						} else {
+							List<ArrayList> temp = new ArrayList<ArrayList>();
+							temp.add(tuple);
+							sounds.put(midiNoteNumber, temp);
+						}
 		        		mRootNotes.put(midiNoteNumber, midiNoteNumber);
 		        		mRates.put(midiNoteNumber, 1.0f);
 		        	}
@@ -148,34 +157,11 @@ public class Piano extends Instrument
 		}
 
 		// Create an iterator to generate all sounds of all notes
-		sound_load_queue = sounds.iterator();
+		//sound_load_queue = sounds.iterator();
 		// Start loading the first sound, the rest are started from the Play::loadKeyboard()::OnLoadCompleteListener()
-		ArrayList tuple = sound_load_queue.next();
-		addSound((Integer)tuple.get(0), (Integer)tuple.get(1), (Integer)tuple.get(2));
+		//ArrayList tuple = sound_load_queue.next();
+		//addSound((Integer)tuple.get(0), (Integer)tuple.get(1), (Integer)tuple.get(2));
 
-		// Extrapolate missing notes from Root Notes (notes for which we have a sound file)
-		float previousRate = 1.0f;
-		int previousRootNote = 21;
-		for (int noteId = 21; noteId <= 102; noteId++) // Limit the range of notes because we know there aren't any other notes above or below in our soundbank
-		{
-			// Found a new root note, we will extrapolate the next missing notes using this one
-			if (mRootNotes.containsKey(noteId))
-			{
-				previousRootNote = noteId;
-				previousRate = 1.0f;
-			}
-			// Else we have a missing note here
-			else
-			{
-				// Extrapolate only after we have found the first root note
-				if (previousRootNote >= 0) {
-					mRootNotes.put(noteId, previousRootNote);
-					double oneTwelfth = 1.0/12.0;
-				    double newRate = previousRate * Math.pow(2, oneTwelfth);	
-				    previousRate = (float)newRate;
-					mRates.put(noteId, previousRate);
-				}
-			}
-		}
+		extrapolateSoundNotes();
 	}
 }

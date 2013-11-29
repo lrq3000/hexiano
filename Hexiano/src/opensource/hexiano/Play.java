@@ -27,6 +27,10 @@
 package opensource.hexiano;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.TreeMap;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -42,10 +46,14 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.Toast;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.media.SoundPool;
@@ -59,7 +67,13 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 	static SharedPreferences mPrefs;
 	static FrameLayout mFrame;
 	static HexKeyboard mBoard;
-	static String mInstrument;
+	static HashMap<String, Instrument> mInstrument;
+	static Iterator<Instrument> instrument_load_queue;
+	static Instrument currLoadingInstrument;
+	static boolean mInstrumentChanged = false;
+	public static int POLYPHONY_COUNT = 16;
+	public static SoundPool mSoundPool;
+	boolean configChanged = false;
 
 	private String getVersionName()
 	{
@@ -138,57 +152,134 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 		return orientationId;
 	}
 	
-	protected void loadKeyboard()
-	{
-	    int orientationId = setOrientation();
-		Context con = this.getApplicationContext();
-		
-		mFrame = new FrameLayout(con);
-		mBoard = new HexKeyboard(con);
-		// This really speeds up orientation switches!
-		HexKeyboard.mInstrument = (Instrument) getLastNonConfigurationInstance();
-		String instrument = mPrefs.getString("instrument", "Piano");
-		// If no retained audio (or changed), load it all up (slow).
-		if (HexKeyboard.mInstrument == null || mInstrument != instrument) {
-			mInstrument = instrument;
-			if (mInstrument.equals("Piano") || mInstrument.equals("DUMMY (dont choose)")) // Place an if conditional for each staticInstrument (included in APK resources)
+	// Load SoundPool, the sound manager
+	public static void loadSoundManager() {
+        POLYPHONY_COUNT = Integer.parseInt(HexKeyboard.mPrefs.getString("polyphonyCount", "8")); // Reload polyphony count
+        if (mSoundPool != null) mSoundPool.release();
+        mSoundPool = null; System.gc();
+		mSoundPool = new SoundPool(POLYPHONY_COUNT, AudioManager.STREAM_MUSIC, 0);
+		// Redraw whenever a new note is ready.
+        mSoundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+			@Override
+			public void onLoadComplete(SoundPool mSoundPool, int sampleId, int status) {
+				mBoard.invalidate();
+				// If there are yet others sounds to load
+				if (currLoadingInstrument.sound_load_queue.hasNext()) {
+					List<ArrayList> listOfTuples = currLoadingInstrument.sound_load_queue.next();
+					for (ArrayList tuple : listOfTuples) {
+						if (!currLoadingInstrument.mExternal) {
+							currLoadingInstrument.addSound((Integer)tuple.get(0), (Integer)tuple.get(1), (Integer)tuple.get(2)); // Instrument class (not external): we use a ressource ID int
+						} else {
+							currLoadingInstrument.addSound((Integer)tuple.get(0), (Integer)tuple.get(1), (String)tuple.get(2)); // Instrument external: we use a string path
+						}
+					}
+				// Else if no more sound for this instrument but we have another instrument for which sounds are to be loaded, we switch to the next instrument
+				} else if (instrument_load_queue.hasNext()) {
+					// Switch to the next instrument
+					currLoadingInstrument = instrument_load_queue.next();
+					// Setup the sound load queue for this instrument
+					currLoadingInstrument.sound_load_queue = currLoadingInstrument.sounds.values().iterator();
+					onLoadComplete(mSoundPool, sampleId, status); // try to load sounds for this next instrument
+				// Else all sounds loaded! Show a short notification so that the user knows that (s)he can start playing without lags
+				} else {
+					Toast.makeText(HexKeyboard.mContext, R.string.finished_loading, Toast.LENGTH_SHORT).show();
+				}
+			}
+        });
+	}
+	
+	protected static void addInstrument(String instrumentName) {
+		// Add instrument only if not already in the map
+		if (!mInstrument.containsKey(instrumentName)) {
+			// Choose the correct instrument class to load, deducting from instrument's name
+
+			// Piano
+			if (instrumentName.equalsIgnoreCase("Piano") || instrumentName.equalsIgnoreCase("DUMMY (dont choose)")) // Place an if conditional for each staticInstrument (included in APK resources)
 			{
-				HexKeyboard.mInstrument = new Piano(HexKeyboard.mContext);
+				mInstrument.put(instrumentName, new Piano(HexKeyboard.mContext));
+			// Generic external instrument for any other case
 			} else {
 				try {
-					HexKeyboard.mInstrument = new GenericInstrument(HexKeyboard.mContext, mInstrument);
+					mInstrument.put(instrumentName, new GenericInstrument(HexKeyboard.mContext, instrumentName));
 				} catch (IllegalAccessException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
-			// Redraw whenever a new note is ready.
-			HexKeyboard.mInstrument.mSoundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
-					@Override
-					public void onLoadComplete(SoundPool mSoundPool, int sampleId, int status) {
-						mBoard.invalidate();
-						// If there are yet others sounds to load
-						if (HexKeyboard.mInstrument.sound_load_queue.hasNext()) {
-							if (!HexKeyboard.mInstrument.mExternal) {
-								ArrayList tuple = HexKeyboard.mInstrument.sound_load_queue.next();
-								HexKeyboard.mInstrument.addSound((Integer)tuple.get(0), (Integer)tuple.get(1), (Integer)tuple.get(2));
-							} else {
-								ArrayList tuple = HexKeyboard.mInstrument.sound_load_queue.next();
-								HexKeyboard.mInstrument.addSound((Integer)tuple.get(0), (Integer)tuple.get(1), (String)tuple.get(2));
-							}
-						// Else all sounds loaded! Show a short notification so that the user knows that (s)he can start playing without lags
-						} else {
-							Toast.makeText(HexKeyboard.mContext, R.string.finished_loading, Toast.LENGTH_LONG).show();
-						}
-					}
-			});
 		}
+	}
+	
+	public static boolean loadInstruments() {
+		boolean multiInstrumentsEnabled = mPrefs.getBoolean("multiInstrumentsEnable", false);
+		mInstrument = null;
+		mInstrument = new HashMap<String, Instrument>();
+		// Single instrument
+		if (!multiInstrumentsEnabled) {
+			String instrumentName = mPrefs.getString("instrument", "Piano");
+			addInstrument(instrumentName);
+		// Multi instruments
+		} else {
+			TreeMap<Integer, HashMap<String, String>> mapping = Prefer.getMultiInstrumentsMappingHashMap(mPrefs);
+			if (mapping != null && mapping.size() > 0) {
+				for(HashMap<String, String> instru : mapping.values()) {
+					String instrumentName = instru.get("instrument");
+					if (!mInstrument.containsKey(instrumentName)) {
+						addInstrument(instrumentName);
+					}
+				}
+			}
+			// Also add single instrument as the default instrument for undefined keys in mapping
+			String instrumentName = mPrefs.getString("instrument", "Piano");
+			addInstrument(instrumentName);
+		}
+		return true;
+	}
+	
+	// Load the first sound and then delegate the rest of the loading to the SoundManager (SoundPool)
+	protected void loadFirstSound() {
+		// Setup the instruments iterator (for the soundmanager to iteratively load all sounds for each instrument)
+		instrument_load_queue = mInstrument.values().iterator();
+		// Initiate the loading process, by loading the first instrument and the first sound for this instrument
+		currLoadingInstrument = instrument_load_queue.next();
+		// Setup the sound load queue for this instrument
+		currLoadingInstrument.sound_load_queue = currLoadingInstrument.sounds.values().iterator();
+		// Start loading the first instrument and the sounds for the first note, the rest are started from the Play::loadKeyboard()::OnLoadCompleteListener()
+		List<ArrayList> listOfTuples = currLoadingInstrument.sound_load_queue.next();
+		for (ArrayList tuple : listOfTuples) {
+			if (!currLoadingInstrument.mExternal) {
+				currLoadingInstrument.addSound((Integer)tuple.get(0), (Integer)tuple.get(1), (Integer)tuple.get(2)); // Instrument class (not external): we use a ressource ID int
+			} else {
+				currLoadingInstrument.addSound((Integer)tuple.get(0), (Integer)tuple.get(1), (String)tuple.get(2)); // Instrument external: we use a string path
+			}
+		}
+	}
+	
+	protected void loadKeyboard()
+	{
+	    int orientationId = setOrientation();
+		Context con = this.getApplicationContext();
+		
+		Toast.makeText(con, R.string.beginning_loading, Toast.LENGTH_SHORT).show(); // Show a little message so that user know that the app is loading
+		
+		mFrame = new FrameLayout(con);
+		mBoard = new HexKeyboard(con);
+		// This really speeds up orientation switches!
+		mInstrument = (HashMap<String, Instrument>) getLastNonConfigurationInstance();
+		// If no retained audio (or changed), load it all up (slow).
+		//if (mInstrument == null || mInstrumentChanged) {
+			// Load SoundPool, the sound manager
+	        loadSoundManager();
+	        // Then, load the instruments
+			loadInstruments();
+		//}
 		mBoard.setUpBoard(orientationId);
 		mBoard.invalidate();
 
+		loadFirstSound(); // Do this only after setUpBoard() so that it can setup the keyboard and limit the range of notes to load
+
 		// mFrame.addView(mBoard);
-		LayoutParams layoutParams = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
-				LayoutParams.WRAP_CONTENT, Gravity.TOP | Gravity.CENTER_HORIZONTAL); 
+		//LayoutParams layoutParams = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
+		//		LayoutParams.WRAP_CONTENT, Gravity.TOP | Gravity.CENTER_HORIZONTAL); 
         
 		// this.setContentView(mFrame);
 		this.setContentView(mBoard);
@@ -198,7 +289,7 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 	public Object onRetainNonConfigurationInstance()
 	{
 		// Retain the audio across configuration changes.
-		return HexKeyboard.mInstrument;
+		return mInstrument;
 	}
 
 	@Override
@@ -243,8 +334,39 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key)
 	{
-		mBoard.setUpBoard(setOrientation());
-		mBoard.invalidate();
+		configChanged = true;
+	}
+	
+	@Override
+	public void onOptionsMenuClosed(Menu menu) {
+		if (configChanged) {
+			unbindDrawables(mBoard);
+			System.gc();
+			// if (Prefer.InstrumentChanged) {
+				// Play.loadInstruments();
+			// } else if (Prefer.BoardChanged) {
+				//mBoard.setUpBoard(setOrientation());
+				//mBoard.invalidate();
+			//}
+			loadKeyboard();
+		}
+	}
+	
+	public void unbindDrawables(View view) {
+		if (view.getBackground() != null)
+			view.getBackground().setCallback(null);
+		
+		if (view instanceof ImageView) {
+			ImageView imageView = (ImageView) view;
+			imageView.setImageBitmap(null);
+		} else if (view instanceof ViewGroup) {
+			ViewGroup viewGroup = (ViewGroup) view;
+			for (int i = 0; i < viewGroup.getChildCount(); i++)
+				unbindDrawables(viewGroup.getChildAt(i));
+		
+		if (!(view instanceof AdapterView))
+			viewGroup.removeAllViews();
+		}
 	}
 	
 	// Clean all playing states (eg: sounds playing, etc)

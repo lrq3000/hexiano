@@ -84,6 +84,7 @@ import java.util.regex.Pattern;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.TreeMap;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -104,7 +105,7 @@ public class GenericInstrument extends Instrument
 
 		Pattern pat = Pattern.compile("m([0-9]+)(v([0-9]+))?.*\\.[^\\.]*$"); // Pattern: anythingyouwant_mxxvyy.ext where xx is the midi note, and yy the velocity (velocity is optional)
 		File[] files = listExternalFiles(instrument+"/"); // Get the list of all files for this instrument (folder)
-		List<ArrayList> sounds = new ArrayList<ArrayList>();
+		sounds = new TreeMap<Integer, List<ArrayList>>();
 		// For each file in this folder/instrument
 		for (File file : files)
 		{
@@ -129,7 +130,15 @@ public class GenericInstrument extends Instrument
 				tuple.add(midiNoteNumber);
 				tuple.add(velocity);
 				tuple.add(filePath);
-				sounds.add(0, tuple);
+				if (sounds.containsKey(midiNoteNumber)) {
+					List<ArrayList> temp = sounds.get(midiNoteNumber);
+					temp.add(tuple);
+					sounds.put(midiNoteNumber, temp);
+				} else {
+					List<ArrayList> temp = new ArrayList<ArrayList>();
+					temp.add(tuple);
+					sounds.put(midiNoteNumber, temp);
+				}
 				// Also set this note as a root note (Root Notes are notes we have files for, from which we will extrapolate other notes that are missing if any)
 				mRootNotes.put(midiNoteNumber, midiNoteNumber);
 				// Rate to play the file with, default is always used for root notes, we only change the rate on other notes (where we don't have a file available) to interpolate the frequency and thus the note
@@ -145,35 +154,12 @@ public class GenericInstrument extends Instrument
 		}
 
 		// Create an iterator to generate all sounds of all notes
-		sound_load_queue = sounds.iterator();
+		//sound_load_queue = sounds.iterator();
 		// Start loading the first sound, the rest are started from the Play::loadKeyboard()::OnLoadCompleteListener()
-		ArrayList tuple = sound_load_queue.next();
-		addSound((Integer)tuple.get(0), (Integer)tuple.get(1), (String)tuple.get(2));
+		//ArrayList tuple = sound_load_queue.next();
+		//addSound((Integer)tuple.get(0), (Integer)tuple.get(1), (String)tuple.get(2));
 
-		// Extrapolate missing notes from Root Notes (notes for which we have a sound file)
-		float previousRate = 1.0f;
-		int previousRootNote = -1;
-		for (int noteId = 0; noteId < 128; noteId++)
-		{
-			// Found a new root note, we will extrapolate the next missing notes using this one
-			if (mRootNotes.containsKey(noteId))
-			{
-				previousRootNote = noteId;
-				previousRate = 1.0f;
-			}
-			// Else we have a missing note here
-			else
-			{
-				// Extrapolate only after we have found the first root note
-				if (previousRootNote >= 0) {
-					mRootNotes.put(noteId, previousRootNote);
-					double oneTwelfth = 1.0/12.0;
-				    double newRate = previousRate * Math.pow(2, oneTwelfth);	
-				    previousRate = (float)newRate;
-					mRates.put(noteId, previousRate);
-				}
-			}
-		}
+		extrapolateSoundNotes();
 	}
 
 	// List all external (eg: sd card) instruments (just the name of the subfolders)

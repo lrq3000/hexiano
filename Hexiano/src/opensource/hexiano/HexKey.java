@@ -73,7 +73,7 @@ public abstract class HexKey
 	private boolean sound_loaded = false;
 	protected boolean mNoSound = false;
     
-    protected static Instrument mInstrument;
+    protected Instrument mInstrument;
     protected int mMidiNoteNumber;
     protected Note mNote;
     protected CC mCC;
@@ -84,7 +84,7 @@ public abstract class HexKey
 		getPrefs();
 
 		setColors();
-		
+
 		mInstrument = instrument;
 		mNote = new Note(midiNoteNumber, keyNumber); // keyNumber is just for reference to show as a label on the key, useless otherwise
 		mMidiNoteNumber = mNote.getMidiNoteNumber();
@@ -374,9 +374,9 @@ public abstract class HexKey
 			return false;
 		} else {
 			// Load sound only if it's a note (CC keys won't load any sound)
-			if (Instrument.mRootNotes.containsKey(mMidiNoteNumber) && this.mNote != null) {
-				int index = Instrument.mRootNotes.get(mMidiNoteNumber);
-				sound_loaded = Instrument.mSounds.containsKey(index);
+			if (mInstrument.mRootNotes.containsKey(mMidiNoteNumber) && this.mNote != null) {
+				int index = mInstrument.mRootNotes.get(mMidiNoteNumber);
+				sound_loaded = mInstrument.mSounds.containsKey(index);
 
 				// Set mDirty if just loaded (to force refresh the painting of the key next time)
 				if (sound_loaded == true) {

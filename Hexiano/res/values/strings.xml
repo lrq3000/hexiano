@@ -5,7 +5,7 @@
 	<string name="contact">See the Git repo for email addresses.</string>
 	<string name="app_name">Hexiano</string>
 	<string name="none">None</string>
-	<string name="default_color_scheme">Black &amp; White</string>
+	<string name="default_color_scheme">Azure</string>
 	<string name="default_instrument">Piano</string>
 	<string name="default_layout">Jammer</string>
 	<string-array name="base_notes">
@@ -97,6 +97,15 @@
 	<string name="default_sonome_orientation">Portrait</string>
 	<string name="default_jammer_orientation">Landscape</string>
 	<string name="default_janko_orientation">Landscape</string>
+	<string name="heading_multiInstruments">List of instruments</string>
+	<string name="prompt_multi_instruments_enable">Enable Multi Instruments</string>
+	<string name="summary_multi_instruments_enable">Use multiple instruments mapped on different keys/rows/columns</string>
+	<string name="prompt_multi_instruments_range">Range</string>
+	<string name="summary_multi_instruments_range">Choose keys that will play this instrument (Key/Column/Row separated by comma, eg: K17&#8211;19 or C1&#8211;3 or R1&#8211;2)</string>
+	<string name="prompt_multi_instruments_keep_base_note_octave">Use layout base note and octave</string>
+	<string name="summary_multi_instruments_keep_base_note_octave">Use the same base note and octave as the whole layout (skip the two next settings)</string>
+	<string name="prompt_multi_instruments_orderid">Order ID</string>
+	<string name="summary_multi_instruments_orderid">Priority of this instrument (will overwrite keys notes of other lower ID instruments)</string>
 	<string name="prompt_scale">Key Size</string>
 	<string name="summary_scale">Enter percentage to scale keys. Default = 100. Smaller numbers shrink keys. Larger numbers expand them.</string>
 	<string name="prompt_touch_scale">Key Touch Surface</string>
@@ -167,9 +176,22 @@ Commons Attribution 3.0 license. See http://creativecommons.org/licenses/by/3.0 
 	<string name="default_janko_key_orientation">Horizontal</string>
 	<string name="prompt_polyphony_count">Polyphony count</string>
 	<string name="summary_polyphony_count">Max number of concurrent sounds (warning: high value may induce jitter!)</string>
+	<string name="prompt_sounds_limit_range">Limit sounds notes range</string>
+	<string name="summary_sounds_limit_range">Do not load sounds for notes that are not visible (optimize memory, critical for multi instruments)</string>
 	<integer name="default_polyphony_count">8</integer>
 	
 	<string name="error_no_soundfiles">Error: no sound files could be found for this instrument. Check that they have the correct format (anything_mxxvyy.ext where xx is midi note number and yy velocity)</string>
 	<string name="ok">OK</string>
 	<string name="finished_loading">Finished loading instrument(s)!</string>
+	<string name="beginning_loading">Begin loading instrument(s), please wait&#8230;</string>
+	
+	<string name="add">Add</string>
+	<string name="edit">Edit</string>
+	<string name="delete">Delete</string>
+	<string name="multi_instruments_add_screen_title_add">Add instrument</string>
+	<string name="multi_instruments_add_screen_title_edit">Edit instrument</string>
+	<string name="multi_instruments_profile_save">Save mapping</string>
+	<string name="multi_instruments_profile_load">Load mapping</string>
+	<string name="multi_instruments_profile_delete">Delete mapping</string>
+	<string name="multi_instruments_clear_mapping">Clear current mapping</string>
 </resources>

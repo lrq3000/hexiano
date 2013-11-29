@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-	<PreferenceScreen android:title="General">
+	<PreferenceScreen android:title="General" android:key="general">
 		<PreferenceCategory android:title="@string/heading_general" android:key="general">
 			<ListPreference android:title="@string/prompt_layout" android:defaultValue="@string/default_layout" android:entryValues="@array/layouts" android:key="layout" android:entries="@array/layouts" android:enabled="true" android:selectable="true" android:summary="@string/summary_layout"/><ListPreference android:entries="@array/color_schemes"
 				android:selectable="true"
@@ -9,7 +9,29 @@
 			<ListPreference android:selectable="true" android:defaultValue="English" android:enabled="true" android:entryValues="@array/key_labels" android:key="labelType" android:title="@string/prompt_label_type" android:entries="@array/key_labels" android:summary="@string/summary_label_type"/>
 			<EditTextPreference android:title="@string/prompt_scale" android:key="scale" android:enabled="true" android:selectable="true" android:summary="@string/summary_scale"/>
 			<EditTextPreference android:title="@string/prompt_touch_scale" android:key="touchScale" android:enabled="true" android:selectable="true" android:summary="@string/summary_touch_scale"/>
-			<ListPreference android:key="instrument" android:title="@string/prompt_instrument" android:defaultValue="@string/default_instrument" android:entryValues="@array/instruments" android:entries="@array/instruments" android:enabled="true" android:selectable="true" android:summary="@string/summary_instrument"/>
+			<PreferenceScreen android:key="instruments" android:title="Instruments">
+			    <CheckBoxPreference android:key="multiInstrumentsEnable" android:defaultValue="false" android:title="@string/prompt_multi_instruments_enable" android:summary="@string/summary_multi_instruments_enable"/>
+				<ListPreference android:key="instrument" android:title="@string/prompt_instrument" android:defaultValue="@string/default_instrument" android:entryValues="@array/instruments" android:entries="@array/instruments" android:enabled="true" android:selectable="true" android:summary="@string/summary_instrument"/>
+				<PreferenceScreen android:key="multiInstrumentsScreen" android:title="Multi Instruments" android:enabled="false">
+				    <!-- NOTICE: never put multiInstrumentsAdd in a PreferenceCategory, else the function used to simulate clicks on it won't work! -->
+				    <PreferenceScreen android:key="multiInstrumentsAddScreen" android:title="@string/multi_instruments_add_screen_title_add">
+				        <ListPreference android:key="minstrument" android:defaultValue="@string/default_instrument" android:entryValues="@array/instruments" android:entries="@array/instruments" android:enabled="true" android:selectable="true" android:title="@string/prompt_instrument" android:summary="@string/summary_instrument"/>
+				        <EditTextPreference android:key="multiInstrumentsRange" android:enabled="true" android:selectable="true" android:title="@string/prompt_multi_instruments_range" android:summary="@string/summary_multi_instruments_range"/>
+				        <CheckBoxPreference android:key="multiInstrumentsKeepBaseNoteOctave" android:defaultValue="false" android:title="@string/prompt_multi_instruments_keep_base_note_octave" android:summary="@string/summary_multi_instruments_keep_base_note_octave"/>
+				        <ListPreference android:key="mbaseNote" android:entryValues="@array/base_notes" android:defaultValue="@string/default_jammer_note" android:entries="@array/base_notes" android:title="@string/prompt_highest_note" android:summary="@string/summary_highest_note"/>
+						<ListPreference android:key="mbaseOctave" android:entryValues="@array/base_octaves" android:defaultValue="@string/default_jammer_octave" android:entries="@array/base_octaves" android:title="@string/prompt_highest_note_octave" android:summary="@string/summary_highest_note_octave"/>
+				        <Preference android:key="multiInstrumentsSubmit" android:title="@string/add"/>
+				        <Preference android:key="multiInstrumentsDelete" android:title="@string/delete"/>
+				    </PreferenceScreen>
+				    <EditTextPreference android:key="multiInstrumentsSaveProfile" android:title="@string/multi_instruments_profile_save" android:enabled="true" android:selectable="true"/>
+				    <ListPreference android:key="multiInstrumentsLoadProfile" android:title="@string/multi_instruments_profile_load" android:enabled="true" android:selectable="true"/>
+				    <ListPreference android:key="multiInstrumentsDeleteProfile" android:title="@string/multi_instruments_profile_delete" android:enabled="true" android:selectable="true"/>
+				    <Preference android:key="multiInstrumentsClear" android:title="@string/multi_instruments_clear_mapping"/>
+				    <PreferenceCategory android:title="@string/heading_multiInstruments" android:key="heading_multiInstruments">
+				        <!-- Entries will be dynamically added here, see Prefer.java -->
+				    </PreferenceCategory>
+				</PreferenceScreen>
+			</PreferenceScreen>
 			<PreferenceScreen android:title="Modifier Keys">
 			    <CheckBoxPreference android:key="hideModifierKeys" android:defaultValue="false" android:title="@string/prompt_hide_modifiers" android:summary="@string/summary_hide_modifiers"/>
 			    <CheckBoxPreference android:key="sustainHold" android:defaultValue="true" android:title="@string/prompt_hold_sustain" android:summary="@string/summary_hold_sustain"/>
@@ -45,6 +67,7 @@
 	</PreferenceScreen>
 	<PreferenceScreen android:title="Advanced">
 		<EditTextPreference android:title="@string/prompt_polyphony_count" android:key="polyphonyCount" android:defaultValue="@integer/default_polyphony_count" android:numeric="integer" android:maxLength="2" android:enabled="true" android:selectable="true" android:summary="@string/summary_polyphony_count"/>
+		<CheckBoxPreference android:key="soundsLimitRange" android:defaultValue="true" android:enabled="true" android:selectable="true" android:title="@string/prompt_sounds_limit_range" android:summary="@string/summary_sounds_limit_range"/>
 	</PreferenceScreen>
 	<PreferenceScreen android:title="MIDI Support">
 		<PreferenceCategory android:key="midi-out" android:title="MIDI OUT">

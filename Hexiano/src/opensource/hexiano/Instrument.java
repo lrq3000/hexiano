@@ -31,6 +31,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.TreeMap;
 
 import android.content.Context;
@@ -40,16 +41,15 @@ import android.util.Log;
 
 public abstract class Instrument {
 
-	public static int POLYPHONY_COUNT = 16;
-	public SoundPool mSoundPool;
-	protected static HashMap<Integer, TreeMap<Integer, Integer>> mSounds; // [midiNoteNumber, [velocity, SoundPool sound id]] 
-	protected static HashMap<Integer, Float> mRates;
-	protected static HashMap<Integer, Integer> mRootNotes;
+	protected HashMap<Integer, TreeMap<Integer, Integer>> mSounds; // [midiNoteNumber, [velocity, SoundPool sound id]] 
+	protected HashMap<Integer, Float> mRates;
+	protected HashMap<Integer, Integer> mRootNotes;
 	private AudioManager  mAudioManager;
 	private Context mContext;
-	public Iterator<ArrayList> sound_load_queue;
+	public Iterator<List<ArrayList>> sound_load_queue;
 	public boolean mExternal = false; // Loading external files (needing to pass Strings instead of int[]?)
 	public String mInstrumentName;
+	public TreeMap<Integer, List<ArrayList>> sounds; // list of sounds to load, each entry being a tuple of [midiNoteNumber, velocity, file resource id int or string file path]
 
 	public Instrument(Context context)
 	{
@@ -58,9 +58,7 @@ public abstract class Instrument {
 	}
 
 	public void init(Context context)
-	{
-		POLYPHONY_COUNT = Integer.parseInt(HexKeyboard.mPrefs.getString("polyphonyCount", "8"));
-		mSoundPool = new SoundPool(POLYPHONY_COUNT, AudioManager.STREAM_MUSIC, 0); 
+	{		
 		mSounds = new HashMap<Integer, TreeMap<Integer, Integer>>(); 
 		mRates = new HashMap<Integer, Float>(); 
 		mRootNotes = new HashMap<Integer, Integer>(); 
@@ -73,13 +71,13 @@ public abstract class Instrument {
 		// If there's already an entry for this midinote, we update it to add the new velocity subentry
 		if (mSounds.containsKey(midiNoteNumber)) {
 			TreeMap<Integer, Integer> velocity_soundid = mSounds.get(midiNoteNumber); // fetch the midinote entry (containing all previous velocity subentries)
-			velocity_soundid.put(velocity, mSoundPool.load(mContext, soundId, 1)); // add the new velocity subentry
+			velocity_soundid.put(velocity, Play.mSoundPool.load(mContext, soundId, 1)); // add the new velocity subentry
 			mSounds.put(midiNoteNumber, velocity_soundid); // update it back into the midinote entry
 		// Else there's no entry for this midinote, we just create it
 		} else {
 			// Just create an entry for this midinote and use the velocity as the only subentry (until it gets updated if there are other velocities available for this midi note)
 			TreeMap<Integer, Integer> velocity_soundid = new TreeMap<Integer, Integer>();
-			velocity_soundid.put(velocity, mSoundPool.load(mContext, soundId, 1));
+			velocity_soundid.put(velocity, Play.mSoundPool.load(mContext, soundId, 1));
 			mSounds.put(midiNoteNumber, velocity_soundid);
 		}
 	}
@@ -90,14 +88,88 @@ public abstract class Instrument {
 		// If there's already an entry for this midinote, we update it to add the new velocity subentry
 		if (mSounds.containsKey(midiNoteNumber)) {
 			TreeMap<Integer, Integer> velocity_soundid = mSounds.get(midiNoteNumber); // fetch the midinote entry (containing all previous velocity subentries)
-			velocity_soundid.put(velocity, mSoundPool.load(path, 1)); // add the new velocity subentry
+			velocity_soundid.put(velocity, Play.mSoundPool.load(path, 1)); // add the new velocity subentry
 			mSounds.put(midiNoteNumber, velocity_soundid); // update it back into the midinote entry
 		// Else there's no entry for this midinote, we just create it
 		} else {
 			// Just create an entry for this midinote and use the velocity as the only subentry (until it gets updated if there are other velocities available for this midi note)
 			TreeMap<Integer, Integer> velocity_soundid = new TreeMap<Integer, Integer>();
-			velocity_soundid.put(velocity, mSoundPool.load(path, 1));
+			velocity_soundid.put(velocity, Play.mSoundPool.load(path, 1));
 			mSounds.put(midiNoteNumber, velocity_soundid);
+		}
+	}
+	
+	// Limit the range of sounds and notes to the given list of notes
+	public void limitRange(ArrayList<Integer> ListOfMidiNotesNumbers) {
+		// Loop through all found notes (from sounds files)
+		ArrayList<Integer> notesToDelete = new ArrayList<Integer>();
+		for (int midiNoteNumber : sounds.keySet()) {
+			/*
+			TreeMap<Integer, Integer> velocity_soundid = mSounds.get(midiNoteNumber);
+			for (int soundid : velocity_soundid.values()) {
+				Play.mSoundPool.unload(soundid);
+			}
+			mSounds.remove(new Integer(midiNoteNumber));
+			*/
+
+			// If the note is not in the limited range and there's no note extrapolated from this note's sound, we remove it and its associated sounds
+			if (!ListOfMidiNotesNumbers.contains(midiNoteNumber) && !mRootNotes.values().contains(midiNoteNumber) ) {
+				notesToDelete.add(midiNoteNumber);
+			}
+		}
+		// Delete notes
+		if (notesToDelete.size() > 0) {
+			for (int midiNoteNumber : notesToDelete) {
+				if (sounds.containsKey(midiNoteNumber)) sounds.remove( new Integer(midiNoteNumber) );
+				if (mRootNotes.containsKey(midiNoteNumber)) mRootNotes.remove( new Integer(midiNoteNumber) );
+				if (mRates.containsKey(midiNoteNumber)) mRates.remove( new Integer(midiNoteNumber) );
+			}
+		}
+		// Recreate the iterator to generate all sounds of all notes
+		sound_load_queue = sounds.values().iterator();
+	}
+	
+	public void extrapolateSoundNotes() {
+		// Extrapolate missing notes from Root Notes (notes for which we have a sound file)
+		float previousRate = 1.0f;
+		int previousRootNote = -1;
+		ArrayList<Integer> beforeEmptyNotes = new ArrayList<Integer>(); // Notes before any root note, that we will extrapolate (by downpitching) as soon as we find one root note. TODO: downpitching by default and uppitch only for the rest. Downpitching should not cause any aliasing, but we have to check if the extrapolation doesn't cause evil downpitching. See http://www.discodsp.com/highlife/aliasing/
+		double oneTwelfth = 1.0/12.0;
+		boolean firstRootNote = true;
+		for (int noteId = 0; noteId < 128; noteId++)
+		{
+			// Found a new root note, we will extrapolate the next missing notes using this one
+			if (mRootNotes.containsKey(noteId))
+			{
+				previousRootNote = noteId;
+				previousRate = 1.0f;
+				// Down-pitching extrapolation of before notes (notes before the first root note)
+				if (firstRootNote) {
+					// Only if we have before notes to extrapolate
+					if (beforeEmptyNotes != null && beforeEmptyNotes.size() > 0) {
+						for (int bNoteId : beforeEmptyNotes) {
+							mRootNotes.put(bNoteId, previousRootNote);
+							double beforeRate = previousRate / Math.pow(Math.pow(2, oneTwelfth), (previousRootNote-bNoteId)); // a = b / (2^1/12)^n , with n positive number of semitones between frequency a and b
+							mRates.put(bNoteId, (float)beforeRate);
+						}
+					}
+					firstRootNote = false;
+				}
+			}
+			// Else we have a missing note here
+			else
+			{
+				// Up-pitching extrapolation of after notes (notes after we have found the first, and subsequente, root note)
+				if (previousRootNote >= 0) {
+					mRootNotes.put(noteId, previousRootNote);
+				    double newRate = previousRate * Math.pow(Math.pow(2, oneTwelfth), (noteId-previousRootNote)); // b = a * (2^1/12)^n , with n positive number of semitones between frequency a and b
+				    //double newRate = previousRate * Math.pow(2, oneTwelfth);
+				    //previousRate = (float)newRate;
+					mRates.put(noteId, (float)newRate);
+				} else {
+					beforeEmptyNotes.add(noteId);
+				}
+			}
 		}
 	}
 	
@@ -115,7 +187,7 @@ public abstract class Instrument {
 		Log.d("Instrument", "play(" + midiNoteNumber + ")");
 		if (mRootNotes.size() == 0) return new int[] {0}; // no sound note available, exit
 		int index = mRootNotes.get(midiNoteNumber); // get root note for this midi number
-		Log.d("Instrument", "rootNote is " + index + ")");
+		Log.d("Instrument", "rootNote found: " + index);
 		if (!mSounds.containsKey(index)) return new int[] {-1}; // no sound (root or interpolated) available (yet?) for this note, exit
 	    float rate = mRates.get(midiNoteNumber); // Get the rate to which to play this note: 1.0f (normal) for root notes, another number for other notes (changing rate interpolates the note sound; rate is computed at loading)
 	
@@ -157,7 +229,6 @@ public abstract class Instrument {
 			current_vel = (Integer) velocity_soundid.keySet().toArray()[0];
 			soundid = velocity_soundid.get(current_vel);
 			streamVolume = (float)velocity/current_vel * streamVolume;
-			Log.d("GBO", "Coucou");
 		// Real velocity with interpolation (either get a sample sound for this velocity and note, or interpolate from two close velocities)
 		} else {
 			// TreeMap ensures that entries are always ordered by velocity (from lowest to highest), thus a subsequent velocity may only be higher than the previous one
@@ -197,18 +268,18 @@ public abstract class Instrument {
 
 		// Velocity interpolation via Blending: we blend two velocity sounds (lower and higher bound) with volumes proportional to the user's velocity to interpolate the missing velocity sound
 		if (soundid2 != 0) {
-			return new int[] {mSoundPool.play(soundid, stream1Volume, stream1Volume, 1, 0, rate),
-			        mSoundPool.play(soundid2, stream2Volume, stream2Volume, 1, 0, rate)};
+			return new int[] {Play.mSoundPool.play(soundid, stream1Volume, stream1Volume, 1, 0, rate),
+			        Play.mSoundPool.play(soundid2, stream2Volume, stream2Volume, 1, 0, rate)};
 		// Else no interpolation, we have found an exact match for the user's velocity
 		} else {
-			return new int[] {mSoundPool.play(soundid, streamVolume, streamVolume, 1, 0, rate)};
+			return new int[] {Play.mSoundPool.play(soundid, streamVolume, streamVolume, 1, 0, rate)};
 		}
 	}
 
 	public void stop(int[] mStreamId)
 	{ 
 		for(int streamId : mStreamId) {
-			mSoundPool.stop(streamId);
+			Play.mSoundPool.stop(streamId);
 		}
 	}
 
