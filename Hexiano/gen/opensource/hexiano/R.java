@@ -105,9 +105,9 @@ public final class R {
         public static final int pno_m102v127le=0x7f050036;
     }
     public static final class string {
-        public static final int add=0x7f060060;
+        public static final int add=0x7f060063;
         public static final int app_name=0x7f060003;
-        public static final int beginning_loading=0x7f06005f;
+        public static final int beginning_loading=0x7f06005e;
         public static final int contact=0x7f060002;
         public static final int copyright=0x7f060011;
         public static final int credit_piano=0x7f060052;
@@ -127,12 +127,14 @@ public final class R {
         public static final int default_sonome_note=0x7f060015;
         public static final int default_sonome_octave=0x7f060016;
         public static final int default_sonome_orientation=0x7f06001e;
-        public static final int delete=0x7f060062;
+        public static final int delete=0x7f060065;
         public static final int description=0x7f06004e;
         public static final int distribution=0x7f060050;
-        public static final int edit=0x7f060061;
+        public static final int edit=0x7f060064;
+        /**  Toast messages 
+         */
         public static final int error_no_soundfiles=0x7f06005c;
-        public static final int finished_loading=0x7f06005e;
+        public static final int finished_loading=0x7f06005d;
         public static final int heading_appearance=0x7f060000;
         public static final int heading_general=0x7f06001d;
         public static final int heading_jammer=0x7f060012;
@@ -140,14 +142,14 @@ public final class R {
         public static final int heading_multiInstruments=0x7f060021;
         public static final int heading_sonome=0x7f060013;
         public static final int license=0x7f060051;
-        public static final int multi_instruments_add_screen_title_add=0x7f060063;
-        public static final int multi_instruments_add_screen_title_edit=0x7f060064;
-        public static final int multi_instruments_clear_mapping=0x7f060068;
-        public static final int multi_instruments_profile_delete=0x7f060067;
-        public static final int multi_instruments_profile_load=0x7f060066;
-        public static final int multi_instruments_profile_save=0x7f060065;
+        public static final int multi_instruments_add_screen_title_add=0x7f060066;
+        public static final int multi_instruments_add_screen_title_edit=0x7f060067;
+        public static final int multi_instruments_clear_mapping=0x7f06006b;
+        public static final int multi_instruments_profile_delete=0x7f06006a;
+        public static final int multi_instruments_profile_load=0x7f060069;
+        public static final int multi_instruments_profile_save=0x7f060068;
         public static final int none=0x7f060004;
-        public static final int ok=0x7f06005d;
+        public static final int ok=0x7f060062;
         public static final int open_source=0x7f06004f;
         public static final int prompt_about=0x7f06004a;
         public static final int prompt_color_scheme=0x7f06000b;
@@ -210,6 +212,9 @@ public final class R {
         public static final int sustain_key=0x7f060008;
         public static final int url=0x7f060001;
         public static final int version=0x7f06004d;
+        public static final int warning_rate_out_of_range=0x7f06005f;
+        public static final int warning_rate_out_of_range_max=0x7f060061;
+        public static final int warning_rate_out_of_range_min=0x7f060060;
     }
     public static final class xml {
         public static final int preferences=0x7f040000;
