@@ -374,7 +374,7 @@ public abstract class HexKey
 			return false;
 		} else {
 			// Load sound only if it's a note (CC keys won't load any sound)
-			if (mInstrument.mRootNotes.containsKey(mMidiNoteNumber) && this.mNote != null) {
+			if (this.mNote != null && mInstrument != null && mInstrument.mRootNotes.containsKey(mMidiNoteNumber)) {
 				int index = mInstrument.mRootNotes.get(mMidiNoteNumber);
 				sound_loaded = mInstrument.mSounds.containsKey(index);
 
