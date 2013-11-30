@@ -103,17 +103,27 @@ public abstract class Instrument {
 	
 	// Limit the range of sounds and notes to the given list of notes
 	public void limitRange(ArrayList<Integer> ListOfMidiNotesNumbers) {
-		// Loop through all found notes (from sounds files)
+		// -- Delete first the root notes that are not directly used
+		// (if the rootNote is not visible then we just delete its entry in mRootNotes and mRates, but NOT the reference from extrapolated keys, this ensures that we trim useless rootNotes that are neither visible neither extrapolated from, but we keep useful rootNotes that are either visible on-screen _or_ extrapolated from (no index in mRootNotes but used as a value for other midi notes))
 		ArrayList<Integer> notesToDelete = new ArrayList<Integer>();
-		for (int midiNoteNumber : sounds_to_load.keySet()) {
-			/*
-			TreeMap<Integer, Integer> velocity_soundid = mSounds.get(midiNoteNumber);
-			for (int soundid : velocity_soundid.values()) {
-				Play.mSoundPool.unload(soundid);
+		// Loop through all root notes
+		for (int midiNoteNumber : mRootNotes.keySet()) {
+			// And check if this root note is used
+			if (!ListOfMidiNotesNumbers.contains(midiNoteNumber)) {
+				notesToDelete.add(midiNoteNumber);
 			}
-			mSounds.remove(new Integer(midiNoteNumber));
-			*/
+		}
+		// Delete useless rootNotes and rates for these rootNotes
+		for (int midiNoteNumber : notesToDelete) {
+			mRootNotes.remove(midiNoteNumber);
+			mRates.remove(midiNoteNumber);
+		}
 
+		// -- Then delete all the not used sounds
+		// (now that only visible or extrapolated from rootNotes are still in mRootNotes, we can remove all sounds that are neither directly visible on-screen, nor extrapolated from. A bit like the first step above but here we do it for all sounds, not just rootNotes).
+		notesToDelete = new ArrayList<Integer>();
+		// Loop through all found notes (from sounds files)
+		for (int midiNoteNumber : sounds_to_load.keySet()) {
 			// If the note is not in the limited range and there's no note extrapolated from this note's sound, we remove it and its associated sounds
 			if (!ListOfMidiNotesNumbers.contains(midiNoteNumber) && !mRootNotes.values().contains(midiNoteNumber) ) {
 				notesToDelete.add(midiNoteNumber);
@@ -122,12 +132,13 @@ public abstract class Instrument {
 		// Delete notes
 		if (notesToDelete.size() > 0) {
 			for (int midiNoteNumber : notesToDelete) {
-				if (sounds_to_load.containsKey(midiNoteNumber)) sounds_to_load.remove( new Integer(midiNoteNumber) );
-				if (mRootNotes.containsKey(midiNoteNumber)) mRootNotes.remove( new Integer(midiNoteNumber) );
-				if (mRates.containsKey(midiNoteNumber)) mRates.remove( new Integer(midiNoteNumber) );
+				if (sounds_to_load.containsKey(midiNoteNumber)) sounds_to_load.remove(midiNoteNumber);
+				if (mRootNotes.containsKey(midiNoteNumber)) mRootNotes.remove(midiNoteNumber);
+				if (mRates.containsKey(midiNoteNumber)) mRates.remove(midiNoteNumber);
 			}
 		}
-		// Recreate the iterator to generate all sounds of all notes
+
+		// -- Recreate the iterator to generate all sounds of all notes
 		notes_load_queue = sounds_to_load.values().iterator();
 	}
 	
