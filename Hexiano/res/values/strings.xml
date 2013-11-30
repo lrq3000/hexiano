@@ -180,11 +180,15 @@ Commons Attribution 3.0 license. See http://creativecommons.org/licenses/by/3.0 
 	<string name="summary_sounds_limit_range">Do not load sounds for notes that are not visible (optimize memory, critical for multi instruments)</string>
 	<integer name="default_polyphony_count">8</integer>
 	
+	<!-- Toast messages -->
 	<string name="error_no_soundfiles">Error: no sound files could be found for this instrument. Check that they have the correct format (anything_mxxvyy.ext where xx is midi note number and yy velocity)</string>
-	<string name="ok">OK</string>
 	<string name="finished_loading">Finished loading instrument(s)!</string>
 	<string name="beginning_loading">Begin loading instrument(s), please wait&#8230;</string>
-	
+	<string name="warning_rate_out_of_range">Warning: some extrapolated notes may not work (having a rate below 0.5 and above 2.0). Please add at least one sample sound per octave.</string>
+	<string name="warning_rate_out_of_range_min">Warning: some extrapolated notes may not work (having a rate below 0.5). Please add at least one sample sound per octave.</string>
+	<string name="warning_rate_out_of_range_max">Warning: some extrapolated notes may not work (having a rate above 2.0). Please add at least one sample sound per octave.</string>
+
+	<string name="ok">OK</string>
 	<string name="add">Add</string>
 	<string name="edit">Edit</string>
 	<string name="delete">Delete</string>

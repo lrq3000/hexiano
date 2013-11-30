@@ -35,6 +35,7 @@ import java.util.TreeMap;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 public abstract class Instrument {
 
@@ -149,6 +150,8 @@ public abstract class Instrument {
 		ArrayList<Integer> beforeEmptyNotes = new ArrayList<Integer>(); // Notes before any root note, that we will extrapolate (by downpitching) as soon as we find one root note. TODO: downpitching by default and uppitch only for the rest. Downpitching should not cause any aliasing, but we have to check if the extrapolation doesn't cause evil downpitching. See http://www.discodsp.com/highlife/aliasing/
 		double oneTwelfth = 1.0/12.0;
 		boolean firstRootNote = true;
+		float minRate = Float.POSITIVE_INFINITY;
+		float maxRate = Float.NEGATIVE_INFINITY;
 		for (int noteId = 0; noteId < 128; noteId++)
 		{
 			// Found a new root note, we will extrapolate the next missing notes using this one
@@ -164,6 +167,9 @@ public abstract class Instrument {
 							mRootNotes.put(bNoteId, previousRootNote);
 							double beforeRate = previousRate / Math.pow(Math.pow(2, oneTwelfth), (previousRootNote-bNoteId)); // a = b / (2^1/12)^n , with n positive number of semitones between frequency a and b
 							mRates.put(bNoteId, (float)beforeRate);
+							// Update the min and max rate found (only used for warning message)
+							if (beforeRate < minRate) minRate = (float)beforeRate;
+							if (beforeRate > maxRate) maxRate = (float)beforeRate;
 						}
 					}
 					firstRootNote = false;
@@ -176,13 +182,25 @@ public abstract class Instrument {
 				if (previousRootNote >= 0) {
 					mRootNotes.put(noteId, previousRootNote);
 				    double newRate = previousRate * Math.pow(Math.pow(2, oneTwelfth), (noteId-previousRootNote)); // b = a * (2^1/12)^n , with n positive number of semitones between frequency a and b
-				    //double newRate = previousRate * Math.pow(2, oneTwelfth);
-				    //previousRate = (float)newRate;
 					mRates.put(noteId, (float)newRate);
+					// Update the min and max rate found (only used for warning message)
+					if (newRate < minRate) minRate = (float)newRate;
+					if (newRate > maxRate) maxRate = (float)newRate;
 				} else {
 					beforeEmptyNotes.add(noteId);
 				}
 			}
+		}
+		// Warning message when min rate or max rate outside of SoundPoolt rate range (rate is guaranteed to be supported between [0.5, 2.0] on all devices, but some devices may also support rates outside of this range, generally below 0.5)
+		if (minRate < 0.5f && maxRate > 2.0f) {
+			Toast.makeText(mContext, R.string.warning_rate_out_of_range, Toast.LENGTH_LONG).show();
+			Log.d("Instrument::extrapolateSoundNotes", mContext.getResources().getString(R.string.warning_rate_out_of_range));
+		} else if (minRate < 0.5f) {
+			Toast.makeText(mContext, R.string.warning_rate_out_of_range_min, Toast.LENGTH_LONG).show();
+			Log.d("Instrument::extrapolateSoundNotes", mContext.getResources().getString(R.string.warning_rate_out_of_range_min));
+		} else if (maxRate > 2.0f) {
+			Toast.makeText(mContext, R.string.warning_rate_out_of_range_max, Toast.LENGTH_LONG).show();
+			Log.d("Instrument::extrapolateSoundNotes", mContext.getResources().getString(R.string.warning_rate_out_of_range_max));
 		}
 	}
 	
