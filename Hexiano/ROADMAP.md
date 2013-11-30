@@ -19,7 +19,6 @@ Here is a list of a few features that are planned in near-term:
 
 - piano HD (3 sounds every 4 are interpolated by the program currently! and in mono)
 - a new free orchestral soundbank (maybe as an external module to keep the Hexiano low in size)
-- a multi-instruments feature: ability to map multiple instruments on the keyboard (eg: the first 2 rows will be piano, then 2 rows of violin, etc...)
 - Connection to computer (via USB or OSC or Bluetooth) with velocity sensitivity support
 - background sound (in menu, add three buttons: load, play and loop, the last two changing to stop and pause when playing)
 - external audio effects via gyrometer/accelerometer and send by USB/OSC/Bluetooth (mapping variable CC messages like Expression, and maybe could map independently 2 different CC functions for the two dimensions x and y).
@@ -44,7 +43,8 @@ DONE
 - note overlap (trigger multiple neighbour keys = chord with one touch) using Key Touch Surface
 - better quality piano sound
 - Velocity sensitivity (via touch surface for capacitive screens and via real pressure on resistive screens) with auto calibration and may use different sound for different velocities of one midi note (real velocity) or just scale the sound volume if only one velocity is available (fake velocity)
+- Multi-instruments feature: ability to map multiple instruments on the keyboard (eg: the first 2 rows will be piano, then 2 rows of violin, etc...)
 
 NOT TO DO
 ---------
-- Hexiano used as a host for an external Midi keyboard. I see no objection if someone contributes such a code, but it's not part of the roadmap, there are plenty of others softwares that can do that, and the main purpose of Hexiano is the keyboard interface.
+- Hexiano used as a host for an external Midi keyboard. I see no objection if someone contributes such a code, but it's not part of the roadmap, there are plenty of other softwares that can do that, and the main purpose of Hexiano is the keyboard interface.

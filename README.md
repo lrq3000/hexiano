@@ -50,7 +50,7 @@ Project architecture
 
 To quick-start your contributions, here is a short description of how the project is architectured, by somewhat chronological order of calling in the program flow:
 
-- __Play.java__ is the entry point of the app, launching the board setup (HexKeyboard) and managing the menu call and what happens on exiting.
+- __Play.java__ is the entry point of the app, launching the board setup (HexKeyboard) and managing the menu call and what happens on exiting. Since multi-instruments was implemented, it also manages the sound manager (SoundPool) as a singleton shared all across the app, and the array of Instrument (that is then used by HexKeyboard and HexKey).
 
 - __HexKeyboard.java__ is the main program, where the keyboard is setup. It defines the screen dimensions and the number of rows/columns of keys, it creates the keys (HexKey, SonomeKey, etc.), draws them and manages the touch event (when you press on the screen), and redirect these events to the correct key. This is also where most of the SharedPreferences are managed (loaded in static variables used across the app).
 
@@ -65,7 +65,7 @@ To quick-start your contributions, here is a short description of how the projec
 
 - __CC.java__ manages the CC messages number correspondance with their name and print the label on ModifierKeys.
 
-- __Instrument.java__ manages the sound, it plays the notes you hear when you press a key. It is an abstract class that must be implemented by other instruments.
+- __Instrument.java__ manages the sound, it plays the notes you hear when you press a key. It also extrapolates missing notes sounds by modulating existing sounds playback rate (=frequency), and the velocity effect. It is an abstract class that must be implemented by other instruments.
     * _Piano.java_ is the standard (and only for now) piano instrument. It simply plays the ogg files in res/raw/
     * _GenericInstrument.java_ is a generic instrument which provides a neat facility to automatically discover and load external instruments by using soundbanks from your SD Card.
 
@@ -79,7 +79,7 @@ To quick-start your contributions, here is a short description of how the projec
 Feedback
 --------------
 
-If you found any bug or have a suggestion for an amazing new feature you would like to see in Hexiano, feel free to post a request in the github issue tracker:
+If you have found any bug or have a suggestion for an amazing new feature you would like to see in Hexiano, feel free to post a request in the github issue tracker:
 
 https://github.com/lrq3000/hexiano/issues
 
@@ -88,7 +88,7 @@ License
 -----------
 Licensed under the terms of the General Public License v3 (GPLv3).
 
-Copyleft @ 2013 by Stephen Larroque
+Copyleft @ 2013 by Stephen Larroque,
 Copyright © 2012 by James Haigh,
 Copyright © 2011, 2012 by David Randolph.
 Hexiano™ and the Hexiano logo are trademarks of James Haigh.
