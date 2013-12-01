@@ -239,7 +239,6 @@ public class Prefer extends PreferenceActivity
 
 			        		                	// Extract attributes for this mapping
 					                			HashMap<String, String> mappingattr = Prefer.getMultiInstrumentsMappingForId(id);
-					                			//Log.d("miEdit", "miEdit " + mappingattr.toString());
 
 					                			// Update values in shared preferences
 					                			mPrefsEditor.putInt("multiInstrumentsEditId", id); // Store the id
@@ -249,7 +248,8 @@ public class Prefer extends PreferenceActivity
 			        		                	mPrefsEditor.putString("mbaseOctaveStr", mappingattr.get("baseOctave"));
 			        		                	mPrefsEditor.putBoolean("multiInstrumentsKeepBaseNoteOctave", mappingattr.get("keepBaseNoteOctave").equals("true") ? true : false);
 			        		                	mPrefsEditor.commit(); // commit is not enough to update preference value without reloading PreferenceActivity. Maybe try .apply() instead?
-			        		                	//Log.d("miEdit", "miEdit2");
+			        		                	// Note that this hack will change the preferences settings twice, which will trigger onSharedPreferenceChanged() even if it's unintended since the user didn't change the config, but we did just to configure the interface
+			        		                	// First preferences settings change happens here just after commit()
 			        		                	
 			        		                	// Hack to force update of new preference values without reloading PreferenceActivity
 			        		                	// ref: http://liquidlabs.ca/2011/08/25/update-preference-value-without-reloading-preferenceactivity/
@@ -263,9 +263,7 @@ public class Prefer extends PreferenceActivity
 					                			mbaseNote.setValue(mappingattr.get("baseNote"));
 					                			mbaseOctave.setValue(mappingattr.get("baseOctave"));
 					                			miKeepBaseNoteOctave.setChecked(mappingattr.get("keepBaseNoteOctave").equals("true") ? true : false);
-					                			//Log.d("miEdit", "miEdit3");
-					                			
-					                			// FIXME: between miEdit and miEdit3, setUpKeyBoard() gets called twice and redraw the board twice, this is not normal and slows things down a lot!
+					                			// Second preferences settings change happens here
 					                			
 					                			// -- Prepare the MultiInstrumentsAddScreen
 					                			// Change submit button into edit

@@ -49,7 +49,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -62,7 +61,7 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 {
 	final static int ABOUT_DIALOG_ID = 1;
 	static SharedPreferences mPrefs;
-	static FrameLayout mFrame;
+	//static FrameLayout mFrame;
 	static HexKeyboard mBoard;
 	static HashMap<String, Instrument> mInstrument;
 	static Iterator<Instrument> instrument_load_queue;
@@ -268,7 +267,7 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 		
 		Toast.makeText(con, R.string.beginning_loading, Toast.LENGTH_SHORT).show(); // Show a little message so that user know that the app is loading
 		
-		mFrame = new FrameLayout(con);
+		//mFrame = new FrameLayout(con);
 		mBoard = new HexKeyboard(con);
 		// This really speeds up orientation switches!
 		mInstrument = (HashMap<String, Instrument>) getLastNonConfigurationInstance();
@@ -296,6 +295,7 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 	public Object onRetainNonConfigurationInstance()
 	{
 		// Retain the audio across configuration changes.
+		// TODO: try to retain SoundPool when just quitting preferences without changing anything, but not sure it could be retained since it's not serializable
 		return mInstrument;
 	}
 
@@ -393,7 +393,7 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 	
 	@Override
 	protected void onDestroy() {
-		cleanStates();
+		this.cleanStates();
 		super.onDestroy();
 	}
 }
