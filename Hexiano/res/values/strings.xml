@@ -241,6 +241,7 @@ Commons Attribution 3.0 license. See http://creativecommons.org/licenses/by/3.0 
 	******************
 	-->
 	<string name="error_no_soundfiles">Error: no sound files could be found for this instrument. Check that they have the correct format (anything_mxxvyy.ext where xx is midi note number and yy velocity)</string>
+	<string name="error_no_first_sound">Error: Cannot load the first sound for any instrument! Please check your multi-instruments settings!</string>
 	<string name="finished_loading">Finished loading instrument(s)!</string>
 	<string name="beginning_loading">Begin loading instrument(s), please wait&#8230;</string>
 	<string name="warning_rate_out_of_range">Warning: some extrapolated notes may not work (having a rate below 0.5 and above 2.0). Please add at least one sample sound per octave.</string>

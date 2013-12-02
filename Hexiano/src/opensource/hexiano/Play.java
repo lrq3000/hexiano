@@ -245,18 +245,32 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 	protected void loadFirstSound() {
 		// Setup the instruments iterator (for the soundmanager to iteratively load all sounds for each instrument)
 		instrument_load_queue = mInstrument.values().iterator();
-		// Initiate the loading process, by loading the first instrument and the first sound for this instrument
-		currLoadingInstrument = instrument_load_queue.next();
-		// Setup the sound load queue for this instrument
-		currLoadingInstrument.notes_load_queue = currLoadingInstrument.sounds_to_load.values().iterator();
-		// Start loading the first instrument and the first sound for the first note, the rest of the sounds are loaded from the Play::loadKeyboard()::OnLoadCompleteListener()
-		currLoadingInstrument.currListOfTuples = currLoadingInstrument.notes_load_queue.next();
-		currLoadingInstrument.sound_load_queue = currLoadingInstrument.currListOfTuples.iterator();
-		ArrayList tuple = currLoadingInstrument.sound_load_queue.next();
-		if (!currLoadingInstrument.mExternal) {
-			currLoadingInstrument.addSound((Integer)tuple.get(0), (Integer)tuple.get(1), (Integer)tuple.get(2)); // Instrument class (not external): we use a ressource ID int
+		// Loop until we find a sound to load
+		// Note: we do that because with an incorrect multi-instruments setup, it may happen that an instrument has no sound mapped on it (the range specified by user is out of visible screen), in this case we will try to load sounds from other instruments that are correctly mapped (normally, the default single instrument should always map at least one sound in this case)
+		boolean found_a_sound = false;
+		while (!found_a_sound && instrument_load_queue.hasNext()) { // Loop until either we have found a sound, or we have iterated through all instruments and none have any sound to load (this should never happen!)
+			// Initiate the loading process, by loading the first instrument and the first sound for this instrument
+			currLoadingInstrument = instrument_load_queue.next();
+			// Setup the sound load queue for this instrument
+			currLoadingInstrument.notes_load_queue = currLoadingInstrument.sounds_to_load.values().iterator();
+
+			// If we have found a sound to load, we stop here
+			if (currLoadingInstrument.notes_load_queue.hasNext()) found_a_sound = true;
+		}
+		// If we iterated through all instruments and never found any sound to load, then it's a fatal error that should never happen!
+		if (!found_a_sound) {
+			Log.e("Play::loadFirstSound", "Cannot load the first sound for any instrument! Fatal error!");
+			Toast.makeText(HexKeyboard.mContext, R.string.error_no_first_sound, Toast.LENGTH_LONG).show();
 		} else {
-			currLoadingInstrument.addSound((Integer)tuple.get(0), (Integer)tuple.get(1), (String)tuple.get(2)); // Instrument external: we use a string path
+			// Start loading the first instrument and the first sound for the first note, the rest of the sounds are loaded from the Play::loadKeyboard()::OnLoadCompleteListener()
+			currLoadingInstrument.currListOfTuples = currLoadingInstrument.notes_load_queue.next();
+			currLoadingInstrument.sound_load_queue = currLoadingInstrument.currListOfTuples.iterator();
+			ArrayList tuple = currLoadingInstrument.sound_load_queue.next();
+			if (!currLoadingInstrument.mExternal) {
+				currLoadingInstrument.addSound((Integer)tuple.get(0), (Integer)tuple.get(1), (Integer)tuple.get(2)); // Instrument class (not external): we use a ressource ID int
+			} else {
+				currLoadingInstrument.addSound((Integer)tuple.get(0), (Integer)tuple.get(1), (String)tuple.get(2)); // Instrument external: we use a string path
+			}
 		}
 	}
 	
