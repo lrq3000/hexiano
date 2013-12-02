@@ -9,6 +9,12 @@ package opensource.hexiano;
 
 public final class R {
     public static final class array {
+        /** 
+	******************** 
+	  SYSTEM CONSTANTS
+	********************
+	
+         */
         public static final int base_notes=0x7f070000;
         public static final int base_octaves=0x7f070005;
         public static final int color_schemes=0x7f070001;
@@ -38,6 +44,12 @@ public final class R {
         public static final int quit=0x7f0a0009;
     }
     public static final class integer {
+        /** 
+	******************
+	  DEFAULT VALUES
+	******************
+	
+         */
         public static final int default_polyphony_count=0x7f080000;
     }
     public static final class layout {
@@ -105,116 +117,164 @@ public final class R {
         public static final int pno_m102v127le=0x7f050036;
     }
     public static final class string {
-        public static final int add=0x7f060063;
-        public static final int app_name=0x7f060003;
-        public static final int beginning_loading=0x7f06005e;
-        public static final int contact=0x7f060002;
-        public static final int copyright=0x7f060011;
-        public static final int credit_piano=0x7f060052;
-        public static final int default_color_scheme=0x7f060005;
-        public static final int default_instrument=0x7f060006;
-        public static final int default_jammer_key_orientation=0x7f060056;
-        public static final int default_jammer_note=0x7f060017;
-        public static final int default_jammer_octave=0x7f060018;
-        public static final int default_jammer_orientation=0x7f06001f;
-        public static final int default_janko_key_orientation=0x7f060057;
-        public static final int default_janko_note=0x7f060019;
-        public static final int default_janko_octave=0x7f06001a;
-        public static final int default_janko_orientation=0x7f060020;
-        public static final int default_janko_row_count=0x7f06001b;
-        public static final int default_layout=0x7f060007;
-        public static final int default_sonome_key_orientation=0x7f060055;
-        public static final int default_sonome_note=0x7f060015;
-        public static final int default_sonome_octave=0x7f060016;
-        public static final int default_sonome_orientation=0x7f06001e;
-        public static final int delete=0x7f060065;
-        public static final int description=0x7f06004e;
-        public static final int distribution=0x7f060050;
-        public static final int edit=0x7f060064;
-        /**  Toast messages 
+        public static final int add=0x7f060069;
+        public static final int app_name=0x7f060002;
+        public static final int beginning_loading=0x7f060063;
+        public static final int cancel=0x7f06006d;
+        public static final int contact=0x7f060001;
+        /**  Contextual menu: About 
          */
-        public static final int error_no_soundfiles=0x7f06005c;
-        public static final int finished_loading=0x7f06005d;
-        public static final int heading_appearance=0x7f060000;
-        public static final int heading_general=0x7f06001d;
-        public static final int heading_jammer=0x7f060012;
-        public static final int heading_janko=0x7f060014;
-        public static final int heading_multiInstruments=0x7f060021;
-        public static final int heading_sonome=0x7f060013;
-        public static final int license=0x7f060051;
-        public static final int multi_instruments_add_screen_title_add=0x7f060066;
-        public static final int multi_instruments_add_screen_title_edit=0x7f060067;
-        public static final int multi_instruments_clear_mapping=0x7f06006b;
-        public static final int multi_instruments_profile_delete=0x7f06006a;
-        public static final int multi_instruments_profile_load=0x7f060069;
-        public static final int multi_instruments_profile_save=0x7f060068;
-        public static final int none=0x7f060004;
-        public static final int ok=0x7f060062;
-        public static final int open_source=0x7f06004f;
-        public static final int prompt_about=0x7f06004a;
-        public static final int prompt_color_scheme=0x7f06000b;
-        public static final int prompt_hide_modifiers=0x7f06003e;
-        public static final int prompt_highest_note=0x7f060039;
-        public static final int prompt_highest_note_octave=0x7f06003b;
-        public static final int prompt_hold_sustain=0x7f060040;
-        public static final int prompt_inneract=0x7f06000a;
-        public static final int prompt_instrument=0x7f06000c;
-        public static final int prompt_janko_row_count=0x7f06000f;
-        public static final int prompt_key_orientation=0x7f060053;
-        public static final int prompt_label_type=0x7f06000d;
-        public static final int prompt_landscape_labels=0x7f06002e;
-        public static final int prompt_layout=0x7f06000e;
-        public static final int prompt_license=0x7f06004b;
-        public static final int prompt_lowest_note=0x7f060037;
-        public static final int prompt_lowest_note_octave=0x7f060038;
-        public static final int prompt_multi_instruments_enable=0x7f060022;
-        public static final int prompt_multi_instruments_keep_base_note_octave=0x7f060026;
-        public static final int prompt_multi_instruments_orderid=0x7f060028;
-        public static final int prompt_multi_instruments_range=0x7f060024;
-        public static final int prompt_orientation=0x7f06001c;
-        public static final int prompt_polyphony_count=0x7f060058;
-        public static final int prompt_preferences=0x7f060009;
-        public static final int prompt_quit=0x7f06004c;
-        public static final int prompt_scale=0x7f06002a;
-        public static final int prompt_single_touch_chording=0x7f06003c;
-        public static final int prompt_sounds_limit_range=0x7f06005a;
-        public static final int prompt_sustain_always_on=0x7f060042;
-        public static final int prompt_touch_scale=0x7f06002c;
-        public static final int prompt_velocity_boost=0x7f060048;
-        public static final int prompt_velocity_enabled=0x7f060044;
-        public static final int prompt_velocity_relative_range=0x7f060046;
-        public static final int summary_color_scheme=0x7f060030;
-        public static final int summary_hide_modifiers=0x7f06003f;
-        public static final int summary_highest_note=0x7f060036;
-        public static final int summary_highest_note_octave=0x7f060034;
-        public static final int summary_hold_sustain=0x7f060041;
-        public static final int summary_instrument=0x7f060031;
-        public static final int summary_janko_row_count=0x7f060010;
-        public static final int summary_key_orientation=0x7f060054;
-        public static final int summary_label_type=0x7f06002f;
-        public static final int summary_landscape=0x7f060032;
-        public static final int summary_layout=0x7f060033;
-        public static final int summary_lowest_note=0x7f060035;
-        public static final int summary_lowest_note_octave=0x7f06003a;
-        public static final int summary_multi_instruments_enable=0x7f060023;
-        public static final int summary_multi_instruments_keep_base_note_octave=0x7f060027;
-        public static final int summary_multi_instruments_orderid=0x7f060029;
-        public static final int summary_multi_instruments_range=0x7f060025;
-        public static final int summary_polyphony_count=0x7f060059;
-        public static final int summary_scale=0x7f06002b;
-        public static final int summary_single_touch_chording=0x7f06003d;
-        public static final int summary_sounds_limit_range=0x7f06005b;
-        public static final int summary_sustain_always_on=0x7f060043;
-        public static final int summary_touch_scale=0x7f06002d;
-        public static final int summary_velocity_boost=0x7f060049;
-        public static final int summary_velocity_enabled=0x7f060045;
-        public static final int summary_velocity_relative_range=0x7f060047;
-        public static final int sustain_key=0x7f060008;
-        public static final int url=0x7f060001;
-        public static final int version=0x7f06004d;
-        public static final int warning_rate_out_of_range=0x7f06005f;
-        public static final int warning_rate_out_of_range_max=0x7f060061;
-        public static final int warning_rate_out_of_range_min=0x7f060060;
+        public static final int copyright=0x7f060017;
+        public static final int credit_osc=0x7f06001c;
+        public static final int credit_piano=0x7f06001b;
+        public static final int default_color_scheme=0x7f060004;
+        public static final int default_instrument=0x7f060005;
+        public static final int default_jammer_key_orientation=0x7f060012;
+        public static final int default_jammer_note=0x7f060009;
+        public static final int default_jammer_octave=0x7f06000a;
+        public static final int default_jammer_orientation=0x7f06000f;
+        public static final int default_janko_key_orientation=0x7f060013;
+        public static final int default_janko_note=0x7f06000b;
+        public static final int default_janko_octave=0x7f06000c;
+        public static final int default_janko_orientation=0x7f060010;
+        public static final int default_janko_row_count=0x7f06000d;
+        public static final int default_layout=0x7f060006;
+        public static final int default_sonome_key_orientation=0x7f060011;
+        public static final int default_sonome_note=0x7f060007;
+        public static final int default_sonome_octave=0x7f060008;
+        public static final int default_sonome_orientation=0x7f06000e;
+        public static final int delete=0x7f06006b;
+        public static final int description=0x7f060018;
+        public static final int distribution=0x7f06006f;
+        public static final int edit=0x7f06006a;
+        public static final int error_no_first_sound=0x7f060061;
+        /** 
+	******************
+	  TOAST MESSAGES
+	******************
+	
+         */
+        public static final int error_no_soundfiles=0x7f060060;
+        public static final int finished_loading=0x7f060062;
+        /**  Layout  (fine-tuning settings per keyboard type) 
+         */
+        public static final int heading_appearance=0x7f06001f;
+        /**  General 
+         */
+        public static final int heading_general=0x7f060034;
+        public static final int heading_jammer=0x7f060020;
+        public static final int heading_janko=0x7f060022;
+        public static final int heading_multiInstruments=0x7f06004d;
+        public static final int heading_sonome=0x7f060021;
+        public static final int license=0x7f06001a;
+        public static final int multi_instruments_add_screen_title_add=0x7f060056;
+        public static final int multi_instruments_add_screen_title_edit=0x7f060057;
+        public static final int multi_instruments_clear_mapping=0x7f06005b;
+        public static final int multi_instruments_profile_delete=0x7f06005a;
+        public static final int multi_instruments_profile_load=0x7f060059;
+        public static final int multi_instruments_profile_save=0x7f060058;
+        /** 
+	***********
+	  GENERIC
+	***********
+	
+         */
+        public static final int none=0x7f060067;
+        public static final int ok=0x7f060068;
+        public static final int open_source=0x7f060019;
+        /** 
+	*******************
+	  CONTEXTUAL MENU
+	*******************
+	
+         */
+        public static final int prompt_about=0x7f060014;
+        public static final int prompt_color_scheme=0x7f060037;
+        /**  Modifier Keys subscreen 
+         */
+        public static final int prompt_hide_modifiers=0x7f06003f;
+        public static final int prompt_highest_note=0x7f06002e;
+        public static final int prompt_highest_note_octave=0x7f060030;
+        public static final int prompt_hold_sustain=0x7f060041;
+        public static final int prompt_inneract=0x7f06001e;
+        /**  Instrument and Multi-instruments subscreen 
+         */
+        public static final int prompt_instrument=0x7f06004b;
+        public static final int prompt_janko_row_count=0x7f060028;
+        public static final int prompt_key_orientation=0x7f060024;
+        public static final int prompt_label_type=0x7f060039;
+        public static final int prompt_landscape_labels=0x7f060026;
+        public static final int prompt_layout=0x7f060035;
+        public static final int prompt_license=0x7f060015;
+        public static final int prompt_lowest_note=0x7f06002a;
+        public static final int prompt_lowest_note_octave=0x7f06002c;
+        public static final int prompt_multi_instruments_enable=0x7f06004e;
+        public static final int prompt_multi_instruments_keep_base_note_octave=0x7f060052;
+        public static final int prompt_multi_instruments_orderid=0x7f060054;
+        public static final int prompt_multi_instruments_range=0x7f060050;
+        public static final int prompt_orientation=0x7f060023;
+        /**   Advanced 
+         */
+        public static final int prompt_polyphony_count=0x7f06005c;
+        /** 
+	***************
+	  PREFERENCES
+	***************
+	
+         */
+        public static final int prompt_preferences=0x7f06001d;
+        public static final int prompt_quit=0x7f060016;
+        public static final int prompt_scale=0x7f06003b;
+        public static final int prompt_single_touch_chording=0x7f060032;
+        public static final int prompt_sounds_limit_range=0x7f06005e;
+        public static final int prompt_sustain_always_on=0x7f060043;
+        public static final int prompt_touch_scale=0x7f06003d;
+        public static final int prompt_velocity_boost=0x7f060049;
+        /**  Velocity subscreen 
+         */
+        public static final int prompt_velocity_enabled=0x7f060045;
+        public static final int prompt_velocity_relative_range=0x7f060047;
+        public static final int save=0x7f06006c;
+        public static final int summary_color_scheme=0x7f060038;
+        public static final int summary_hide_modifiers=0x7f060040;
+        public static final int summary_highest_note=0x7f06002f;
+        public static final int summary_highest_note_octave=0x7f060031;
+        public static final int summary_hold_sustain=0x7f060042;
+        public static final int summary_instrument=0x7f06004c;
+        public static final int summary_janko_row_count=0x7f060029;
+        public static final int summary_key_orientation=0x7f060025;
+        public static final int summary_label_type=0x7f06003a;
+        public static final int summary_landscape=0x7f060027;
+        public static final int summary_layout=0x7f060036;
+        public static final int summary_lowest_note=0x7f06002b;
+        public static final int summary_lowest_note_octave=0x7f06002d;
+        public static final int summary_multi_instruments_enable=0x7f06004f;
+        public static final int summary_multi_instruments_keep_base_note_octave=0x7f060053;
+        public static final int summary_multi_instruments_orderid=0x7f060055;
+        public static final int summary_multi_instruments_range=0x7f060051;
+        public static final int summary_polyphony_count=0x7f06005d;
+        public static final int summary_scale=0x7f06003c;
+        /**  Only for Jammer, but you can get the same effect by tweaking Key Touch Surface 
+         */
+        public static final int summary_single_touch_chording=0x7f060033;
+        public static final int summary_sounds_limit_range=0x7f06005f;
+        public static final int summary_sustain_always_on=0x7f060044;
+        public static final int summary_touch_scale=0x7f06003e;
+        public static final int summary_velocity_boost=0x7f06004a;
+        public static final int summary_velocity_enabled=0x7f060046;
+        public static final int summary_velocity_relative_range=0x7f060048;
+        public static final int sustain_key=0x7f060003;
+        /** 
+	*****************
+	  PACKAGE INFOS
+	*****************
+	
+         */
+        public static final int url=0x7f060000;
+        public static final int version=0x7f06006e;
+        public static final int warning_rate_out_of_range=0x7f060064;
+        public static final int warning_rate_out_of_range_max=0x7f060066;
+        public static final int warning_rate_out_of_range_min=0x7f060065;
     }
     public static final class xml {
         public static final int preferences=0x7f040000;
