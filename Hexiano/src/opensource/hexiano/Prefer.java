@@ -166,7 +166,6 @@ public class Prefer extends PreferenceActivity
 		                	if (((String)multiInstrumentsSubmit.getTitle()).equalsIgnoreCase(getResources().getString(R.string.add))) {
 			                	// Add mode: Append the new mapping and save the new config
 			                	error = error | !appendMultiInstrumentsMapping(mPrefs, mPrefsEditor, attributes_mapping);
-			                	openPreference("multiInstrumentsScreen"); // open multiInstrumentsScreen to update the list of mappings
 		                	} else if (((String)multiInstrumentsSubmit.getTitle()).equalsIgnoreCase(getResources().getString(R.string.edit))) {
 		                		// Edit mode: Replace the instrument mapping for this mapping id
 		                		int id = mPrefs.getInt("multiInstrumentsEditId", -1);
@@ -174,10 +173,16 @@ public class Prefer extends PreferenceActivity
 		                			error = true;
 		                		} else {
 		                			error = error | !updateMultiInstrumentsMapping(mPrefs, mPrefsEditor, id, attributes_mapping);
-		                			openPreference("multiInstrumentsScreen"); // open multiInstrumentsScreen to update the list of mappings
 		                		}
 		                	}
-		                	
+
+		                	// Refresh previous screen (listing current multi instruments mapping)
+		                	refreshPreferenceScreenByClick("multiInstrumentsScreen");
+		            		// Go back to the previous screen
+		                	closePreferenceScreen("multiInstrumentsAddScreen");
+		                	// Alternative: programmatically open the previous screen, but this doesn't trim the history of preference screens, thus this nested preference screen will be kept in memory and after 2 or 3 instruments adding, the app will crash because of stack overflow.
+		                	// openPreference("multiInstrumentsScreen"); // open multiInstrumentsScreen to update the list of mappings
+
 		                    return !error;
 		                }
 		            });
@@ -187,14 +192,22 @@ public class Prefer extends PreferenceActivity
 		multiInstrumentsDelete.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() { // Defining delete button action
             @Override
             public boolean onPreferenceClick(Preference multiInstrumentsDelete) {
+            	boolean error = false;
             	int id = mPrefs.getInt("multiInstrumentsEditId", -1);
             	if (id < 0) {
-            		return false;
+            		error = true;
             	} else {
-                	deleteMultiInstrumentsMapping(mPrefs, mPrefsEditor, id); // open multiInstrumentsScreen to update the list of mappings
-                	openPreference("multiInstrumentsScreen");
-                	return true;
+                	deleteMultiInstrumentsMapping(mPrefs, mPrefsEditor, id); // delete current instrument from the mapping
             	}
+
+            	// Refresh previous screen (listing current multi instruments mapping)
+            	refreshPreferenceScreenByClick("multiInstrumentsScreen");
+        		// Go back to the previous screen
+            	closePreferenceScreen("multiInstrumentsAddScreen");
+            	// Alternative: programmatically open the previous screen, but this doesn't trim the history of preference screens, thus this nested preference screen will be kept in memory and after 2 or 3 instruments adding, the app will crash because of stack overflow.
+            	// openPreference("multiInstrumentsScreen"); // open multiInstrumentsScreen to update the list of mappings
+
+            	return !error;
             }
 		});
 		
@@ -302,10 +315,10 @@ public class Prefer extends PreferenceActivity
 					                			//multiInstrumentsAddScreen.addPreference(multiInstrumentsDelete); // Finally, add the delete button in the screen
 					                			multiInstrumentsDelete.setDefaultValue((int)(Math.random()*1000)); onContentChanged(); // force refresh of the delete button
 					                			
-					                			// Redirect to add instrument on click
+					                			// Redirect on click to add instrument preference screen (that we above modified a bit to turn into an edit instrument preference screen)
 					                			mPrefsEditor.putBoolean("multiInstrumentsEditClick", true); // Trick to know if we are simulating a click (editing) or user really clicked on Add (adding a new instrument)
 					                			mPrefsEditor.commit();
-					                			openPreference("multiInstrumentsAddScreen");
+					                			openPreference("multiInstrumentsAddScreen"); // open the sub PreferenceScreen
 		        		                	}
 
 		        		                	return true;
@@ -370,7 +383,8 @@ public class Prefer extends PreferenceActivity
         		onContentChanged();
         		System.gc();
 
-				openPreference("multiInstrumentsScreen"); // open multiInstrumentsScreen to update the list of mappings
+        		refreshPreferenceScreenByClick("multiInstrumentsScreen");
+				//openPreference("multiInstrumentsScreen"); // open multiInstrumentsScreen to update the list of mappings
 				
 				return true;
 			}
@@ -403,7 +417,7 @@ public class Prefer extends PreferenceActivity
 		            String mappingValue = (String)newValue;
 		            if (mappingValue.length() > 0) {
 			            mPrefsEditor.putString("multiInstrumentsConfig", mappingValue);
-			            if (mPrefsEditor.commit()) openPreference("multiInstrumentsScreen"); // force refresh the list of instruments
+			            if (mPrefsEditor.commit()) refreshPreferenceScreenByClick("multiInstrumentsScreen"); //openPreference("multiInstrumentsScreen"); // force refresh the list of instruments
 		            } else {
 		            	return false;
 		            }
@@ -887,6 +901,8 @@ public class Prefer extends PreferenceActivity
 	    return null;
 	}
 
+	// Open a preference item directly from string name
+	// Thank's so much to markus ( http://stackoverflow.com/a/4869034/1121352 )
 	private void openPreference( String key ) {
 	    PreferenceScreen screen = findPreferenceScreenForPreference( key, null );
 	    if( screen != null ) {
@@ -903,5 +919,20 @@ public class Prefer extends PreferenceActivity
 
 		// simulate a click / call it!!
 		screen.onItemClick( null, null, pos, 0 ); 
+	}
+
+	// Refresh the content of a PreferenceScreen by simulating a click (thus it will call the refresh code if it's contained inside the click callback)
+	private void refreshPreferenceScreenByClick(String prefScreenName) {
+		// Refresh preference screen (given by its name) by calling the click callback
+		PreferenceScreen prefScreen = (PreferenceScreen) findPreference(prefScreenName);
+		Preference.OnPreferenceClickListener click_callback = prefScreen.getOnPreferenceClickListener();
+		click_callback.onPreferenceClick(prefScreen);
+	}
+
+	// Close the current PreferenceScreen (or any given the name)
+	// Useful to go back to the previous PreferenceScreen when constructing dynamically nested submenus.
+	private void closePreferenceScreen(String prefScreenName) {
+		PreferenceScreen prefScreen = (PreferenceScreen) findPreference(prefScreenName);
+    	prefScreen.getDialog().dismiss();
 	}
 }
