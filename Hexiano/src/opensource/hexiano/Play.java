@@ -283,15 +283,22 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 		
 		//mFrame = new FrameLayout(con);
 		mBoard = new HexKeyboard(con);
-		// This really speeds up orientation switches!
-		mInstrument = (HashMap<String, Instrument>) getLastNonConfigurationInstance();
-		// If no retained audio (or changed), load it all up (slow).
+
+		// Reload previously cached data (SoundPool decoded sounds) if available, this really speeds up orientation switches!
+		//mInstrument = (HashMap<String, Instrument>) getLastNonConfigurationInstance();
+		Play prevActivity = (Play)getLastNonConfigurationInstance();
+		if(prevActivity != null) {
+			Log.d("Play", "prevActivity is not null!");
+			Play.mSoundPool = prevActivity.mSoundPool;
+			Play.mInstrument = prevActivity.mInstrument;
+		} else { // If no retained audio (or changed), load it all up (slow).
 		//if (mInstrument == null || mInstrumentChanged) {
 			// Load SoundPool, the sound manager
 	        loadSoundManager();
 	        // Then, load the instruments
 			loadInstruments();
 		//}
+		}
 		mBoard.setUpBoard(orientationId);
 		mBoard.invalidate();
 
@@ -305,12 +312,17 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 		this.setContentView(mBoard);
 	}
 
+	// Cache data to speedup orientation switches
 	@Override
 	public Object onRetainNonConfigurationInstance()
 	{
+		Log.d("Play", "onRetainNonConfigurationInstance()");
 		// Retain the audio across configuration changes.
-		// TODO: try to retain SoundPool when just quitting preferences without changing anything, but not sure it could be retained since it's not serializable
-		return mInstrument;
+		// TODO: try to retain SoundPool when just quitting preferences without changing anything, but not sure it could be retained since it's not serializable. Maybe as a service? http://stackoverflow.com/questions/16169488/how-to-get-an-android-bound-service-to-survive-a-configuration-restart
+		// TODO: or use fragments: https://github.com/alexjlockwood/worker-fragments
+		// TODO: or change SoundPool for AudioTrack to read directly from file (but does it handle ogg?): http://www.martinhoeller.net/2012/01/13/developing-a-musical-instrument-app-for-android/
+		//return mInstrument;
+		return Play.this;
 	}
 
 	@Override
