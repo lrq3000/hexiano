@@ -168,10 +168,12 @@ public class GenericInstrument extends Instrument
 
 			    File f = new File(path);
 			    File[] files = f.listFiles();
-			    for (File file : files) {
-			        if (file.isDirectory()) { // is directory
-			        	Directories.add(file.getName());
-			        }
+			    if (files != null && files.length > 0) {
+				    for (File file : files) {
+				        if (file.isDirectory()) { // is directory
+				        	Directories.add(file.getName());
+				        }
+				    }
 			    }
 			}
 		}
