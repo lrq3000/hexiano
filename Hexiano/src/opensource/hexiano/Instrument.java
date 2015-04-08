@@ -248,8 +248,8 @@ public abstract class Instrument {
 		if (velocity > 127) velocity = 127;
 		
 		// -- Get the corresponding sound(s) for the user's velocity and from the available velocities
-		int previous_vel = 0; // lower velocity bound if user's velocity is in-between
-		int current_vel = 0; // higher velocity bound if user's velocity is in-between
+		int lower_vel = 0; // lower velocity bound if user's velocity is in-between (to select the sound at the velocity below the user's pressure)
+		int higher_vel = 0; // higher velocity bound if user's velocity is in-between (to select the sound at the velocity higher to the user's pressure, and we will mix it with the lower_vel sound to simulate a velocity that is in-between)
 		int soundid = 0; // lower velocity sound or sound exactly equal to user's velocity
 		int soundid2 = 0; // higher velocity sound if user's velocity is in-between, or null
 		float stream1Volume = 0; // volume for lower velocity sound if user's velocity is in-between, to allow for blending of two velocity sounds
@@ -257,45 +257,45 @@ public abstract class Instrument {
 
 		// Fake velocity (modulate only the sound volume)
 		if (velocity_soundid.size() == 1) {
-			current_vel = (Integer) velocity_soundid.keySet().toArray()[0];
-			soundid = velocity_soundid.get(current_vel);
-			streamVolume = (float)velocity/current_vel * streamVolume;
+			higher_vel = (Integer) velocity_soundid.keySet().toArray()[0];
+			soundid = velocity_soundid.get(higher_vel);
+			streamVolume = (float)velocity/higher_vel * streamVolume;
 		// Real velocity with interpolation (either get a sample sound for this velocity and note, or interpolate from two close velocities)
 		} else {
 			// TreeMap ensures that entries are always ordered by velocity (from lowest to highest), thus a subsequent velocity may only be higher than the previous one
 			// For each velocity available for this note (iterate in ascending order from lowest velocity to highest)
 			for (TreeMap.Entry<Integer, Integer> vel : velocity_soundid.entrySet()) {
-				current_vel = vel.getKey(); // get the current velocity in TreeMap
+				higher_vel = vel.getKey(); // get the current velocity in TreeMap (at the end, it will store the higher velocity bound sound)
 	
 				// Case 1: higher bound: one sound when user's velocity is equal or lower than any available velocity sound
-				if (current_vel == velocity || // if current available velocity is exactly equal to user's velocity
-						(current_vel > velocity && previous_vel == 0)) { // or if it's above usen's velocity but there's no lower velocity available
+				if (higher_vel == velocity || // if current available velocity is exactly equal to user's velocity
+						(higher_vel > velocity && lower_vel == 0)) { // or if it's above usen's velocity but there's no lower velocity available
 					// Just use the current velocity sound
 					soundid = vel.getValue();
 					break; // Found our sound, exit the loop
 				// Case 2: middle bound: two sounds when user's velocity is in-between two available velocity sounds
-				} else if (current_vel > velocity && previous_vel != 0) {
-					soundid = velocity_soundid.get(previous_vel); // get lower bound velocity sound
+				} else if (higher_vel > velocity && lower_vel != 0) {
+					soundid = velocity_soundid.get(lower_vel); // get lower bound velocity sound
 					soundid2 = vel.getValue(); // == velocity_soundid.get(current_vel); // higher bound velocity sound
 					// Compute the streams volumes for sounds blending
-					int vdiff = current_vel - previous_vel; // compute ratio between max and min available velocity, which will represent the max volume ratio
-					stream2Volume = (float)(velocity - previous_vel) / vdiff * streamVolume; // compute lower velocity sound volume (note: inversed s1 and s2 on purpose, to avoid computing stream1Volume = 1.0f - stream1Volume and stream1Volume = 1.0f - stream2Volume)
-					stream1Volume = (float)(current_vel - velocity) / vdiff * streamVolume; // compute higher velocity sound volume
+					int vdiff = higher_vel - lower_vel; // compute ratio between max and min available velocity, which will represent the max volume ratio
+					stream2Volume = (float)(velocity - lower_vel) / vdiff * streamVolume; // compute lower velocity sound volume (note: inversed s1 and s2 on purpose, to avoid computing stream1Volume = 1.0f - stream1Volume and stream1Volume = 1.0f - stream2Volume)
+					stream1Volume = (float)(higher_vel - velocity) / vdiff * streamVolume; // compute higher velocity sound volume
 					break; // Found our sounds, exit the loop
 				}
-				previous_vel = current_vel; // keep previous velocity (= lower bound velocity)
+				lower_vel = higher_vel; // keep previous velocity (= lower bound velocity)
 			}
 			// Case 3: lower bound: one sound when user's velocity is higher than any available velocity (we iterated all available velocities and could not find any higher)
 			if (soundid == 0) {
-				if (previous_vel != 0) {
-					soundid = velocity_soundid.get(previous_vel);
+				if (lower_vel != 0) {
+					soundid = velocity_soundid.get(lower_vel);
 				} else {
-					soundid = velocity_soundid.get(current_vel);
+					soundid = velocity_soundid.get(higher_vel);
 				}
 			}
 		}
 
-		Log.d("Instrument::play", "VelocityCheck: midinote: " + midiNoteNumber + " soundid: " + Integer.toString(soundid) + " soundid2: "+ Integer.toString(soundid2) + " velocity/previous_vel/current_vel " + velocity + "/" + previous_vel + "/" + current_vel + " pressure " + Float.toString(pressure) + " max/min " + Float.toString(HexKeyboard.mMaxPressure) + "/" + Float.toString(HexKeyboard.mMinPressure) + " s/s1/s2 vol " + Float.toString(streamVolume) + "/" + Float.toString(stream1Volume) + "/" + Float.toString(stream2Volume));
+		Log.d("Instrument::play", "VelocityCheck: midinote: " + midiNoteNumber + " soundid: " + Integer.toString(soundid) + " soundid2: "+ Integer.toString(soundid2) + " sound_max_vel/sound_min_vel " + max_vel + "/" + min_vel + " velocity/lower_vel/higher_vel " + velocity + "/" + lower_vel + "/" + higher_vel + " pressure " + Float.toString(pressure) + " max/min " + Float.toString(HexKeyboard.mMaxPressure) + "/" + Float.toString(HexKeyboard.mMinPressure) + " s/s1/s2 vol " + Float.toString(streamVolume) + "/" + Float.toString(stream1Volume) + "/" + Float.toString(stream2Volume));
 
 		// Velocity interpolation via Blending: we blend two velocity sounds (lower and higher bound) with volumes proportional to the user's velocity to interpolate the missing velocity sound
 		if (soundid2 != 0) {
