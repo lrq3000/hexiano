@@ -830,7 +830,7 @@ public class HexKeyboard extends View
 		// Velocity boost by this percentage
 		String velocityBoostStr = mPrefs.getString("velocityBoost", ""); // for backward compatibility, we still have to set it as a string and then do a regexp, even if we could just set android:numeric="integer" in the preferences, but that would break compatibility...
 		velocityBoostStr = velocityBoostStr.replaceAll("[^0-9]", "");
-		int velocityBoostPct = 100;
+		int velocityBoostPct = 0; // by default, no velocityBoost
 		if (velocityBoostStr.length() != 0) {
 			velocityBoostPct = Integer.parseInt(velocityBoostStr);
 			if (velocityBoostPct < 0 || velocityBoostPct > 1000) {
