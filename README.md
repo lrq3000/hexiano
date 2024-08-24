@@ -10,9 +10,13 @@ Description
 ----------------
 Hexiano is an Open-source isomorphic musical keyboard, and technically a sample-based synthesizer.
 
-Isomorphic means that all intervals, chords, and scales have identical patterns, regardless of the key in which one plays.
+Isomorphic means that all intervals, chords, and scales have identical patterns, regardless of the key in which one plays. In other words, in [isomorphic keyboard](https://en.wikipedia.org/wiki/Isomorphic_keyboard), also called [generalized keyboards](https://en.wikipedia.org/wiki/Generalized_keyboard), all musical concepts have an invariant pattern. This allows to understand theoretical musical concepts not only from the sound, but also visually.
 
-Isomorphic keyboards are an old concept, and some layouts are more than a century old (Janko, Wicki-Hayden).
+Furthermore, this kind of keyboard being in two dimensions, they have a much higher density of keys compared to a unidimensional piano keyboard, which means that professional players will appreciate the ability to reach other octaves much faster than on a traditional keyboard: if you want to compete on your speed of playing music, this is what you need.
+
+Finally, isomorphic keyboards are also ideal for microtonality, although this is currently not implemented in this app.
+
+Isomorphic keyboards are an old concept, and some layouts are more than a century old (Janko, Wicki-Hayden). The original concept of isomorphic hexagonal keyboards with invariant musical patterns likely traces back to the [Tonnetz](https://en.wikipedia.org/wiki/Tonnetz).
 
 Hexiano not only aims to deliver the isomorphic keyboard concept to the Android platform, but it is also committed to give you ergonomic tools to get the most out of these amazing keyboards, with all the options you need to customize your own Hexiano experience.
 
