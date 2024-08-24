@@ -8,9 +8,9 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.myapplication"
+        applicationId = "opensource.hexiano.Play"
         minSdk = 8
-        targetSdk = 10
+        targetSdk = 34
         versionCode = 15
         versionName = "0.84 BETA"
 
@@ -37,12 +37,12 @@ android {
 
 dependencies {
 
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    implementation(libs.androidx.activity)
-    implementation(libs.androidx.constraintlayout)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+//    implementation(libs.androidx.core.ktx)
+//    implementation(libs.androidx.appcompat)
+//    implementation(libs.material)
+//    implementation(libs.androidx.activity)
+//    implementation(libs.androidx.constraintlayout)
+//    testImplementation(libs.junit)
+//    androidTestImplementation(libs.androidx.junit)
+//    androidTestImplementation(libs.androidx.espresso.core)
 }
