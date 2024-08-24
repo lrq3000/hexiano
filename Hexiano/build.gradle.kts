@@ -4,15 +4,15 @@ plugins {
 }
 
 android {
-    namespace = "com.example.myapplication"
+    namespace = "opensource.hexiano"
     compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.myapplication"
-        minSdk = 24
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        minSdk = 8
+        targetSdk = 10
+        versionCode = 15
+        versionName = "0.84 BETA"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
