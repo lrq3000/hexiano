@@ -347,17 +347,12 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
-		switch (item.getItemId())
-		{
-		    case R.id.preferences:
-			    startActivity(new Intent(this, Prefer.class)); 
-			    break;
-		    case R.id.quit:
-			    finish();
-			    break;
-		    case R.id.about:
-			    showDialog(ABOUT_DIALOG_ID);
-			    break;
+		if (item.getItemId() == R.id.preferences) {
+			startActivity(new Intent(this, Prefer.class));
+		} else if (item.getItemId() == R.id.quit) {
+			finish();
+		} else if (item.getItemId() == R.id.about) {
+			showDialog(ABOUT_DIALOG_ID);
 		}
 
 		return true; 
