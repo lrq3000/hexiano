@@ -18,6 +18,7 @@ Hexiano not only aims to deliver the isomorphic keyboard concept to the Android 
 
 See http://www.altkeyboards.com/ for more information about these instruments.
 
+This is a fork of the Hexiano app, with several bugfixes and new features, such as the possibility to use multiple instruments on the same keyboard, and add new instruments soundfonts from the SD card.
 
 Build and install
 -----------------------
