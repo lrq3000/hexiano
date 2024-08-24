@@ -75,12 +75,16 @@ If you have found any bug or have a suggestion for an amazing new feature you wo
 
 https://github.com/lrq3000/hexiano/issues
 
+Similar projects
+----------------
+
+* [Hexpress](https://github.com/jmiskovic/hexpress)
 
 License
 -----------
 Licensed under the terms of the General Public License v3 (GPLv3).
 
-Copyleft @ 2013 by Stephen Larroque,
+Copyleft @ 2013-2024 by Stephen Larroque,
 Copyright © 2012 by James Haigh,
 Copyright © 2011, 2012 by David Randolph.
 Hexiano™ and the Hexiano logo are trademarks of James Haigh.
