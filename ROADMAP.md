@@ -5,11 +5,14 @@ Hexiano Roadmap
 GOALS
 -----------
 
-The current main goal of Hexiano is to extend it as to be a fully nomad on-the-run performance keyboard for diverse instruments, which would particularly fit street performers.
+The current main goal of Hexiano is to extend it as to be a fully nomad on-the-run performance keyboard for diverse instruments, 
+which would particularly fit street performers.
 
-Longer term goals would have Hexiano be a full midi keyboard and synthesizer, which just begins to be possible with the very recent (as of 2013) efforts of Google with low-latency Android Audio.
+Longer term goals would have Hexiano be a full midi keyboard and synthesizer, 
+which just begins to be possible with the very recent (as of 2013) efforts of Google with low-latency Android Audio.
 
-Anyway if you have any other idea of a feature or any code you would like to propose to the project, feel free to post in the Github Issues or Fork+Pull Request!
+Anyway if you have any other idea of a feature or any code you would like to propose to the project, 
+feel free to post in the Github Issues or Fork+Pull Request!
 
 
 TODO

@@ -24,25 +24,12 @@ Build and install
 
 ### Via commandline
 
-    $ cd ~/src/hexiano/Hexiano
-    
-    $ # Only needed first time:
-    $ android list targets # I build against API level 10.
-    $ android update project --name Hexiano --target 1 --path ./
-    $ git checkout build.xml # Update, not replace. Bad android update!
-    
-    $ # Everytime:
-    $ ant filter-package && ant debug && adb -d install -r build/bin/Hexiano-debug.apk
-
-### Via Eclipse ADT
-
-In Eclipse ADT, select File > Import and then select Android > Existing Android Code Into Workspace.
-Then select the hexiano/Hexiano directory (where src is contained), and import that. It should work right away.
-As an alternative: use the build.gradle file.
+    ./gradlew installDebug
 
 ### Via Android Studio
 
-Not tested, but you can try to use the build.gradle file to import the project.
+1. Make sure an Android device is connected (either connect your phone via USB, or run an emulator)
+2. hit the green 'play' button in the top left of the IDE!
 
 
 Project architecture
