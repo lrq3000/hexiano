@@ -22,7 +22,7 @@ Here is a list of a few features that are planned in near-term:
 
 - piano HD (3 sounds every 4 are interpolated by the program currently! and in mono)
 - a new free orchestral soundbank (maybe as an external module to keep the Hexiano low in size)
-- Connection to computer (via USB or OSC or Bluetooth) with velocity sensitivity support
+- Connection to computer (via USB or OSC or Bluetooth) with velocity sensitivity support ( see low latency real-time sensors streaming over udp https://github.com/umer0586/SensaGram )
 - background sound (in menu, add three buttons: load, play and loop, the last two changing to stop and pause when playing)
 - external audio effects via gyrometer/accelerometer and send by USB/OSC/Bluetooth (mapping variable CC messages like Expression, and maybe could map independently 2 different CC functions for the two dimensions x and y).
 
