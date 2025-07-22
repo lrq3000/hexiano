@@ -2,7 +2,20 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 	<item android:id="@+id/preferences"
 		android:icon="@android:drawable/ic_menu_preferences"
-		android:title="@string/prompt_preferences" android:enabled="true" android:visible="true"></item>
-	<item android:id="@+id/about" android:title="@string/prompt_about" android:icon="@android:drawable/ic_menu_info_details" android:visible="true" android:enabled="true"></item>
-	<item android:id="@+id/quit" android:icon="@android:drawable/ic_menu_close_clear_cancel" android:title="@string/prompt_quit" android:visible="true" android:enabled="true"></item>
+		android:title="@string/prompt_preferences" 
+		android:enabled="true" 
+		android:visible="true"
+		android:showAsAction="ifRoom|withText"></item>
+	<item android:id="@+id/about" 
+		android:title="@string/prompt_about" 
+		android:icon="@android:drawable/ic_menu_info_details" 
+		android:visible="true" 
+		android:enabled="true"
+		android:showAsAction="never"></item>
+	<item android:id="@+id/quit" 
+		android:icon="@android:drawable/ic_menu_close_clear_cancel" 
+		android:title="@string/prompt_quit" 
+		android:visible="true" 
+		android:enabled="true"
+		android:showAsAction="never"></item>
 </menu>

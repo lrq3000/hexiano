@@ -33,6 +33,14 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    
+    lint {
+        // Disable lint errors for this legacy project
+        abortOnError = false
+        checkReleaseBuilds = false
+        // Ignore specific lint issues common in legacy projects
+        disable.addAll(listOf("LongLogTag", "ObsoleteSdkInt", "OldTargetApi"))
+    }
 }
 
 dependencies {

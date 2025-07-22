@@ -49,7 +49,10 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.media.SoundPool;
@@ -106,6 +109,7 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 		
     	String versionStr = this.getVersionName();
         
+		// Hide both title bar and status bar for maximum screen space
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -304,12 +308,34 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 
 		loadFirstSound(); // Do this only after setUpBoard() so that it can setup the keyboard and limit the range of notes to load
 
-		// mFrame.addView(mBoard);
-		//LayoutParams layoutParams = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
-		//		LayoutParams.WRAP_CONTENT, Gravity.TOP | Gravity.CENTER_HORIZONTAL); 
-        
-		// this.setContentView(mFrame);
-		this.setContentView(mBoard);
+		// Create a frame layout to hold both the keyboard and floating menu button
+		FrameLayout frameLayout = new FrameLayout(con);
+		frameLayout.addView(mBoard);
+		
+		// Add a floating menu button for modern devices
+		Button menuButton = new Button(con);
+		menuButton.setText("⋮");
+		menuButton.setTextSize(20);
+		menuButton.setAlpha(0.8f);
+		menuButton.setPadding(12, 8, 12, 8);
+		
+		FrameLayout.LayoutParams buttonParams = new FrameLayout.LayoutParams(
+			FrameLayout.LayoutParams.WRAP_CONTENT,
+			FrameLayout.LayoutParams.WRAP_CONTENT
+		);
+		buttonParams.setMargins(16, 16, 16, 16);
+		buttonParams.gravity = android.view.Gravity.TOP | android.view.Gravity.RIGHT;
+		
+		menuButton.setLayoutParams(buttonParams);
+		menuButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				showFloatingMenu(v);
+			}
+		});
+		
+		frameLayout.addView(menuButton);
+		this.setContentView(frameLayout);
 	}
 
 	// Cache data to speedup orientation switches
@@ -358,25 +384,48 @@ public class Play extends Activity implements OnSharedPreferenceChangeListener
 		return true; 
 	}
 
+	// Show floating popup menu
+	private void showFloatingMenu(View anchor) {
+		PopupMenu popup = new PopupMenu(this, anchor);
+		popup.getMenuInflater().inflate(R.menu.menu, popup.getMenu());
+		
+		popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				return onOptionsItemSelected(item);
+			}
+		});
+		
+		popup.show();
+	}
+
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key)
 	{
 		configChanged = true;
+		Log.d("Play", "Preference changed: " + key);
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		// Check if settings have changed when returning from preferences
+		if (configChanged) {
+			Log.d("Play", "Config changed detected in onResume, reloading keyboard");
+			configChanged = false; // Reset the flag
+			unbindDrawables(mBoard);
+			System.gc();
+			loadKeyboard();
+		}
 	}
 	
 	@Override
 	public void onOptionsMenuClosed(Menu menu) {
+		// This method is kept for compatibility but onResume now handles the reload
 		if (configChanged) {
-			unbindDrawables(mBoard);
-			System.gc();
-			// if (Prefer.InstrumentChanged) {
-				// Play.loadInstruments();
-			// } else if (Prefer.BoardChanged) {
-				//mBoard.setUpBoard(setOrientation());
-				//mBoard.invalidate();
-			//}
-			loadKeyboard();
+			Log.d("Play", "Config changed detected in onOptionsMenuClosed");
+			// Don't reload here, let onResume handle it
 		}
 	}
 	
